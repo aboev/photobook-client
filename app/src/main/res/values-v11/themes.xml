@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PhotobookTheme" parent="@style/Theme.AppCompat.Light">
+    	<item name="android:actionBarTabStyle">@style/ActionBarTabStyle</item>
+    	<item name="android:actionBarSize">100dp</item>
+	</style>
+
+	<style name="ActionBarTabStyle" parent="@style/Theme.AppCompat.Light">
+   		<item name="android:minHeight">100dp</item>
+	</style>
+</resources>
