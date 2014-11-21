@@ -2,6 +2,7 @@ package com.freecoders.photobook;
 
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
+import com.pkmmte.view.CircularImageView;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -18,7 +19,7 @@ public class RegisterActivity extends ActionBarActivity {
 	
 	EditText nameEditText;
 	EditText emailEditText;
-	ImageView avatarImage;
+    CircularImageView avatarImage;
 	
 	RegisterActivityHandler handler;
 
@@ -28,7 +29,7 @@ public class RegisterActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_register);
 		nameEditText = (EditText) findViewById(R.id.name);
 		emailEditText = (EditText) findViewById(R.id.email);
-		avatarImage = (ImageView) findViewById(R.id.imageViewAvatar);
+		avatarImage = (CircularImageView) findViewById(R.id.imageViewAvatar);
 		
 		avatarImage.setOnClickListener(new View.OnClickListener() {
 	        @Override
