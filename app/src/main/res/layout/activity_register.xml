@@ -21,14 +21,14 @@
 				  android:orientation="vertical"
 				  android:gravity="center">
 
-            <com.pkmmte.view.CircularImageView
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imageViewAvatar"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
-                app:border_color="#EEEEEE"
                 app:border_width="4dp"
-                app:shadow="true"
-                android:src="@drawable/avatar" />
+                app:border_color="#EEEEEE"
+                android:src="@drawable/avatar"/>
 	              
 		    <TextView
 		        android:layout_width="wrap_content"
