@@ -20,8 +20,8 @@ import java.io.IOException;
  */
 
 public class MultiPartRequest extends Request<String>{
-    public static final String KEY_PICTURE = "myavatar";
-    public static final String KEY_PICTURE_NAME = "filename";
+    public static final String KEY_PICTURE = "image";
+    //public static final String KEY_PICTURE_NAME = "image";
 
     private HttpEntity mHttpEntity;
 
@@ -29,7 +29,7 @@ public class MultiPartRequest extends Request<String>{
     private Response.Listener mListener;
 
     public MultiPartRequest(String url, String filePath,
-                            Response.Listener<JSONObject> listener,
+                            Response.Listener<String> listener,
                             Response.ErrorListener errorListener) {
         super(Method.POST, url, errorListener);
 
@@ -38,7 +38,7 @@ public class MultiPartRequest extends Request<String>{
     }
 
     public MultiPartRequest(String url, File file,
-                            Response.Listener<JSONObject> listener,
+                            Response.Listener<String> listener,
                             Response.ErrorListener errorListener) {
         super(Method.POST, url, errorListener);
 
@@ -56,7 +56,7 @@ public class MultiPartRequest extends Request<String>{
         String fileName = file.getName();
         FileBody fileBody = new FileBody(file);
         builder.addPart(KEY_PICTURE, fileBody);
-        builder.addTextBody(KEY_PICTURE_NAME, fileName);
+        //builder.addTextBody(KEY_PICTURE_NAME, fileName);
         return builder.build();
     }
 
