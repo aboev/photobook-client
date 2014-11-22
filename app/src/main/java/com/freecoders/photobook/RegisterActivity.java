@@ -3,7 +3,6 @@ package com.freecoders.photobook;
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.utils.FileUtils;
-import com.pkmmte.view.CircularImageView;
 import com.soundcloud.android.crop.Crop;
 
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +19,13 @@ import android.widget.ImageView;
 
 import java.io.File;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class RegisterActivity extends ActionBarActivity {
 	
 	EditText nameEditText;
 	EditText emailEditText;
-    CircularImageView avatarImage;
+    CircleImageView avatarImage;
 	
 	RegisterActivityHandler handler;
 
@@ -33,7 +35,7 @@ public class RegisterActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_register);
 		nameEditText = (EditText) findViewById(R.id.name);
 		emailEditText = (EditText) findViewById(R.id.email);
-		avatarImage = (CircularImageView) findViewById(R.id.imageViewAvatar);
+		avatarImage = (CircleImageView) findViewById(R.id.imageViewAvatar);
 		
 		avatarImage.setOnClickListener(new View.OnClickListener() {
 	        @Override
@@ -92,7 +94,9 @@ public class RegisterActivity extends ActionBarActivity {
             File dstFile = new File(getFilesDir(), Constants.FILENAME_AVATAR);
             new Crop(Uri.fromFile(tmpFile)).output(Uri.fromFile(dstFile)).asSquare().start(this);
 	    } else if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
+            avatarImage.setImageResource(0);
             avatarImage.setImageURI(Crop.getOutput(data));
+            Log.d(Constants.LOG_TAG, "Setting avatar URI to " + Crop.getOutput(data));
         }
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
