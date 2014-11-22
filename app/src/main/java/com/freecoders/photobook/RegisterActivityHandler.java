@@ -11,6 +11,7 @@ import com.android.volley.Request.Method;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Preferences;
+import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.VolleySingleton;
 
 import android.app.Activity;
@@ -25,7 +26,38 @@ public class RegisterActivityHandler {
 	public RegisterActivityHandler(Context context){
 		this.context = context;
 	}
-	
+
+    public void sendAvatar(){
+
+        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL, "asdsa",
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        try {
+                            String strResult = response.getString("result");
+                            if (strResult.equals("OK")) {
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(context, "Avatar downloaded ",
+                                Toast.LENGTH_LONG).show();
+                        //((Activity) context).finish();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(avatarRequest);
+    }
+
 	public void doRegister(String strName, String strEmail){
 		
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -61,6 +93,9 @@ public class RegisterActivityHandler {
 		                		Preferences prefs = new Preferences(context);
 		                		prefs.strUserID = intID.toString();
 		                		prefs.savePreferences();
+
+                                sendAvatar();
+
 		                        ((Activity) context).finish();
 		                        
 		                    }
