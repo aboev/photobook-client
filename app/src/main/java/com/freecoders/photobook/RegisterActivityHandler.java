@@ -1,5 +1,6 @@
 package com.freecoders.photobook;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -28,21 +29,14 @@ public class RegisterActivityHandler {
 	}
 
     public void sendAvatar(){
-
-        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL, "asdsa",
-                new Response.Listener<JSONObject>() {
+        File avatarImage = new File(context.getFilesDir(), Constants.FILENAME_AVATAR);
+        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image", avatarImage,
+                new Response.Listener<String>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         Log.d(Constants.LOG_TAG, response.toString());
-                        try {
-                            String strResult = response.getString("result");
-                            if (strResult.equals("OK")) {
 
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                         Toast.makeText(context, "Avatar downloaded ",
                                 Toast.LENGTH_LONG).show();
                         //((Activity) context).finish();
@@ -70,7 +64,7 @@ public class RegisterActivityHandler {
 		pDialog.show();   
 		
 		JsonObjectRequest registerRequest = new JsonObjectRequest(Method.POST,
-				Constants.SERVER_URL, new JSONObject(params),
+				Constants.SERVER_URL+"/user", new JSONObject(params),
 				new Response.Listener<JSONObject>() {
 		 
 		                    @Override
