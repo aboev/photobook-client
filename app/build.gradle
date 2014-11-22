@@ -23,4 +23,5 @@ dependencies {
     compile files('libs/library-1.0.0.jar')
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.soundcloud.android:android-crop:0.9.10@aar'
+    compile 'org.apache.httpcomponents:httpmime:4.3.6'
 }
