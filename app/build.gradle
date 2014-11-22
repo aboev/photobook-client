@@ -21,7 +21,8 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile files('libs/library-1.0.0.jar')
-    compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.soundcloud.android:android-crop:0.9.10@aar'
     compile 'org.apache.httpcomponents:httpmime:4.3.6'
+    compile 'org.apache.httpcomponents:httpcore:4.+'
 }
