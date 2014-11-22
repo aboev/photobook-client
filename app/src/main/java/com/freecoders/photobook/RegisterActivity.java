@@ -2,7 +2,9 @@ package com.freecoders.photobook;
 
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.utils.FileUtils;
 import com.pkmmte.view.CircularImageView;
+import com.soundcloud.android.crop.Crop;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -14,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import java.io.File;
 
 public class RegisterActivity extends ActionBarActivity {
 	
@@ -82,10 +86,14 @@ public class RegisterActivity extends ActionBarActivity {
 	        Cursor cursor = getContentResolver().query(_uri, new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
 	        cursor.moveToFirst();
 
-	        //Link to the image
-	        avatarImage.setImageURI(_uri);
-	        cursor.close();
-	    }
+            File tmpFile = new File(getCacheDir(), Constants.FILENAME_AVATAR);
+            FileUtils.copyFileFromUri(new File(FileUtils.getRealPathFromURI(this, _uri)), tmpFile);
+            cursor.close();
+            File dstFile = new File(getFilesDir(), Constants.FILENAME_AVATAR);
+            new Crop(Uri.fromFile(tmpFile)).output(Uri.fromFile(dstFile)).asSquare().start(this);
+	    } else if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
+            avatarImage.setImageURI(Crop.getOutput(data));
+        }
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
 }

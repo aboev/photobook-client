@@ -7,4 +7,6 @@ public class Constants {
 	public static final int INTENT_PICK_IMAGE = 1;
 	
 	public final static String SERVER_URL = "http://photobook-freecoders.rhcloud.com/user";
+
+    public final static String FILENAME_AVATAR = "avatar.jpg";
 }
