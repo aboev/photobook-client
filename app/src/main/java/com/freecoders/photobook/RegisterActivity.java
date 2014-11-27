@@ -29,6 +29,8 @@ public class RegisterActivity extends ActionBarActivity {
 	
 	RegisterActivityHandler handler;
 
+    Boolean boolAvatarSelected = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,6 +47,8 @@ public class RegisterActivity extends ActionBarActivity {
 	    });
 		
 		handler = new RegisterActivityHandler(this);
+
+
 	}
 
 	@Override
@@ -66,10 +70,10 @@ public class RegisterActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void doRegister(View view) { 
+	public void doRegister(View view) {
 		String strName = nameEditText.getText().toString();
 		String strEmail = emailEditText.getText().toString();
-		handler.doRegister(strName, strEmail);
+		handler.doRegister(strName, strEmail, boolAvatarSelected);
 	}
 	
 	public void doAvatarPick(){
@@ -96,6 +100,7 @@ public class RegisterActivity extends ActionBarActivity {
 	    } else if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
             avatarImage.setImageResource(0);
             avatarImage.setImageURI(Crop.getOutput(data));
+            boolAvatarSelected = true;
             Log.d(Constants.LOG_TAG, "Setting avatar URI to " + Crop.getOutput(data));
         }
 	    super.onActivityResult(requestCode, resultCode, data);
