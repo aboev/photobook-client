@@ -45,14 +45,14 @@ public class RegisterActivityHandler {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                    Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
             }
         }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(avatarRequest);
     }
 
-	public void doRegister(String strName, String strEmail){
+	public void doRegister(String strName, String strEmail, final Boolean boolUploadAvatar){
 		
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("name", strName);
@@ -71,24 +71,24 @@ public class RegisterActivityHandler {
 		                    public void onResponse(JSONObject response) {
 		                        Log.d(Constants.LOG_TAG, response.toString());
 		                        pDialog.hide();
-		                        Integer intID = 0;
+		                        String strID = "";
 								try {
 									String strResult = response.getString("result");
 									if (strResult.equals("OK")) {
 										String strData = response.getString("data");
 										JSONObject obj = new JSONObject(strData);
-										intID = obj.getInt("id");
+										strID = obj.getString("id");
 									}
 								} catch (JSONException e) {
 									e.printStackTrace();
 								}
-		                        Toast.makeText(context, "Registration success " + intID,
+		                        Toast.makeText(context, "Registration success " + strID,
 		                        		   Toast.LENGTH_LONG).show();
 		                		Preferences prefs = new Preferences(context);
-		                		prefs.strUserID = intID.toString();
+		                		prefs.strUserID = strID;
 		                		prefs.savePreferences();
 
-                                sendAvatar();
+                                if (boolUploadAvatar) sendAvatar();
 
 		                        ((Activity) context).finish();
 		                        
