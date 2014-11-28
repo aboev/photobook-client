@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Preferences;
+import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -33,6 +34,7 @@ public class ServerInterface {
         headers.put("Accept", "*/*");
         headers.put("Content-Type", "application/json");
         headers.put("userid", userId);
+        Log.d(Constants.LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_CONTACTS,
                 gson.toJson(contacts), headers,
@@ -48,6 +50,39 @@ public class ServerInterface {
                     public void onErrorResponse(VolleyError error) {
                         errorListener.onErrorResponse(error);
 
+                    }
+                }
+        );
+
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+
+    }
+
+    public static final void updateProfileRequest(Context context,
+                                                 UserProfile profile, String userId,
+                                                 final Response.Listener<String> responseListener,
+                                                 final Response.ErrorListener errorListener) {
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("Content-Type", "application/json");
+        headers.put("userid", userId);
+        profile.setNullFields();
+        Log.d(Constants.LOG_TAG, "Update profile request");
+        StringRequest request = new StringRequest(Request.Method.PUT,
+                Constants.SERVER_URL+Constants.SERVER_PATH_USER ,
+                gson.toJson(profile), headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (errorListener != null) errorListener.onErrorResponse(error);
                     }
                 }
         );
