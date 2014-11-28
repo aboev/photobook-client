@@ -9,4 +9,13 @@ public class UserProfile {
     public String email = "";
     public String avatar = "";
     public String id = "";
+
+    public void setNullFields(){
+        if (name.isEmpty()) name = null;
+        if (phone.isEmpty()) phone = null;
+        if (email.isEmpty()) email = null;
+        if (avatar.isEmpty()) avatar = null;
+        if (id.isEmpty()) id = null;
+    }
 }
+
