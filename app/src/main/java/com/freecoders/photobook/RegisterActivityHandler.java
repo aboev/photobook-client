@@ -12,7 +12,9 @@ import com.android.volley.Request.Method;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Preferences;
+import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
+import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
 
 import android.app.Activity;
@@ -36,7 +38,18 @@ public class RegisterActivityHandler {
                     @Override
                     public void onResponse(String response) {
                         Log.d(Constants.LOG_TAG, response.toString());
-
+                        try {
+                            JSONObject obj = new JSONObject( response);
+                            String strUrl = obj.getJSONObject("data").getString("url");
+                            UserProfile profile = new UserProfile();
+                            profile.setNullFields();
+                            profile.avatar = Constants.SERVER_URL + strUrl;
+                            Preferences pref = new Preferences(context);
+                            ServerInterface.updateProfileRequest(context, profile,
+                                    pref.strUserID, null, null);
+                        } catch (Exception e) {
+                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        }
                         Toast.makeText(context, "Avatar downloaded ",
                                 Toast.LENGTH_LONG).show();
                         //((Activity) context).finish();
