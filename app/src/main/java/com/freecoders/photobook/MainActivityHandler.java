@@ -5,6 +5,7 @@ import com.android.volley.VolleyError;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.ContactListInterface;
+import com.freecoders.photobook.db.ContactsRetriever;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
@@ -36,6 +37,7 @@ public class MainActivityHandler {
 		    activity.startActivity(intent);
 		} else {
             refreshContactList();
+
         }
 	}
 
@@ -43,8 +45,12 @@ public class MainActivityHandler {
         if (prefs.strUserID.isEmpty()) return;
 
         //final ArrayList<String> contactList = ContactListInterface.getContactList(activity);
-        final ArrayList<String> contactList = new ArrayList<String>();
-        for (int i = 111; i <= 129; i++) contactList.add(String.valueOf(i));
+        ContactsRetriever contactsRet = new ContactsRetriever();
+        final ArrayList<String> contactList = contactsRet.getContacts(activity);
+        Log.d(Constants.LOG_TAG,"Contacts retrieved");
+        //final ArrayList<String> contactList = new ArrayList<String>();
+        //for (int i = 111; i <= 129; i++) contactList.add(String.valueOf(i));
+
         for (int i = 0; i < contactList.size(); i++) {
             if (activity.friendsDataSource.getFriendByContactKey(contactList.get(i))==null) {
                 activity.friendsDataSource.createFriend("", contactList.get(i), "", "",
