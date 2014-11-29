@@ -4,6 +4,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 
 import org.apache.http.HttpEntity;
@@ -21,7 +22,7 @@ import java.io.IOException;
 
 public class MultiPartRequest extends Request<String>{
     public static final String KEY_PICTURE = "image";
-    //public static final String KEY_PICTURE_NAME = "image";
+    public static final String KEY_PICTURE_NAME = "name";
 
     private HttpEntity mHttpEntity;
 
@@ -56,7 +57,7 @@ public class MultiPartRequest extends Request<String>{
         String fileName = file.getName();
         FileBody fileBody = new FileBody(file);
         builder.addPart(KEY_PICTURE, fileBody);
-        //builder.addTextBody(KEY_PICTURE_NAME, fileName);
+        builder.addTextBody(KEY_PICTURE_NAME, fileName);
         return builder.build();
     }
 
