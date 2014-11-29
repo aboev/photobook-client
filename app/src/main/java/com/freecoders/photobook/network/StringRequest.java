@@ -1,10 +1,13 @@
 package com.freecoders.photobook.network;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.freecoders.photobook.common.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -17,6 +20,8 @@ import java.util.Map;
 public class StringRequest extends Request<String> {
     private final Response.Listener<String> mListener;
     private static final String PROTOCOL_CHARSET = "utf-8";
+    private static final String PROTOCOL_CONTENT_TYPE =
+            String.format("application/json; charset=%s", PROTOCOL_CHARSET);
     private String mRequestBody;
     private HashMap<String, String> mRequestHeaders;
 
@@ -48,6 +53,11 @@ public class StringRequest extends Request<String> {
     }
 
     @Override
+    public String getBodyContentType() {
+        return PROTOCOL_CONTENT_TYPE;
+    }
+
+    @Override
     public Map<String, String> getHeaders() {
         return ((mRequestHeaders == null) ? Collections.<String, String>emptyMap() : mRequestHeaders);
     }
@@ -65,5 +75,11 @@ public class StringRequest extends Request<String> {
             parsed = new String(response.data);
         }
         return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }
+
+    @Override
+    protected com.android.volley.VolleyError parseNetworkError(com.android.volley.VolleyError volleyError){
+        Log.d(Constants.LOG_TAG, "Error: " + new String(volleyError.networkResponse.data) );
+        return volleyError;
     }
 }
