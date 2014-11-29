@@ -1,6 +1,7 @@
 package com.freecoders.photobook;
 
 import com.freecoders.photobook.R;
+import com.freecoders.photobook.db.FriendsDataSource;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -21,9 +22,8 @@ public class MainActivity extends FragmentActivity {
     MainActivityPagerAdapter mPagerAdapter;
 
 	ActionBar.Tab friendsTab, galleryTab, feedTab;
-	Fragment friendsFragmentTab = new FriendsFragmentTab();
-	Fragment galleryFragmentTab = new GalleryFragmentTab();
-	Fragment feedFragmentTab = new FeedFragmentTab();
+
+    FriendsDataSource friendsDataSource;
     
 	@SuppressLint("NewApi") 
     @Override
@@ -74,7 +74,10 @@ public class MainActivity extends FragmentActivity {
         actionBar.addTab(friendsTab);
         actionBar.addTab(galleryTab);
         actionBar.addTab(feedTab);
-        
+
+        friendsDataSource = new FriendsDataSource(this);
+        friendsDataSource.open();
+
         mHandler = new MainActivityHandler();
         mHandler.init(this);
     }
