@@ -31,8 +31,6 @@ public class ServerInterface {
         final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("Content-Type", "application/json");
         headers.put("userid", userId);
         Log.d(Constants.LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
         StringRequest request = new StringRequest(Request.Method.POST,
@@ -64,8 +62,6 @@ public class ServerInterface {
                                                  final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("Content-Type", "application/json");
         headers.put("userid", userId);
         profile.setNullFields();
         Log.d(Constants.LOG_TAG, "Update profile request");
