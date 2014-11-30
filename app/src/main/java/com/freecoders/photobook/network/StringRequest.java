@@ -79,7 +79,6 @@ public class StringRequest extends Request<String> {
 
     @Override
     protected com.android.volley.VolleyError parseNetworkError(com.android.volley.VolleyError volleyError){
-        Log.d(Constants.LOG_TAG, "Error: " + new String(volleyError.networkResponse.data) );
         return volleyError;
     }
 }
