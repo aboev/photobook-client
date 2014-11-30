@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
@@ -20,6 +21,7 @@ import com.freecoders.photobook.network.VolleySingleton;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -103,9 +105,9 @@ public class RegisterActivityHandler {
 
                                 if (boolUploadAvatar) sendAvatar();
 
+                                Photobook.getFriendsFragmentTab().refreshContactList();
 		                        ((Activity) context).finish();
-		                        
-		                    }
+                            }
 		                }, new Response.ErrorListener() {
 		 
 		                    @Override
