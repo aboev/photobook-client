@@ -23,18 +23,16 @@ public class MainActivity extends FragmentActivity {
 
 	ActionBar.Tab friendsTab, galleryTab, feedTab;
 
-    FriendsDataSource friendsDataSource;
-    
 	@SuppressLint("NewApi") 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+
+        mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager(), this);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
-        
+
         mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -75,9 +73,6 @@ public class MainActivity extends FragmentActivity {
         actionBar.addTab(galleryTab);
         actionBar.addTab(feedTab);
 
-        friendsDataSource = new FriendsDataSource(this);
-        friendsDataSource.open();
-
         mHandler = new MainActivityHandler();
         mHandler.init(this);
     }
@@ -101,5 +96,4 @@ public class MainActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
