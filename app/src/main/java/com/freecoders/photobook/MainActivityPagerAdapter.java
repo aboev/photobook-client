@@ -7,20 +7,26 @@ import android.support.v4.app.FragmentPagerAdapter;
 //Since this is an object collection, use a FragmentStatePagerAdapter,
 //and NOT a FragmentPagerAdapter.
 public class MainActivityPagerAdapter extends FragmentPagerAdapter {
- public MainActivityPagerAdapter(FragmentManager fm) {
+    private MainActivity mActivity;
+
+ public MainActivityPagerAdapter(FragmentManager fm, MainActivity activity) {
      super(fm);
+     this.mActivity = activity;
  }
 
  @Override
  public Fragment getItem(int i) {
-	 Fragment fragment;
-	 if (i == 0) 
-		 fragment = new FriendsFragmentTab();
-	 else if (i == 1)
-		 fragment = new GalleryFragmentTab();
-	 else 
-		 fragment = new FeedFragmentTab();
-     return fragment;
+	 if (i == 0) {
+         FriendsFragmentTab fragment = new FriendsFragmentTab();
+         fragment.setMainActivity(mActivity);
+         return fragment;
+     } else if (i == 1) {
+         Fragment fragment = new GalleryFragmentTab();
+         return fragment;
+     } else {
+         Fragment fragment = new FeedFragmentTab();
+         return fragment;
+     }
  }
 
  @Override
