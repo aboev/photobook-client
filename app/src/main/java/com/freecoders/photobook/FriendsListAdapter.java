@@ -1,6 +1,7 @@
 package com.freecoders.photobook;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.network.VolleySingleton;
-import com.freecoders.photobook.utils.BitmapLruCache;
-import com.freecoders.photobook.utils.DiskBitmapCache;
+import com.freecoders.photobook.utils.MemoryLruCache;
+import com.freecoders.photobook.utils.DiskLruBitmapCache;
 
 import java.util.List;
 
@@ -35,10 +36,22 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
     public FriendsListAdapter(Context context, int resource, List<FriendEntry> items) {
         super(context, resource, items);
         this.resource=resource;
-        ImageLoader.ImageCache imageCache = new BitmapLruCache();
-        imageLoader = new ImageLoader(VolleySingleton.getInstance(context).getRequestQueue(),
-                imageCache);
-                //new DiskBitmapCache(context.getCacheDir()));
+        ImageLoader.ImageCache memoryCache = new MemoryLruCache();
+        try {
+            DiskLruBitmapCache diskCache = new DiskLruBitmapCache(context, "DiskCache",
+                2000000, Bitmap.CompressFormat.JPEG, 100);
+            imageLoader = new ImageLoader(VolleySingleton.getInstance(context).getRequestQueue(),
+                    diskCache);
+        } catch (Exception e) {
+            imageLoader = new ImageLoader(VolleySingleton.getInstance(context).getRequestQueue(),
+                    memoryCache);
+            Log.d(Constants.LOG_TAG, "Failed to initialize disk cache");
+        }
+    }
+
+    static class ViewHolder {
+        TextView nameText;
+        CircleImageView imgAvatar;
     }
 
     @Override
@@ -47,38 +60,55 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         LinearLayout view;
         FriendEntry profile = getItem(position);
         View rowView = convertView;
+        ViewHolder holder = null;
 
-        if(rowView == null)
-        {
+        if(rowView == null) {
             String inflater = Context.LAYOUT_INFLATER_SERVICE;
             LayoutInflater vi = (LayoutInflater)getContext().getSystemService(inflater);
             rowView = vi.inflate(R.layout.row_friend_list, null);
+            holder = new ViewHolder();
+            holder.nameText = (TextView)rowView.findViewById(R.id.txtName);
+            holder.imgAvatar = (CircleImageView)rowView.findViewById(R.id.imgAvatar);
+            rowView.setTag(holder);
+        } else {
+            holder = (ViewHolder) rowView.getTag();
         }
 
-        final CircleImageView avatar = (CircleImageView)rowView.findViewById(R.id.imgAvatar);
-        TextView nameText =(TextView)rowView.findViewById(R.id.txtName);
-        avatar.setImageResource(R.drawable.avatar);
-
-        nameText.setText(profile.getName());
+        holder.imgAvatar.setImageResource(R.drawable.avatar);
+        holder.nameText.setText(profile.getName());
+        holder.imgAvatar.setTag(position);
 
         if ((profile.getAvatar().isEmpty() == false)
                 && (URLUtil.isValidUrl(profile.getAvatar()))) {
-            Log.d(Constants.LOG_TAG, "Requesting avatar = " + profile.getAvatar());
+            Log.d(Constants.LOG_TAG, "Requesting avatar for " + profile.getName() +
+                            " " + profile.getAvatar());
             imageLoader.get(profile.getAvatar().toString(),
-                    new ImageLoader.ImageListener() {
-                public void onErrorResponse(VolleyError error) {
-                }
-
-                public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
-                    if (response.getBitmap() != null) {
-                        avatar.setImageResource(0);
-                        avatar.setImageBitmap(response.getBitmap());
-                    }
-                }
-            });
+                    new ImageListener(position, holder.imgAvatar));
         }
 
         return rowView;
     }
 
+    private class ImageListener implements ImageLoader.ImageListener {
+        Integer pos = 0;
+        CircleImageView imgAvatar;
+
+        public ImageListener(Integer position, CircleImageView imgAvatar){
+            this.pos = position;
+            this.imgAvatar = imgAvatar;
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+        }
+
+        @Override
+        public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+            if ((response.getBitmap() != null) && ((Integer) imgAvatar.getTag() == pos)) {
+                Log.d(Constants.LOG_TAG, "Setting bitmap for pos = " + pos);
+                imgAvatar.setImageResource(0);
+                imgAvatar.setImageBitmap(response.getBitmap());
+            }
+        }
+    }
 }
