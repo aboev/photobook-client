@@ -2,21 +2,23 @@ package com.freecoders.photobook.utils;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.freecoders.photobook.common.Constants;
 
 /**
  * Created by Alex on 2014-11-28.
  */
-public class BitmapLruCache
+public class MemoryLruCache
         extends LruCache<String, Bitmap>
         implements ImageLoader.ImageCache {
 
-    public BitmapLruCache() {
+    public MemoryLruCache() {
         this(getDefaultLruCacheSize());
     }
 
-    public BitmapLruCache(int sizeInKiloBytes) {
+    public MemoryLruCache(int sizeInKiloBytes) {
         super(sizeInKiloBytes);
     }
 
@@ -32,6 +34,8 @@ public class BitmapLruCache
 
     @Override
     public void putBitmap(String url, Bitmap bitmap) {
+        Log.d(Constants.LOG_TAG, "Putting cache value for " + url + ", control pixel " +
+                bitmap.getPixel(10,10));
         put(url, bitmap);
     }
 
