@@ -26,9 +26,11 @@ public class FriendsFragmentTab extends Fragment {
     public FriendsListAdapter adapter;
     public Preferences prefs;
     private ContactsRetrieverTask contactsRetrieverTask;
+    private Boolean boolUpdateList = true;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
+        this.prefs = new Preferences(activity);
     }
 
     @Override
@@ -41,13 +43,17 @@ public class FriendsFragmentTab extends Fragment {
 
         friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                 FriendEntry.INT_STATUS_DEFAULT);
-        prefs = new Preferences(getActivity());
+
         adapter = new FriendsListAdapter(getActivity(),
                 R.layout.row_friend_list, friendsList);
         listView.setAdapter(adapter);
-        refreshContactList();
 
         Photobook.setFriendsFragmentTab(this);
+
+        if (boolUpdateList) {
+            refreshContactList();
+            //boolUpdateList = false;
+        }
         return rootView;
     }
 
@@ -56,7 +62,7 @@ public class FriendsFragmentTab extends Fragment {
         prefs.loadPreferences();
         if (prefs.strUserID.isEmpty()) return;
 
-        contactsRetrieverTask = new ContactsRetrieverTask(this);
+        contactsRetrieverTask = new ContactsRetrieverTask(this, true);
         contactsRetrieverTask.execute();
     }
 }
