@@ -90,8 +90,10 @@ public class FriendsDataSource {
     public ArrayList<FriendEntry> getFriendsByStatus(int Status) {
         String selection = dbHelper.COLUMN_STATUS + " = ?";
 
+        String orderBy =  SQLiteHelper.COLUMN_NAME + " ASC";
+
         Cursor cursor = database.query(dbHelper.TABLE_FRIENDS,
-                null, selection,new String[]{String.valueOf(Status)} , null, null, null);
+                null, selection,new String[]{String.valueOf(Status)} , null, null, orderBy);
 
         ArrayList<FriendEntry> listFriends = new ArrayList<FriendEntry>();
 
@@ -112,7 +114,10 @@ public class FriendsDataSource {
 
     public ArrayList<FriendEntry> getAllFriends() {
 
-        Cursor cursor = database.query(dbHelper.TABLE_FRIENDS, null, null,null , null, null, null);
+        String orderBy =  SQLiteHelper.COLUMN_NAME + " ASC";
+
+        Cursor cursor = database.query(dbHelper.TABLE_FRIENDS, null, null,null , null, null,
+                orderBy);
 
         if (cursor == null) {
             return null;
