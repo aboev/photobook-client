@@ -30,9 +30,12 @@ import java.util.Map;
 public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<String>> {
 
     private FriendsFragmentTab mFriendsTab;
+    private Boolean boolPopulateTab;
 
-    public ContactsRetrieverTask(FriendsFragmentTab friendsTab) {
+    public ContactsRetrieverTask(FriendsFragmentTab friendsTab, Boolean boolPopulateTab)
+    {
         this.mFriendsTab = friendsTab;
+        this.boolPopulateTab = boolPopulateTab;
     }
 
     @Override
@@ -77,13 +80,16 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                                     }
                                 }
                             }
-                            mFriendsTab.friendsList.clear();
-                            mFriendsTab.friendsList.addAll(
-                                    Photobook.getFriendsDataSource().getFriendsByStatus(
-                                            FriendEntry.INT_STATUS_DEFAULT));
-                            mFriendsTab.adapter.notifyDataSetChanged();
-                            Log.d(Constants.LOG_TAG, "Notifying data set changed list length"
-                                +  mFriendsTab.friendsList.size());
+                            if (boolPopulateTab) {
+                                mFriendsTab.friendsList.clear();
+                                mFriendsTab.friendsList.addAll(
+                                        Photobook.getFriendsDataSource().getFriendsByStatus(
+                                                FriendEntry.INT_STATUS_DEFAULT));
+                                mFriendsTab.adapter.notifyDataSetChanged();
+                                Log.d(Constants.LOG_TAG,
+                                        "Notifying data set changed list length"
+                                        + mFriendsTab.friendsList.size());
+                            }
                         } catch (Exception e) {
                             Log.d(Constants.LOG_TAG, "Exception" + e.getLocalizedMessage());
                         }
