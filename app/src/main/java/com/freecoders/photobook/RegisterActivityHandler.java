@@ -34,7 +34,8 @@ public class RegisterActivityHandler {
 
     public void sendAvatar(){
         File avatarImage = new File(context.getFilesDir(), Constants.FILENAME_AVATAR);
-        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image", avatarImage,
+        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
+                avatarImage, new HashMap<String,String>(),
                 new Response.Listener<String>() {
 
                     @Override
@@ -99,13 +100,13 @@ public class RegisterActivityHandler {
 								}
 		                        Toast.makeText(context, "Registration success " + strID,
 		                        		   Toast.LENGTH_LONG).show();
-		                		Preferences prefs = new Preferences(context);
-		                		prefs.strUserID = strID;
-		                		prefs.savePreferences();
+                                Photobook.getPreferences().strUserID = strID;
+                                Photobook.getPreferences().savePreferences();
 
                                 if (boolUploadAvatar) sendAvatar();
 
-                                Photobook.getFriendsFragmentTab().refreshContactList();
+                                if (Photobook.getFriendsFragmentTab() != null)
+                                    Photobook.getFriendsFragmentTab().refreshContactList();
 		                        ((Activity) context).finish();
                             }
 		                }, new Response.ErrorListener() {
