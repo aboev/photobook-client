@@ -24,13 +24,11 @@ public class FriendsFragmentTab extends Fragment {
     public MainActivity mActivity;
     public ArrayList<FriendEntry> friendsList;
     public FriendsListAdapter adapter;
-    public Preferences prefs;
     private ContactsRetrieverTask contactsRetrieverTask;
     private Boolean boolUpdateList = true;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
-        this.prefs = new Preferences(activity);
     }
 
     @Override
@@ -52,15 +50,14 @@ public class FriendsFragmentTab extends Fragment {
 
         if (boolUpdateList) {
             refreshContactList();
-            //boolUpdateList = false;
+            boolUpdateList = false;
         }
         return rootView;
     }
 
     public void refreshContactList(){
         Log.d(Constants.LOG_TAG, "Refreshing contact list");
-        prefs.loadPreferences();
-        if (prefs.strUserID.isEmpty()) return;
+        if (Photobook.getPreferences().strUserID.isEmpty()) return;
 
         contactsRetrieverTask = new ContactsRetrieverTask(this, true);
         contactsRetrieverTask.execute();
