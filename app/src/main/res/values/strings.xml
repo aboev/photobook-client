@@ -11,5 +11,8 @@
     <string name="name_hint">Alice Gallakher</string>
     <string name="email_hint">agallakher@gmail.com</string>
     <string name="register">Sign up</string>
+    <string name="btn_follow_text">follow</string>
+    <string name="btn_share_text">share</string>
+    <string name="edit_title_hint">Fabulous morning</string>
 
 </resources>
