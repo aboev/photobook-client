@@ -53,7 +53,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
         }
 
         ServerInterface.postContactsRequest(mFriendsTab.mActivity,
-                contactList, mFriendsTab.prefs.strUserID,
+                contactList, Photobook.getPreferences().strUserID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
