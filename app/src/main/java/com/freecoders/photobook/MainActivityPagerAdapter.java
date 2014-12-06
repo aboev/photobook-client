@@ -8,21 +8,23 @@ import android.support.v4.app.FragmentPagerAdapter;
 //and NOT a FragmentPagerAdapter.
 public class MainActivityPagerAdapter extends FragmentPagerAdapter {
     private MainActivity mActivity;
+    private FriendsFragmentTab friendsFragment;
+    private GalleryFragmentTab galleryFragment;
 
  public MainActivityPagerAdapter(FragmentManager fm, MainActivity activity) {
      super(fm);
      this.mActivity = activity;
+     friendsFragment = new FriendsFragmentTab();
+     friendsFragment.setMainActivity(mActivity);
+     galleryFragment = new GalleryFragmentTab();
  }
 
  @Override
  public Fragment getItem(int i) {
 	 if (i == 0) {
-         FriendsFragmentTab fragment = new FriendsFragmentTab();
-         fragment.setMainActivity(mActivity);
-         return fragment;
+         return friendsFragment;
      } else if (i == 1) {
-         Fragment fragment = new GalleryFragmentTab();
-         return fragment;
+         return galleryFragment;
      } else {
          Fragment fragment = new FeedFragmentTab();
          return fragment;
