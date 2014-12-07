@@ -6,7 +6,7 @@ package com.freecoders.photobook.utils;
 public class PhoneUtils {
 
     // Implement phone number normalization. Ex. 010-1111-2222 -> +82 10-1111-2222
-    public final static String getNormalizedPhoneNumber(){
+    public final static String getNormalizedPhoneNumber(String strRawPhoneNum){
         /*
         Code here
          */
