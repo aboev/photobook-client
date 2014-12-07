@@ -14,6 +14,7 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
+import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -123,7 +124,10 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                             ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                             new String[]{id}, null);
                     while (pCur.moveToNext()) {
-                        telNumbers.add(pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                        String strNumber = pCur.getString(pCur.getColumnIndex
+                                (ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        String strNormalizedNumber = PhoneUtils.getNormalizedPhoneNumber(strNumber);
+                        telNumbers.add(strNormalizedNumber);
                     }
                     pCur.close();
                 }
