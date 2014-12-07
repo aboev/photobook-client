@@ -97,12 +97,13 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         if (profile.getStatus() == FriendEntry.INT_STATUS_FRIEND) {
             holder.followButton.setText(R.string.btn_unfollow_text);
             final int pos = position;
+            final String strUserId = profile.getUserId();
             final FriendsListAdapter adapter = this;
             View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mFriendList.get(pos).setStatus(FriendEntry.INT_STATUS_DEFAULT);
-                        adapter.notifyDataSetChanged();
+                        ServerInterface.removeFriendRequest(mFriendList, adapter, pos,
+                                Photobook.getMainActivity(), new String[]{strUserId});
                     }
             };
             holder.followButton.setOnClickListener(onClickListener);
