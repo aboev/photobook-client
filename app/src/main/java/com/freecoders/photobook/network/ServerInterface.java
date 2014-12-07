@@ -9,8 +9,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.freecoders.photobook.FriendsListAdapter;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
+import com.freecoders.photobook.db.FriendEntry;
+import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
 
@@ -87,5 +91,47 @@ public class ServerInterface {
 
         VolleySingleton.getInstance(context).addToRequestQueue(request);
 
+    }
+
+    public static final void addFriendRequest(final ArrayList<FriendEntry> friendList,
+        FriendsListAdapter adapter, int pos, Context context,
+        final String[] friendIds) {
+        Gson gson = new Gson();
+        String userId = Photobook.getPreferences().strUserID;
+        if (userId.isEmpty()) return;
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        final int position = pos;
+        final FriendsListAdapter friendsListAdapter = adapter;
+        Log.d(Constants.LOG_TAG, "Add friend request");
+        StringRequest request = new StringRequest(Request.Method.PUT,
+                Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
+                gson.toJson(friendIds), headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject resJson = new JSONObject(response);
+                            String strRes = resJson.getString("result");
+                            if (strRes.equals("OK")) {
+                                friendList.get(position).
+                                        setStatus(FriendEntry.INT_STATUS_FRIEND);
+                                friendsListAdapter.notifyDataSetChanged();
+                            }
+                        } catch (JSONException e) {
+                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        }
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(Constants.LOG_TAG, "Error: " + error.getLocalizedMessage());
+                    }
+                }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 }
