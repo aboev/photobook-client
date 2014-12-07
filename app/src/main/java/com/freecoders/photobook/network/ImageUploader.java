@@ -104,8 +104,9 @@ public class ImageUploader {
                             String strRes = resJson.getString("result");
                             if (strRes.equals("OK")) {
                                 mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
-                                Photobook.getImagesDataSource().saveImage(
-                                        mImgList.get(mPosition));
+                                mImgList.set(mPosition, Photobook.getImagesDataSource().saveImage(
+                                        mImgList.get(mPosition)));
+
                                 Log.d(Constants.LOG_TAG, "Saving new ImageEntry with " +
                                         mImgList.get(mPosition).getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
@@ -119,7 +120,7 @@ public class ImageUploader {
 
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                            Log.d(Constants.LOG_TAG, "Error: " + new String(error.networkResponse.data));
                             handleFailure();
                         }
                 }
