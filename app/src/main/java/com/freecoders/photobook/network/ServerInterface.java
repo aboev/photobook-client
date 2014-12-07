@@ -134,4 +134,53 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
+
+    public static final void removeFriendRequest(final ArrayList<FriendEntry> friendList,
+                                              FriendsListAdapter adapter, int pos, Context context,
+                                              final String[] friendIds) {
+        Gson gson = new Gson();
+        String userId = Photobook.getPreferences().strUserID;
+        if (userId.isEmpty()) return;
+        String idList = "";
+        if (friendIds.length > 0) {
+            idList = friendIds[0];
+            for (int i = 1; i < friendIds.length; i++)
+                idList = idList + ", " + friendIds[i];
+        }
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        headers.put("id", idList);
+        final int position = pos;
+        final FriendsListAdapter friendsListAdapter = adapter;
+        Log.d(Constants.LOG_TAG, "Remove friend request");
+        StringRequest request = new StringRequest(Request.Method.DELETE,
+                Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
+                gson.toJson(friendIds), headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject resJson = new JSONObject(response);
+                            String strRes = resJson.getString("result");
+                            if (strRes.equals("OK")) {
+                                friendList.get(position).
+                                        setStatus(FriendEntry.INT_STATUS_DEFAULT);
+                                friendsListAdapter.notifyDataSetChanged();
+                            }
+                        } catch (JSONException e) {
+                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        }
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(Constants.LOG_TAG, "Error: " + error.getLocalizedMessage());
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
 }
