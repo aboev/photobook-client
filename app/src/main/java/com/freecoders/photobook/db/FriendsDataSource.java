@@ -37,12 +37,12 @@ public class FriendsDataSource {
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(dbHelper.TABLE_FRIENDS, null, null, null, null, null, null);
-        idColIndex = cursor.getColumnIndex("_id");
-        nameColIndex = cursor.getColumnIndex("Name");
-        userIdColIndex = cursor.getColumnIndex("UserId");
-        avatarColIndex = cursor.getColumnIndex("Avatar");
-        statusColIndex = cursor.getColumnIndex("Status");
-        ContactKeyColIndex = cursor.getColumnIndex("ContactKey");
+        idColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_ID);
+        nameColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_NAME);
+        userIdColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_USER_ID);
+        avatarColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_AVATAR);
+        statusColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_STATUS);
+        ContactKeyColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_CONTACT_KEY);
 
     }
 
@@ -65,7 +65,7 @@ public class FriendsDataSource {
     }
 
     public void deleteFriendEntry(FriendEntry friendEntry) {
-        //Delete FriendEntry
+        database.delete(dbHelper.TABLE_FRIENDS,"_id = ?",new String[] {String.valueOf(friendEntry.getId())});
     }
 
     public FriendEntry getFriendByContactKey(String ContactKey) {
