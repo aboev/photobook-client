@@ -85,14 +85,10 @@ public class ImageUploader {
 
     private void putMetaData(String strId, String strTitle){
         Gson gson = new Gson();
-        JSONObject reqBody = new JSONObject();
-        try {
-            reqBody.put("id", strId);
-            reqBody.put("timestamp", System.currentTimeMillis());
-            reqBody.put("title", strTitle);
-        } catch (JSONException e) {
-            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
-        }
+        HashMap<String, String> reqBody = new HashMap<String, String>();
+        reqBody.put("id", strId);
+        reqBody.put("timestamp", String.valueOf(System.currentTimeMillis()));
+        reqBody.put("title", strTitle);
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("userid", Photobook.getPreferences().strUserID);
         headers.put("Accept", "*/*");
