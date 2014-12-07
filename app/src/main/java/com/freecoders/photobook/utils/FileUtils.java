@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Alex on 2014-11-22.
@@ -50,5 +52,26 @@ public class FileUtils {
             cursor.close();
         }
         return result;
+    }
+
+    public final static String makeSHA1Hash(String input)
+    {
+        try {
+            MessageDigest md = null;
+            md = MessageDigest.getInstance("SHA1");
+            md.reset();
+            byte[] buffer = input.getBytes();
+            md.update(buffer);
+            byte[] digest = md.digest();
+
+            String hexStr = "";
+            for (int i = 0; i < digest.length; i++) {
+                hexStr +=  Integer.toString( ( digest[i] & 0xff ) + 0x100, 16).substring( 1 );
+            }
+            return hexStr;
+        } catch (NoSuchAlgorithmException e) {
+            Log.d(Constants.LOG_TAG, "Hash exception: " + e.getLocalizedMessage());
+            return "";
+        }
     }
 }
