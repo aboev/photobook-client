@@ -8,17 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
+import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.MemoryLruCache;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -32,8 +36,9 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
     String response;
     Context context;
     ImageLoader imageLoader;
+    ArrayList<FriendEntry> mFriendList;
     //Initialize adapter
-    public FriendsListAdapter(Context context, int resource, List<FriendEntry> items) {
+    public FriendsListAdapter(Context context, int resource, ArrayList<FriendEntry> items) {
         super(context, resource, items);
         this.resource=resource;
         ImageLoader.ImageCache memoryCache = new MemoryLruCache();
@@ -47,11 +52,13 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                     memoryCache);
             Log.d(Constants.LOG_TAG, "Failed to initialize disk cache");
         }
+        this.mFriendList = items;
     }
 
     static class ViewHolder {
         TextView nameText;
         CircleImageView imgAvatar;
+        Button followButton;
     }
 
     @Override
@@ -69,6 +76,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
             holder = new ViewHolder();
             holder.nameText = (TextView)rowView.findViewById(R.id.txtName);
             holder.imgAvatar = (CircleImageView)rowView.findViewById(R.id.imgAvatar);
+            holder.followButton = (Button)rowView.findViewById(R.id.btnFollow);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
@@ -84,6 +92,35 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                             " " + profile.getAvatar());
             imageLoader.get(profile.getAvatar().toString(),
                     new ImageListener(position, holder.imgAvatar));
+        }
+
+        if (profile.getStatus() == FriendEntry.INT_STATUS_FRIEND) {
+            holder.followButton.setText(R.string.btn_unfollow_text);
+            final int pos = position;
+            final FriendsListAdapter adapter = this;
+            View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mFriendList.get(pos).setStatus(FriendEntry.INT_STATUS_DEFAULT);
+                        adapter.notifyDataSetChanged();
+                    }
+            };
+            holder.followButton.setOnClickListener(onClickListener);
+        } else {
+            holder.followButton.setText(R.string.btn_follow_text);
+            if (!profile.getUserId().isEmpty()) {
+                final int pos = position;
+                final String strUserId = profile.getUserId();
+                final FriendsListAdapter adapter = this;
+                View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ServerInterface.addFriendRequest(mFriendList, adapter, pos,
+                                Photobook.getMainActivity(), new String[]{strUserId});
+                    }
+                };
+                holder.followButton.setOnClickListener(onClickListener);
+            }
         }
 
         return rowView;
