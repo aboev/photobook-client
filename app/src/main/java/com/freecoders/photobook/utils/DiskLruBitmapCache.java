@@ -73,7 +73,7 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
 
     @Override
     public void putBitmap( String url, Bitmap data ) {
-        String key = makeSHA1Hash(url);
+        String key = FileUtils.makeSHA1Hash(url);
         com.jakewharton.disklrucache.DiskLruCache.Editor editor = null;
         try {
             editor = mDiskCache.edit( key );
@@ -112,7 +112,7 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
 
     @Override
     public Bitmap getBitmap( String url ) {
-        String key = makeSHA1Hash(url);
+        String key = FileUtils.makeSHA1Hash(url);
         Bitmap bitmap = null;
         com.jakewharton.disklrucache.DiskLruCache.Snapshot snapshot = null;
         try {
@@ -197,27 +197,6 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
 
     public static boolean hasExternalCacheDir() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-    }
-
-    public String makeSHA1Hash(String input)
-    {
-        try {
-            MessageDigest md = null;
-            md = MessageDigest.getInstance("SHA1");
-            md.reset();
-            byte[] buffer = input.getBytes();
-            md.update(buffer);
-            byte[] digest = md.digest();
-
-            String hexStr = "";
-            for (int i = 0; i < digest.length; i++) {
-                hexStr +=  Integer.toString( ( digest[i] & 0xff ) + 0x100, 16).substring( 1 );
-            }
-            return hexStr;
-        } catch (NoSuchAlgorithmException e) {
-            Log.d(Constants.LOG_TAG, "Hash exception: " + e.getLocalizedMessage());
-            return "";
-        }
     }
 
 }
