@@ -10,6 +10,7 @@ public class MainActivityPagerAdapter extends FragmentPagerAdapter {
     private MainActivity mActivity;
     private FriendsFragmentTab friendsFragment;
     private GalleryFragmentTab galleryFragment;
+    private FeedFragmentTab feedFragmentTab;
 
  public MainActivityPagerAdapter(FragmentManager fm, MainActivity activity) {
      super(fm);
@@ -17,6 +18,7 @@ public class MainActivityPagerAdapter extends FragmentPagerAdapter {
      friendsFragment = new FriendsFragmentTab();
      friendsFragment.setMainActivity(mActivity);
      galleryFragment = new GalleryFragmentTab();
+     feedFragmentTab = new FeedFragmentTab();
  }
 
  @Override
@@ -26,8 +28,7 @@ public class MainActivityPagerAdapter extends FragmentPagerAdapter {
      } else if (i == 1) {
          return galleryFragment;
      } else {
-         Fragment fragment = new FeedFragmentTab();
-         return fragment;
+         return feedFragmentTab;
      }
  }
 
