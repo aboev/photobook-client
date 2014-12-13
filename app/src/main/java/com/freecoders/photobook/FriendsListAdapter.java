@@ -143,7 +143,6 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         @Override
         public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
             if ((response.getBitmap() != null) && ((Integer) imgAvatar.getTag() == pos)) {
-                Log.d(Constants.LOG_TAG, "Setting bitmap for pos = " + pos);
                 imgAvatar.setImageResource(0);
                 imgAvatar.setImageBitmap(response.getBitmap());
             }
