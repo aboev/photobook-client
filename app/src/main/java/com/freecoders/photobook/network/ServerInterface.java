@@ -118,6 +118,9 @@ public class ServerInterface {
                                 friendList.get(position).
                                         setStatus(FriendEntry.INT_STATUS_FRIEND);
                                 friendsListAdapter.notifyDataSetChanged();
+                                int res = Photobook.getFriendsDataSource().updateFriend(
+                                        friendList.get(position));
+                                Log.d(Constants.LOG_TAG, "Updated " + res + "friend items");
                             }
                         } catch (JSONException e) {
                             Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
@@ -167,6 +170,8 @@ public class ServerInterface {
                                 friendList.get(position).
                                         setStatus(FriendEntry.INT_STATUS_DEFAULT);
                                 friendsListAdapter.notifyDataSetChanged();
+                                Photobook.getFriendsDataSource().updateFriend(
+                                        friendList.get(position));
                             }
                         } catch (JSONException e) {
                             Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
