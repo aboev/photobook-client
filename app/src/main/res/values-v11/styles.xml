@@ -5,7 +5,19 @@
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
     -->
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowTitleSize">0dp</item>
+        <item name="android:windowActionBar">false</item>
         <!-- API 11 theme customizations can go here. -->
+    </style>
+
+    <style name="AppThemeNoActionBar" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="SplashScreen">
+        <item name="android:padding">0dp</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowFrame">@null</item>
     </style>
 
 </resources>
