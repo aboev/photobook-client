@@ -1,18 +1,20 @@
 package com.freecoders.photobook;
 
-import com.freecoders.photobook.R;
-import com.freecoders.photobook.db.FriendsDataSource;
+import com.freecoders.photobook.common.Constants;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.support.v4.app.Fragment;
+import android.app.Dialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.app.FragmentTransaction;
+import android.view.Window;
 
 public class MainActivity extends FragmentActivity {
 
@@ -23,13 +25,58 @@ public class MainActivity extends FragmentActivity {
 
 	ActionBar.Tab friendsTab, galleryTab, feedTab;
 
+    protected Dialog mSplashDialog;
+
 	@SuppressLint("NewApi") 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getActionBar().hide();
+
+        mSplashDialog = new Dialog(this, R.style.SplashScreen);
+        mSplashDialog.setContentView(R.layout.activity_splash);
+        mSplashDialog.setCancelable(false);
+        mSplashDialog.show();
+
         setContentView(R.layout.activity_main);
 
-        mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager(), this);
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        
+        friendsTab = actionBar.newTab().setIcon(R.drawable.ic_action_friends_tab);
+        galleryTab = actionBar.newTab().setIcon(R.drawable.ic_action_gallery_tab);
+        feedTab = actionBar.newTab().setIcon(R.drawable.ic_action_feed_tab);
+
+        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			@Override
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+                if (mViewPager != null)
+				    mViewPager.setCurrentItem(tab.getPosition());
+			}
+
+			@Override
+			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			}
+
+			@Override
+			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			}
+        };
+
+        friendsTab.setTabListener(tabListener);
+        galleryTab.setTabListener(tabListener);
+        feedTab.setTabListener(tabListener);
+        
+        actionBar.addTab(friendsTab);
+        actionBar.addTab(galleryTab);
+        actionBar.addTab(feedTab);
+
+        mPagerAdapter = new MainActivityPagerAdapter(
+                getSupportFragmentManager(), this);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
 
@@ -41,42 +88,32 @@ public class MainActivity extends FragmentActivity {
                     }
                 });
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(false);
-        
-        friendsTab = actionBar.newTab().setIcon(R.drawable.ic_action_friends_tab);
-        galleryTab = actionBar.newTab().setIcon(R.drawable.ic_action_gallery_tab);
-        feedTab = actionBar.newTab().setIcon(R.drawable.ic_action_feed_tab);
-        
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-				mViewPager.setCurrentItem(tab.getPosition());
-			}
-
-			@Override
-			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			}
-
-			@Override
-			public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			}
-        };
-        
-        friendsTab.setTabListener(tabListener);
-        galleryTab.setTabListener(tabListener);
-        feedTab.setTabListener(tabListener);
-        
-        actionBar.addTab(friendsTab);
-        actionBar.addTab(galleryTab);
-        actionBar.addTab(feedTab);
-
         mHandler = new MainActivityHandler();
         mHandler.init(this);
+
+        getActionBar().show();
+
+        new SplashTimeoutTask().execute();
+
+        Log.d(Constants.LOG_TAG, "Loaded main activity");
     }
 
+    public class SplashTimeoutTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSplashDialog.hide();
+                }
+            });
+            return true;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
