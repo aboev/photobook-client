@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +22,10 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.network.ImageUploader;
+import com.freecoders.photobook.utils.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("NewApi") 
@@ -31,6 +36,9 @@ public class GalleryFragmentTab extends Fragment {
     private GalleryAdapter mAdapter;
 
     public GalleryFragmentTab(){
+        mImageLoader = new ImageUploader();
+        mImageList = new ArrayList<ImageEntry>();
+        new GalleryLoaderClass().execute();
     }
 
     @Override
@@ -38,14 +46,27 @@ public class GalleryFragmentTab extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
         StaggeredGridView gridView = (StaggeredGridView) rootView.findViewById(R.id.gridView);
-        mImageList = Photobook.getImagesDataSource().getAllImages();
-        mImageLoader = new ImageUploader();
         mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
                 mImageList);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(OnItemClickListener);
         setRetainInstance(true);
         return rootView;
+    }
+
+    public class GalleryLoaderClass extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            ArrayList<ImageEntry> imgList = Photobook.getImagesDataSource().getAllImages();
+            mImageList.addAll(imgList);
+            Photobook.getMainActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mAdapter != null) mAdapter.notifyDataSetChanged();
+                }
+            });
+            return true;
+        }
     }
 
     AdapterView.OnItemClickListener OnItemClickListener
@@ -71,6 +92,25 @@ public class GalleryFragmentTab extends Fragment {
                     @Override
                     public void onClick(View v) {
                         mImageList.get(pos).setTitle(editText.getText().toString());
+                        /*
+                        String strOrigUri = mImageList.get(pos).getOrigUri();
+                        String strDestName = mImageList.get(pos).getMediaStoreID();
+                        if (strOrigUri.contains(".")) {
+                            String filenameArray[] = strOrigUri.split("\\.");
+                            String extension = filenameArray[filenameArray.length - 1];
+                            strDestName = strDestName + extension;
+                        }
+                        File destFile = new File(Photobook.getMainActivity().getFilesDir(),
+                                strDestName);
+                        try {
+                            destFile.createNewFile();
+                        } catch (IOException e) {
+                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        }
+                        FileUtils.copyFileFromUri(new File(mImageList.get(pos).getOrigUri()),
+                                destFile);
+                        mImageList.get(pos).setOrigUri(destFile.toURI().toString());
+                        */
                         mImageLoader.uploadImage(mImageList, pos, mAdapter);
                         alertDialog.dismiss();
                     }
