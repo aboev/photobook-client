@@ -17,6 +17,7 @@ import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
+import com.freecoders.photobook.utils.PhoneUtils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -73,7 +74,8 @@ public class RegisterActivityHandler {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("name", strName);
 		params.put("email", strEmail);
-		params.put("phone", "+82 111-2222-3333");
+        String strPhoneNumber = PhoneUtils.getPhoneNumber();
+        params.put("phone", strPhoneNumber);
 		
 		final ProgressDialog pDialog = new ProgressDialog(context);
 		pDialog.setMessage("Creating account...");
