@@ -40,7 +40,8 @@ public class FriendsFragmentTab extends Fragment {
         Log.d(Constants.LOG_TAG, "Initializing FriendsFragmentTab");
 
         friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
-                FriendEntry.INT_STATUS_DEFAULT);
+                new int[]{FriendEntry.INT_STATUS_DEFAULT,
+                        FriendEntry.INT_STATUS_FRIEND});
 
         adapter = new FriendsListAdapter(getActivity(),
                 R.layout.row_friend_list, friendsList);
@@ -52,6 +53,7 @@ public class FriendsFragmentTab extends Fragment {
             refreshContactList();
             boolUpdateList = false;
         }
+
         return rootView;
     }
 
