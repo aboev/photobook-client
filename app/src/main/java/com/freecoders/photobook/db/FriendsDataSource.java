@@ -87,13 +87,20 @@ public class FriendsDataSource {
         return cursorToFriendEntry(cursor);
     }
 
-    public ArrayList<FriendEntry> getFriendsByStatus(int Status) {
-        String selection = dbHelper.COLUMN_STATUS + " = ?";
+    public ArrayList<FriendEntry> getFriendsByStatus(int StatusSet[]) {
+        String selection = dbHelper.COLUMN_STATUS + " IN (?";
+        String values[] = new String[StatusSet.length];
+        values[0] = String.valueOf(StatusSet[0]);
+        for (int i = 1; i < StatusSet.length; i++) {
+            selection = selection + ",?";
+            values[i] = String.valueOf(StatusSet[i]);
+        }
+        selection = selection + ") ";
 
         String orderBy =  SQLiteHelper.COLUMN_NAME + " ASC";
 
         Cursor cursor = database.query(dbHelper.TABLE_FRIENDS,
-                null, selection,new String[]{String.valueOf(Status)} , null, null, orderBy);
+                null, selection, values , null, null, orderBy);
 
         ArrayList<FriendEntry> listFriends = new ArrayList<FriendEntry>();
 
