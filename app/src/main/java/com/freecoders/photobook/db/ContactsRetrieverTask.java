@@ -76,7 +76,9 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                                         friend.setName(profile.name);
                                         friend.setAvatar(profile.avatar);
                                         friend.setUserId(profile.id);
-                                        friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
+                                        if (friend.getStatus() == FriendEntry.INT_STATUS_NULL) {
+                                            friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
+                                        }
                                         Photobook.getFriendsDataSource().updateFriend(friend);
                                     }
                                 }
@@ -85,7 +87,10 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                                 mFriendsTab.friendsList.clear();
                                 mFriendsTab.friendsList.addAll(
                                         Photobook.getFriendsDataSource().getFriendsByStatus(
-                                                FriendEntry.INT_STATUS_DEFAULT));
+                                                new int[]{
+                                                FriendEntry.INT_STATUS_DEFAULT,
+                                                FriendEntry.INT_STATUS_FRIEND}
+                                         ));
                                 mFriendsTab.adapter.notifyDataSetChanged();
                                 Log.d(Constants.LOG_TAG,
                                         "Notifying data set changed list length"
