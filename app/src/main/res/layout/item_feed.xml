@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:padding="6dp">
+    <com.etsy.android.grid.util.DynamicHeightImageView
+        android:id="@+id/imgViewFeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>
+   <!-- <ImageView
+        android:id="@+id/imgViewFeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>-->
+    <TextView
+        android:id="@+id/txtViewFeed"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="70dp"
+        android:background="#80FFFFFF"
+        android:textSize="17dp"
+        android:paddingLeft="70dp"
+        android:gravity="center"
+        android:layout_gravity="bottom"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imgAvatarFeed"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="5dp"
+        android:layout_gravity="bottom"
+        android:layout_alignParentLeft="true"
+        app:border_width="0dp"
+        app:border_color="#EEEEEE"
+        android:src="@drawable/avatar"/>
+</FrameLayout>
