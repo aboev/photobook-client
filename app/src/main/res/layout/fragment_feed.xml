@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
- 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <com.freecoders.photobook.FeedListView
+        android:id="@+id/feedList"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Feed" />
+        android:layout_margin="5dp"/>
  
 </RelativeLayout>
