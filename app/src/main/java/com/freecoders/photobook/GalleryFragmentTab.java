@@ -3,6 +3,7 @@ package com.freecoders.photobook;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.utils.FileUtils;
+import com.freecoders.photobook.utils.ImageUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +88,11 @@ public class GalleryFragmentTab extends Fragment {
                 ImageView imgView = (ImageView) layout.findViewById(R.id.fragmentImgView);
                 final EditText editText = (EditText) layout.findViewById(R.id.fragmentEditText);
                 Button button = (Button) layout.findViewById(R.id.fragmentButton);
-                imgView.setImageURI(Uri.parse(image.getOrigUri()));
+
+                Bitmap b = ImageUtils.decodeSampledBitmap(image.getOrigUri());
+                imgView.setImageBitmap(b);
+                //imgView.setImageURI(Uri.parse(image.getOrigUri()));
+
                 dialog.setView(layout);
                 final AlertDialog alertDialog = dialog.create();
                 button.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +122,8 @@ public class GalleryFragmentTab extends Fragment {
                         alertDialog.dismiss();
                     }
                 });
+                alertDialog.getWindow().setSoftInputMode(
+                        WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 alertDialog.show();
             }
         }
