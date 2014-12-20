@@ -107,6 +107,8 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
             holder.imgViewAvatar.setTag(pos);
             mAvatarLoader.get(feedEntry.author.avatar,
                     new ImageListener(pos, holder.imgViewAvatar));
+        } else {
+            holder.imgViewAvatar.setImageResource(R.drawable.avatar);
         }
 
         return rowView;
