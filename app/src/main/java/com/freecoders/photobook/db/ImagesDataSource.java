@@ -100,8 +100,10 @@ public class ImagesDataSource {
     public ArrayList<ImageEntry> getSharedImages() {
 
         String selection = dbHelper.COLUMN_STATUS + " = ?";
+        String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
         Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
-                null, selection,new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED)} , null, null,null);
+                null, selection,new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED)} ,
+                null, null, orderBy);
 
         ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 
@@ -147,8 +149,8 @@ public class ImagesDataSource {
             imageEntry.setOrigUri(strOrigUri);
             imageEntry.setThumbUri(strThumbUri);
             res.add(imageEntry);
-            Log.d(Constants.LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
-                    "origUri = " + strOrigUri + ", thumbUri = " + strThumbUri);
+            //Log.d(Constants.LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
+            //        "origUri = " + strOrigUri + ", thumbUri = " + strThumbUri);
         }
         return res;
     }
@@ -163,7 +165,7 @@ public class ImagesDataSource {
                 pos++;
             }
             if ((pos < resList.size()) && (localList.get(i).getMediaStoreID().
-                    compareTo(resList.get(pos).getMediaStoreID()) != 0)) {
+                    equals(resList.get(pos).getMediaStoreID()) == false)) {
                 resList.add(pos, localList.get(i));
             } else if (pos == resList.size()){
                 resList.add(localList.get(i));
