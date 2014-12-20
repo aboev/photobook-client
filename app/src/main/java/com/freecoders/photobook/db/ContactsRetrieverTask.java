@@ -136,6 +136,23 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                     }
                     pCur.close();
                 }
+                Cursor emailCursor = cr.query(
+                        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                        null,
+                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                        new String[]{id}, null);
+
+                if (emailCursor.getCount() > 0) {
+                    while (emailCursor.moveToNext()) {
+
+                        String email = emailCursor.getString(emailCursor.getColumnIndex(
+                                ContactsContract.CommonDataKinds.Email.DATA));
+                        telNumbers.add(email);
+
+                    }
+                }
+
+                emailCursor.close();
             }
         }
 
