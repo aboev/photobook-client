@@ -69,7 +69,6 @@ public class ServerInterface {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", "*/*");
         headers.put("userid", userId);
-        profile.setNullFields();
         Log.d(Constants.LOG_TAG, "Update profile request");
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_USER ,
