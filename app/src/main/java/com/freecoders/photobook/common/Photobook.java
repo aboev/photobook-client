@@ -29,6 +29,7 @@ public class Photobook extends Application {
     private static Preferences mPreferences;
     private static DiskLruBitmapCache mAvatarDiskLruCache;
     private static DiskLruBitmapCache mImageDiskLruCache;
+    private static Boolean isFirstStart = true;
 
     @Override
     public void onCreate() {
@@ -50,6 +51,12 @@ public class Photobook extends Application {
             mImageDiskLruCache = null;
             Log.d(Constants.LOG_TAG, "Failed to initialize disk cache");
         }
+    }
+
+    public static Boolean isFirstStart(){
+        Boolean res = isFirstStart;
+        isFirstStart = false;
+        return res;
     }
 
     public final static FriendsDataSource getFriendsDataSource(){
