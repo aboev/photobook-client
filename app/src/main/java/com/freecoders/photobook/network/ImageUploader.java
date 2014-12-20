@@ -104,8 +104,8 @@ public class ImageUploader {
                             String strRes = resJson.getString("result");
                             if (strRes.equals("OK")) {
                                 mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
-                                mImgList.set(mPosition, Photobook.getImagesDataSource().saveImage(
-                                        mImgList.get(mPosition)));
+                                Photobook.getImagesDataSource().
+                                        updateImage(mImgList.get(mPosition));
 
                                 Log.d(Constants.LOG_TAG, "Saving new ImageEntry with " +
                                         mImgList.get(mPosition).getMediaStoreID());
@@ -131,6 +131,8 @@ public class ImageUploader {
 
     public void handleFailure(){
         mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_DEFAULT);
+        Photobook.getImagesDataSource().
+                updateImage(mImgList.get(mPosition));
         mAdapter.notifyDataSetChanged();
     }
 }
