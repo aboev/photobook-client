@@ -1,6 +1,7 @@
 package com.freecoders.photobook;
 
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.app.FragmentTransaction;
 import android.view.Window;
+import android.view.WindowManager;
 
 public class MainActivity extends FragmentActivity {
 
@@ -35,10 +37,14 @@ public class MainActivity extends FragmentActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().hide();
 
-        mSplashDialog = new Dialog(this, R.style.SplashScreen);
-        mSplashDialog.setContentView(R.layout.activity_splash);
-        mSplashDialog.setCancelable(false);
-        mSplashDialog.show();
+        if (Photobook.isFirstStart()) {
+            mSplashDialog = new Dialog(this, R.style.SplashScreen);
+            mSplashDialog.setContentView(R.layout.activity_splash);
+            mSplashDialog.setCancelable(false);
+            mSplashDialog.show();
+        } else {
+            mSplashDialog = null;
+        }
 
         setContentView(R.layout.activity_main);
 
@@ -93,7 +99,9 @@ public class MainActivity extends FragmentActivity {
 
         getActionBar().show();
 
-        new SplashTimeoutTask().execute();
+        if (mSplashDialog != null) {
+            new SplashTimeoutTask().execute();
+        }
 
         Log.d(Constants.LOG_TAG, "Loaded main activity");
     }
@@ -108,7 +116,7 @@ public class MainActivity extends FragmentActivity {
             MainActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSplashDialog.hide();
+                    mSplashDialog.dismiss();
                 }
             });
             return true;
