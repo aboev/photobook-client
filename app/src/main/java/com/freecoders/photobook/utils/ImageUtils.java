@@ -64,6 +64,22 @@ public final class ImageUtils {
         return BitmapFactory.decodeFile(imgPath, options);
     }
 
+    public static Bitmap decodeSampledBitmap(String imgPath) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imgPath, options);
+
+        DisplayMetrics displayMetrics = Photobook.getMainActivity().
+                getResources().getDisplayMetrics();
+        int dpHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
+        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
+
+        options.inSampleSize = calculateInSampleSize(options, dpWidth, dpHeight);
+
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(imgPath, options);
+    }
+
     public final static int dpToPx(int dp) {
         DisplayMetrics displayMetrics = Photobook.getMainActivity().
                 getResources().getDisplayMetrics();
