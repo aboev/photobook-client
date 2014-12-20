@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.utils.ImageUtils;
@@ -74,52 +75,24 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             holder = (ViewHolder) rowView.getTag();
         }
 
-        Bitmap b;
-        if (imageEntry.getThumbUri().isEmpty() == false) {
-           b = cache.getBitmap(imageEntry.getThumbUri());
-            if (b == null){
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                b = BitmapFactory.decodeFile(imageEntry.getThumbUri(), options);
-                cache.put(imageEntry.getThumbUri(), b);
-            }
-            Log.d(Constants.LOG_TAG, "Loaded image from thumbnail size " + b.getWidth() +
-                    ":" + b.getHeight());
-        } else {
-            b = cache.getBitmap(imageEntry.getOrigUri());
-            if (b == null){
-                b = ImageUtils.decodeSampledBitmap(imageEntry.getOrigUri(), imageWidth,
-                        maxImageHeight);
-                cache.put(imageEntry.getOrigUri(), b);
-                Log.d(Constants.LOG_TAG, "Loaded image from cache size " + b.getWidth() +
-                        ":" + b.getHeight());
-            }
-            Log.d(Constants.LOG_TAG, "Loaded original image size " + b.getWidth() +
-                    ":" + b.getHeight());
-        }
         holder.position = position;
-        holder.imgView.setHeightRatio(b.getHeight() * 1.00 / b.getWidth());
-        holder.imgView.setImageBitmap(b);
+        holder.imgView.setImageResource(android.R.color.transparent);
+        new ImageLoadTask(holder, position, false).execute();
+        if ((position + 10) < getCount() )
+            new ImageLoadTask(holder, position + 10, true).execute();
+        if ((position - 10) >= 0)
+            new ImageLoadTask(holder, position - 10, true).execute();
 
-        if (position > mLastPosition)
-            new PrefetchTask().execute(position + 10);
-        else
-            new PrefetchTask().execute(position - 10);
-
+        holder.shareImgView.setVisibility(View.GONE);
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
-            holder.textView.setText(imageEntry.getTitle());
-            holder.textView.setVisibility(View.VISIBLE);
             holder.progressBar.setVisibility(View.GONE);
-            holder.shareImgView.setVisibility(View.GONE);
-        } else if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARING){
-            holder.textView.setText("Uploading image");
-            holder.textView.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.INVISIBLE);
+        } else if (imageEntry.getStatus() ==  imageEntry.INT_STATUS_SHARING){
             holder.progressBar.setVisibility(View.VISIBLE);
-            holder.shareImgView.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.INVISIBLE);
         } else {
-            holder.textView.setVisibility(View.GONE);
             holder.progressBar.setVisibility(View.GONE);
-            holder.shareImgView.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.GONE);
         }
 
         mLastPosition = position;
@@ -127,35 +100,61 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         return rowView;
     }
 
-    private class PrefetchTask extends AsyncTask<Integer, Integer, Boolean> {
-        protected Boolean doInBackground(Integer... position) {
-            prefetchItems(position[0]);
-            return true;
-        }
-    }
+    public class ImageLoadTask extends AsyncTask<Integer, Integer, Boolean> {
+        private int mPosition;
+        private String mImgUri;
+        private final ViewHolder mViewHolder;
+        private final ImageEntry mImageEntry;
+        private Boolean mBoolPrefetch;
 
-    public void prefetchItems(int pos) {
-        if ((pos >= 0) && (pos < this.getCount())) {
-            ImageEntry imageEntry = getItem(pos);
-            Bitmap b;
-            if (imageEntry.getThumbUri().isEmpty() == false) {
-                b = cache.getBitmap(imageEntry.getThumbUri());
+        public ImageLoadTask(ViewHolder holder, int position, Boolean boolPrefetch){
+            this.mViewHolder = holder;
+            this.mPosition = position;
+            this.mImageEntry = getItem(position);
+            mImgUri = mImageEntry.getThumbUri();
+            if (mImageEntry.getThumbUri().isEmpty() == true)
+                mImgUri = mImageEntry.getOrigUri();
+            mBoolPrefetch = boolPrefetch;
+
+            if (!boolPrefetch) {
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(mImgUri, options);
+                double ratio = options.outHeight * 1.0 / options.outWidth;
+                mViewHolder.imgView.setHeightRatio(ratio);
+            }
+        }
+
+        protected Boolean doInBackground(Integer... position) {
+            Bitmap b = null;
+            if ((mBoolPrefetch == true) || (mViewHolder.position == mPosition)) {
+                b = cache.getBitmap(mImgUri);
                 if (b == null) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    b = BitmapFactory.decodeFile(imageEntry.getThumbUri(), options);
-                    cache.put(imageEntry.getThumbUri(), b);
-                }
-            } else {
-                b = cache.getBitmap(imageEntry.getOrigUri());
-                if (b == null) {
-                    b = ImageUtils.decodeSampledBitmap(imageEntry.getOrigUri(), imageWidth,
-                            maxImageHeight);
-                    cache.put(imageEntry.getOrigUri(), b);
-                    Log.d(Constants.LOG_TAG, "Loaded image from cache size " + b.getWidth() +
-                            ":" + b.getHeight());
+                    b = ImageUtils.decodeSampledBitmap(mImgUri,
+                            imageWidth, maxImageHeight);
+                    cache.putBitmap(mImgUri, b);
                 }
             }
+            if ((mViewHolder.position == mPosition) && (mBoolPrefetch == false)) {
+                final Bitmap bitmap = b;
+                Photobook.getMainActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mViewHolder.imgView.setImageBitmap(bitmap);
+                        mViewHolder.textView.setText(mImageEntry.getTitle());
+                        if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
+                            mViewHolder.shareImgView.setVisibility(View.VISIBLE);
+                            mViewHolder.textView.setVisibility(View.VISIBLE);
+                        } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
+                            mViewHolder.textView.setText("Uploading image");
+                            mViewHolder.textView.setVisibility(View.VISIBLE);
+                        } else {
+                            mViewHolder.textView.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+            return true;
         }
     }
 }
