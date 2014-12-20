@@ -35,8 +35,11 @@ public class RegisterActivityHandler {
 
     public void sendAvatar(){
         File avatarImage = new File(context.getFilesDir(), Constants.FILENAME_AVATAR);
+        HashMap<String, String> params = new HashMap<String, String>();
+        final String strUserID = Photobook.getPreferences().strUserID;
+        params.put("userid", strUserID);
         MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
-                avatarImage, new HashMap<String,String>(),
+                avatarImage, params,
                 new Response.Listener<String>() {
 
                     @Override
@@ -44,18 +47,18 @@ public class RegisterActivityHandler {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject obj = new JSONObject( response);
-                            String strUrl = obj.getJSONObject("data").getString("url");
+                            String strUrl = obj.getJSONObject("data").getString("url_small");
                             UserProfile profile = new UserProfile();
                             profile.setNullFields();
-                            profile.avatar = Constants.SERVER_URL + strUrl;
-                            Preferences pref = new Preferences(context);
+                            profile.avatar = strUrl;
                             ServerInterface.updateProfileRequest(context, profile,
-                                    pref.strUserID, null, null);
+                                    strUserID, null, null);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
                         }
-                        Toast.makeText(context, "Avatar downloaded ",
-                                Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, "Avatar downloaded ",
+                        //        Toast.LENGTH_LONG).show();
                         //((Activity) context).finish();
                     }
                 }, new Response.ErrorListener() {
@@ -88,7 +91,7 @@ public class RegisterActivityHandler {
 		                    @Override
 		                    public void onResponse(JSONObject response) {
 		                        Log.d(Constants.LOG_TAG, response.toString());
-		                        pDialog.hide();
+		                        pDialog.dismiss();
 		                        String strID = "";
 								try {
 									String strResult = response.getString("result");
@@ -100,7 +103,8 @@ public class RegisterActivityHandler {
 								} catch (JSONException e) {
 									e.printStackTrace();
 								}
-		                        Toast.makeText(context, "Registration success " + strID,
+                                if ((strID == null) || (strID.isEmpty() == true))
+		                            Toast.makeText(context, "Registration failed",
 		                        		   Toast.LENGTH_LONG).show();
                                 Photobook.getPreferences().strUserID = strID;
                                 Photobook.getPreferences().savePreferences();
@@ -116,7 +120,7 @@ public class RegisterActivityHandler {
 		                    @Override
 		                    public void onErrorResponse(VolleyError error) {
 		                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
-		                        pDialog.hide();
+                                pDialog.dismiss();
 		                    }
 		                }
 				);
