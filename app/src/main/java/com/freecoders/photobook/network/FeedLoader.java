@@ -87,10 +87,13 @@ public class FeedLoader {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(Constants.LOG_TAG, "Error: " + new String(error.networkResponse.data));
-                handleFailure();
+                 if ((error != null) && (error.networkResponse != null)
+                         && (error.networkResponse.data != null))
+                    Log.d(Constants.LOG_TAG, "Error: " +
+                            new String(error.networkResponse.data));
+                    handleFailure();
+                }
             }
-        }
         );
         if (!isLoading) VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getFeedRequest);
