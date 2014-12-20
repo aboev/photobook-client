@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,9 +88,11 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.INVISIBLE);
+            holder.textView.setGravity(Gravity.CENTER);
         } else if (imageEntry.getStatus() ==  imageEntry.INT_STATUS_SHARING){
             holder.progressBar.setVisibility(View.VISIBLE);
             holder.textView.setVisibility(View.INVISIBLE);
+            holder.textView.setGravity(Gravity.LEFT);
         } else {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.GONE);
@@ -132,7 +135,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 if (b == null) {
                     b = ImageUtils.decodeSampledBitmap(mImgUri,
                             imageWidth, maxImageHeight);
-                    cache.putBitmap(mImgUri, b);
+                    if (b != null)
+                        cache.putBitmap(mImgUri, b);
                 }
             }
             if ((mViewHolder.position == mPosition) && (mBoolPrefetch == false)) {
@@ -143,12 +147,12 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                         mViewHolder.imgView.setImageBitmap(bitmap);
                         mViewHolder.textView.setText(mImageEntry.getTitle());
                         if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
-                            mViewHolder.shareImgView.setVisibility(View.VISIBLE);
                             mViewHolder.textView.setVisibility(View.VISIBLE);
                         } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
                             mViewHolder.textView.setText("Uploading image");
                             mViewHolder.textView.setVisibility(View.VISIBLE);
                         } else {
+                            mViewHolder.shareImgView.setVisibility(View.VISIBLE);
                             mViewHolder.textView.setVisibility(View.GONE);
                         }
                     }
