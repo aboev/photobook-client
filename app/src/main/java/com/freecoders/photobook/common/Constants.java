@@ -12,6 +12,8 @@ public class Constants {
     public final static String SERVER_PATH_CONTACTS = "/contacts";
     public final static String SERVER_PATH_FRIENDS = "/friends";
     public final static String SERVER_PATH_FEED = "/feed";
+    public final static String SERVER_PATH_LIKE = "/like";
+    public final static String SERVER_PATH_COMMENTS = "/comments";
 
     public final static String FILENAME_AVATAR = "avatar.jpg";
 }
