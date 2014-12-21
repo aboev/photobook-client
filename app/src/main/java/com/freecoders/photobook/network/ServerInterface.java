@@ -187,4 +187,64 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
+
+    public static final void likeRequest(Context context,
+                                              String imageId, String userId,
+                                              final Response.Listener<String> responseListener,
+                                              final Response.ErrorListener errorListener) {
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        headers.put("id", imageId);
+        Log.d(Constants.LOG_TAG, "Like request");
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static final void unLikeRequest(Context context,
+                                         String imageId, String userId,
+                                         final Response.Listener<String> responseListener,
+                                         final Response.ErrorListener errorListener) {
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        headers.put("id", imageId);
+        Log.d(Constants.LOG_TAG, "Like request");
+        StringRequest request = new StringRequest(Request.Method.DELETE,
+                Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
 }
