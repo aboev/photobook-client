@@ -13,6 +13,7 @@ import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.db.FriendsDataSource;
 import com.freecoders.photobook.db.ImagesDataSource;
+import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -30,6 +31,7 @@ public class Photobook extends Application {
     private static DiskLruBitmapCache mAvatarDiskLruCache;
     private static DiskLruBitmapCache mImageDiskLruCache;
     private static Boolean isFirstStart = true;
+    private static FeedEntryJson mImageDetails;
 
     @Override
     public void onCreate() {
@@ -88,4 +90,10 @@ public class Photobook extends Application {
     public final static DiskLruBitmapCache getAvatarDiskLruCache() {return mAvatarDiskLruCache;}
 
     public final static DiskLruBitmapCache getImageDiskLruCache() {return mImageDiskLruCache;}
+
+    public static void setImageDetails(FeedEntryJson imageDetails)
+        {mImageDetails = imageDetails;}
+
+    public static FeedEntryJson getImageDetails()
+        {return mImageDetails;}
 }
