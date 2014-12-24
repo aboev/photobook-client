@@ -5,7 +5,6 @@ import com.android.volley.VolleyError;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
-import com.freecoders.photobook.db.ContactListInterface;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
