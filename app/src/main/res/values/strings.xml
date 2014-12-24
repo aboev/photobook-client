@@ -17,5 +17,6 @@
     <string name="edit_title_hint">Fabulous morning</string>
     <string name="edit_loading">Loading feed</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_image_details">ImageDetailsActivity</string>
 
 </resources>
