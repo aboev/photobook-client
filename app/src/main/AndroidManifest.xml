@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
@@ -39,6 +38,12 @@
             android:theme="@style/AppThemeNoActionBar">
         </activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity
+            android:name=".ImageDetailsActivity"
+            android:label="@string/title_activity_image_details"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppThemeNoActionBar">
+        </activity>
     </application>
 
 </manifest>
