@@ -1,0 +1,63 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollViewDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="5dp">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imgAvatarDetails"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:border_width="0dp"
+                android:src="@drawable/avatar"/>
+            <TextView
+                android:id="@+id/textAuthorNameDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="35sp"
+                android:gravity="center"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/imgViewDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"/>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:layout_gravity="right">
+            <TextView
+                android:id="@+id/textLikeCountDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                android:text="0"/>
+            <ImageView
+                android:id="@+id/imgViewLike"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/ic_like"/>
+            <ImageView
+                android:id="@+id/imgViewDownload"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/ic_download"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/commentsListDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</ScrollView>
