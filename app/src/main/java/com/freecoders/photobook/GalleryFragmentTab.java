@@ -26,6 +26,7 @@ import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.ImageUtils;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,25 +100,31 @@ public class GalleryFragmentTab extends Fragment {
                     @Override
                     public void onClick(View v) {
                         mImageList.get(pos).setTitle(editText.getText().toString());
-                        /*
                         String strOrigUri = mImageList.get(pos).getOrigUri();
-                        String strDestName = mImageList.get(pos).getMediaStoreID();
+                        String strThumbUri = mImageList.get(pos).getThumbUri();
+                        String strDestOrigName = mImageList.get(pos).getMediaStoreID();
+                        String strDestThumbName = mImageList.get(pos).getMediaStoreID() +
+                                "_thumb";
                         if (strOrigUri.contains(".")) {
                             String filenameArray[] = strOrigUri.split("\\.");
                             String extension = filenameArray[filenameArray.length - 1];
-                            strDestName = strDestName + extension;
+                            strDestOrigName = strDestOrigName + "." + extension;
+                            strDestThumbName = strDestThumbName + "." + extension;
                         }
-                        File destFile = new File(Photobook.getMainActivity().getFilesDir(),
-                                strDestName);
-                        try {
-                            destFile.createNewFile();
-                        } catch (IOException e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        File destOrigFile = new File(Photobook.getMainActivity().getFilesDir(),
+                                strDestOrigName);
+                        File destThumbFile = new File(Photobook.getMainActivity().getFilesDir(),
+                                strDestThumbName);
+                        destOrigFile.getParentFile().mkdirs();
+                        destThumbFile.getParentFile().mkdirs();
+                        if (FileUtils.copyFileFromUri(new File(strOrigUri), destOrigFile) &&
+                              FileUtils.copyFileFromUri(new File(strThumbUri), destThumbFile)) {
+                            mImageList.get(pos).setOrigUri(destOrigFile.toString());
+                            mImageList.get(pos).setThumbUri(destThumbFile.toString());
                         }
-                        FileUtils.copyFileFromUri(new File(mImageList.get(pos).getOrigUri()),
-                                destFile);
-                        mImageList.get(pos).setOrigUri(destFile.toURI().toString());
-                        */
+                        Log.d(Constants.LOG_TAG, "Saving new image " +
+                                (new Gson()).toJson(mImageList.get(pos)));
+                        Photobook.getImagesDataSource().saveImage(mImageList.get(pos));
                         mImageLoader.uploadImage(mImageList, pos, mAdapter);
                         alertDialog.dismiss();
                     }
