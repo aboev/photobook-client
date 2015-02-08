@@ -24,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ImageDetailsActivity extends ActionBarActivity {
 
     CircleImageView mAvatarImageView;
-    TextView mAuthorNameTextView;
+    TextView mImageTitleTextView;
     ImageView mImageView;
     TextView mLikeCountTextView;
     ImageView mLikeImageView;
@@ -43,7 +43,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_image_details);
 
         mAvatarImageView = (CircleImageView) findViewById(R.id.imgAvatarDetails);
-        mAuthorNameTextView = (TextView) findViewById(R.id.textAuthorNameDetails);
+        mImageTitleTextView = (TextView) findViewById(R.id.textImageTitleDetails);
         mImageView = (ImageView) findViewById(R.id.imgViewDetails);
         mLikeCountTextView = (TextView) findViewById(R.id.textLikeCountDetails);
         mLikeImageView = (ImageView) findViewById(R.id.imgViewLike);
@@ -99,7 +99,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         }
 
         if (mAuthor.name != null)
-            mAuthorNameTextView.setText(mAuthor.name);
+            mImageTitleTextView.setText(mImage.title);
 
         if (mImage.likes != null)
             mLikeCountTextView.setText(String.valueOf(mImage.likes.length));
