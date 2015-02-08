@@ -81,8 +81,6 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         new ImageLoadTask(holder, position, false).execute();
         if ((position + 10) < getCount() )
             new ImageLoadTask(holder, position + 10, true).execute();
-        if ((position - 10) >= 0)
-            new ImageLoadTask(holder, position - 10, true).execute();
 
         holder.shareImgView.setVisibility(View.GONE);
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
