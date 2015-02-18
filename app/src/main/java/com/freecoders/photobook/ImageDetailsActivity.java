@@ -4,19 +4,26 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
+import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.MemoryLruCache;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -29,10 +36,13 @@ public class ImageDetailsActivity extends ActionBarActivity {
     TextView mLikeCountTextView;
     ImageView mLikeImageView;
     ImageView mDownloadImageView;
-    ScrollView mScrollView;
+    LinearLayout mHeaderLayout;
 
     UserProfile mAuthor;
     ImageJson mImage;
+
+    ListView mCommentsList;
+    CommentListAdapter mCommentListAdapter;
 
     ImageLoader mAvatarLoader;
     ImageLoader mImageLoader;
@@ -42,13 +52,16 @@ public class ImageDetailsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_details);
 
-        mAvatarImageView = (CircleImageView) findViewById(R.id.imgAvatarDetails);
-        mImageTitleTextView = (TextView) findViewById(R.id.textImageTitleDetails);
-        mImageView = (ImageView) findViewById(R.id.imgViewDetails);
-        mLikeCountTextView = (TextView) findViewById(R.id.textLikeCountDetails);
-        mLikeImageView = (ImageView) findViewById(R.id.imgViewLike);
-        mDownloadImageView = (ImageView) findViewById(R.id.imgViewDownload);
-        mScrollView = (ScrollView) findViewById(R.id.scrollViewDetails);
+        View view = View.inflate(this, R.layout.activity_image_details_header, null);
+
+        mAvatarImageView =   (CircleImageView) view.findViewById(R.id.imgAvatarDetails);
+        mImageTitleTextView = (TextView) view.findViewById(R.id.textImageTitleDetails);
+        mImageView = (ImageView) view.findViewById(R.id.imgViewDetails);
+        mLikeCountTextView = (TextView) view.findViewById(R.id.textLikeCountDetails);
+        mLikeImageView = (ImageView) view.findViewById(R.id.imgViewLike);
+        mDownloadImageView = (ImageView) view.findViewById(R.id.imgViewDownload);
+        mHeaderLayout = (LinearLayout) view.findViewById(R.id.detailsHeaderLayout);
+        mCommentsList = (ListView) findViewById(R.id.commentsListDetails);
 
         mAuthor = Photobook.getImageDetails().author;
         mImage = Photobook.getImageDetails().image;
@@ -70,15 +83,21 @@ public class ImageDetailsActivity extends ActionBarActivity {
                     memoryCache);
         }
 
+        mCommentListAdapter = new CommentListAdapter(this,
+                R.layout.item_comment, new ArrayList<CommentEntryJson>(),
+                mAvatarLoader);
+        mCommentsList.setAdapter(mCommentListAdapter);
+        mCommentsList.addHeaderView(view);
+
         populateView();
     }
 
     public void populateView(){
 
-        ViewTreeObserver viewTree = mScrollView.getViewTreeObserver();
+        ViewTreeObserver viewTree = mHeaderLayout.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             public boolean onPreDraw() {
-                int imgWidth = mScrollView.getMeasuredWidth();
+                int imgWidth = mHeaderLayout.getMeasuredWidth();
                 int imgHeight = (int) (mImage.ratio * 1.0 * imgWidth);
                 mImageView.getLayoutParams().height = imgHeight;
                 return true;
@@ -104,6 +123,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         if (mImage.likes != null)
             mLikeCountTextView.setText(String.valueOf(mImage.likes.length));
 
+        ServerInterface.getComments(this, mImage.image_id, mCommentListAdapter);
     }
 
 
