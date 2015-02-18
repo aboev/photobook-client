@@ -32,6 +32,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
 
     CircleImageView mAvatarImageView;
     TextView mImageTitleTextView;
+    TextView mAuthorNameTextView;
     ImageView mImageView;
     TextView mLikeCountTextView;
     ImageView mLikeImageView;
@@ -56,6 +57,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
 
         mAvatarImageView =   (CircleImageView) view.findViewById(R.id.imgAvatarDetails);
         mImageTitleTextView = (TextView) view.findViewById(R.id.textImageTitleDetails);
+        mAuthorNameTextView = (TextView) view.findViewById(R.id.textImageAuthorDetails);
         mImageView = (ImageView) view.findViewById(R.id.imgViewDetails);
         mLikeCountTextView = (TextView) view.findViewById(R.id.textLikeCountDetails);
         mLikeImageView = (ImageView) view.findViewById(R.id.imgViewLike);
@@ -117,8 +119,11 @@ public class ImageDetailsActivity extends ActionBarActivity {
             mImageLoader.get(mAuthor.avatar, new ImageListener(mAvatarImageView));
         }
 
-        if (mAuthor.name != null)
+        if (mImage.title != null)
             mImageTitleTextView.setText(mImage.title);
+
+        if (mAuthor.name != null)
+            mAuthorNameTextView.setText(mAuthor.name);
 
         if (mImage.likes != null)
             mLikeCountTextView.setText(String.valueOf(mImage.likes.length));
