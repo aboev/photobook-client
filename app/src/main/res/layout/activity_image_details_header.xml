@@ -20,15 +20,25 @@
             android:orientation="vertical"
             android:padding="5dp"
             android:background="@drawable/container_dropshadow_rounded">
-            <TextView
-                android:id="@+id/textImageAuthorDetails"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:gravity="left"
-                android:textStyle="bold"
+                android:orientation="horizontal"
                 android:padding="5dp"
-                android:text="by Andy Wharhol"/>
+                android:gravity="left">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="by "/>
+                <TextView
+                    android:id="@+id/textImageAuthorDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:text="Andy Wharhol"/>
+            </LinearLayout>
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imgAvatarDetails"
@@ -44,7 +54,7 @@
                 android:layout_height="match_parent"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:text="Awesome car"/>
         </LinearLayout>
     </LinearLayout>
