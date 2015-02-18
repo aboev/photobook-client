@@ -48,7 +48,7 @@ public class FeedFragmentTab extends Fragment {
         mAdapter = new FeedAdapter(getActivity(), R.layout.item_feed, feedEntryList);
         mFeedLoader = new FeedLoader(listView);
         listView.setFeedComponents(mFeedLoader, mAdapter, feedEntryList);
-        //listView.setOnItemClickListener(OnItemClickListener);
+        listView.setOnItemClickListener(OnItemClickListener);
         //mFeedLoader.loadFeed();
         setRetainInstance(true);
         return rootView;
