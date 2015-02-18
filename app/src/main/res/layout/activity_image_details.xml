@@ -1,77 +1,12 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollViewDetails"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
+    <ListView
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/commentsListDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp">
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-            <ImageView
-                android:id="@+id/imgViewDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/sample"/>
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="5dp"
-                android:background="@drawable/container_dropshadow_rounded">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/imgAvatarDetails"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_margin="5dp"
-                    app:border_width="0dp"
-                    android:src="@drawable/avatar"/>
-                <TextView
-                    android:id="@+id/textImageTitleDetails"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textSize="15sp"
-                    android:gravity="center"
-                    android:text="Awesome car"/>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp"
-            android:layout_gravity="right">
-            <TextView
-                android:id="@+id/textLikeCountDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="15dp"
-                android:text="0"/>
-            <ImageView
-                android:id="@+id/imgViewLike"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/ic_like"/>
-            <ImageView
-                android:id="@+id/imgViewDownload"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/ic_download"/>
-        </LinearLayout>
-        <ListView
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/commentsListDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_comment"/>
-    </LinearLayout>
-</ScrollView>
+        tools:listitem="@layout/item_comment"/>
+</LinearLayout>
