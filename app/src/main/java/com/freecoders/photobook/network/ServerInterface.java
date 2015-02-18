@@ -9,18 +9,22 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.freecoders.photobook.CommentListAdapter;
 import com.freecoders.photobook.FriendsListAdapter;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
+import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -246,5 +250,54 @@ public class ServerInterface {
         }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static final void getComments (Context context,
+                                         String imageId,
+                                         final CommentListAdapter adapter) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put("imageid", imageId);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Load comments request");
+        StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        try {
+                            Log.d(Constants.LOG_TAG, "Response " + response);
+                            Gson gson = new Gson();
+                            JSONObject resJson = new JSONObject(response);
+                            String strRes = resJson.getString("result");
+                            if ((strRes.equals("OK")) && (resJson.has("data"))) {
+                                Type type = new TypeToken<ArrayList<CommentEntryJson>>(){}.getType();
+                                ArrayList<CommentEntryJson> commentList = gson.fromJson(
+                                        resJson.get("data").toString(), type);
+                                adapter.mCommentList.clear();
+                                adapter.mCommentList.addAll(commentList);
+                                adapter.notifyDataSetChanged();
+                                Log.d(Constants.LOG_TAG, "Loaded  " + commentList.size()
+                                        + " comments");
+                            }
+                        } catch (Exception e) {
+                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if ((error != null) && (error.networkResponse != null)
+                        && (error.networkResponse.data != null))
+                    Log.d(Constants.LOG_TAG, "Error: " +
+                            new String(error.networkResponse.data));
+            }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getCommentsRequest);
     }
 }
