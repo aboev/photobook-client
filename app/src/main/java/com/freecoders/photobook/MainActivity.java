@@ -7,16 +7,27 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Dialog;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.app.FragmentTransaction;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
@@ -25,7 +36,15 @@ public class MainActivity extends FragmentActivity {
     MainActivityHandler mHandler;
     MainActivityPagerAdapter mPagerAdapter;
 
-	ActionBar.Tab friendsTab, galleryTab, feedTab;
+    DrawerLayout mDrawerLayout;
+    ActionBarDrawerToggle mDrawerToggle;
+    ListView mDrawerList;
+
+    ImageView mDrawerAvatarImage;
+    TextView mDrawerUserName;
+    TextView mDrawerContactKey;
+
+    ActionBar.Tab friendsTab, galleryTab, feedTab;
 
     protected Dialog mSplashDialog;
 
@@ -93,6 +112,36 @@ public class MainActivity extends FragmentActivity {
                         getActionBar().setSelectedNavigationItem(position);
                     }
                 });
+
+
+        String[] mMenuItems = getResources().getStringArray(R.array.menu_items);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.menu_drawer);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        //mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+
+        mDrawerAvatarImage = (ImageView) findViewById(R.id.imgAvatarDrawer);
+        mDrawerUserName = (TextView) findViewById(R.id.textUserNameDrawer);
+        mDrawerContactKey = (TextView) findViewById(R.id.textContactKeyDrawer);
+
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.item_drawer_list, mMenuItems));
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         mHandler = new MainActivityHandler();
         mHandler.init(this);
