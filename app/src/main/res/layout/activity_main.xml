@@ -46,6 +46,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:text="+7 495 1234567"/>
             </LinearLayout>
         </LinearLayout>
