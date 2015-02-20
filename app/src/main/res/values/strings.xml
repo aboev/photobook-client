@@ -18,5 +18,11 @@
     <string name="edit_loading">Loading feed</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_image_details">ImageDetailsActivity</string>
-
+    <string name="drawer_open">My profile</string>
+    <string name="drawer_close">Hide</string>
+    <string-array name="menu_items">
+        <item>My shares</item>
+        <item>My likes</item>
+        <item>Settings</item>
+    </string-array>
 </resources>
