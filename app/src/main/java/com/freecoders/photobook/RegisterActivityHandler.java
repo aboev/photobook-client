@@ -72,14 +72,17 @@ public class RegisterActivityHandler {
         VolleySingleton.getInstance(context).addToRequestQueue(avatarRequest);
     }
 
-	public void doRegister(String strName, String strEmail, final Boolean boolUploadAvatar){
+	public void doRegister(final String strName, String strEmail, final Boolean boolUploadAvatar){
 		
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("name", strName);
 		params.put("email", strEmail);
         String strPhoneNumber = PhoneUtils.getPhoneNumber();
         params.put("phone", strPhoneNumber);
-		
+        Photobook.getPreferences().strContactKey = strEmail;
+        if ((strPhoneNumber != null) && (strPhoneNumber.isEmpty() == false))
+            Photobook.getPreferences().strContactKey = strPhoneNumber;
+
 		final ProgressDialog pDialog = new ProgressDialog(context);
 		pDialog.setMessage("Creating account...");
 		pDialog.show();   
@@ -107,6 +110,7 @@ public class RegisterActivityHandler {
 		                            Toast.makeText(context, "Registration failed",
 		                        		   Toast.LENGTH_LONG).show();
                                 Photobook.getPreferences().strUserID = strID;
+                                Photobook.getPreferences().strUserName = strName;
                                 Photobook.getPreferences().savePreferences();
 
                                 if (boolUploadAvatar) sendAvatar();
