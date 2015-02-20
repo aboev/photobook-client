@@ -2,13 +2,18 @@ package com.freecoders.photobook;
 
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.utils.FileUtils;
+import com.soundcloud.android.crop.Crop;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -28,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.io.File;
 
 public class MainActivity extends FragmentActivity {
 
@@ -189,5 +196,25 @@ public class MainActivity extends FragmentActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Constants.INTENT_PICK_IMAGE && data != null && data.getData() != null) {
+            Uri _uri = data.getData();
+
+            Cursor cursor = getContentResolver().query(_uri, new String[] {
+                    android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
+            cursor.moveToFirst();
+
+            File tmpFile = new File(getCacheDir(), Constants.FILENAME_AVATAR);
+            FileUtils.copyFileFromUri(new File(FileUtils.getRealPathFromURI(this, _uri)), tmpFile);
+            cursor.close();
+            File dstFile = new File(getFilesDir(), Constants.FILENAME_AVATAR);
+            new Crop(Uri.fromFile(tmpFile)).output(Uri.fromFile(dstFile)).asSquare().start(this);
+        } else if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
+            mHandler.updateAvatar();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
