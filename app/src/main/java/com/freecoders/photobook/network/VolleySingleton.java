@@ -2,8 +2,10 @@ package com.freecoders.photobook.network;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.Volley;
 
 public class VolleySingleton {
@@ -33,6 +35,11 @@ public class VolleySingleton {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        int socketTimeout = 90000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        req.setRetryPolicy(policy);
         getRequestQueue().add(req);
     }
 }
