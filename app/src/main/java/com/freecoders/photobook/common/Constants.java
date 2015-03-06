@@ -16,5 +16,6 @@ public class Constants {
     public final static String SERVER_PATH_COMMENTS = "/comments";
 
     public final static String FILENAME_AVATAR = "avatar.jpg";
+    public final static String APP_FOLDER = "photobook";
 }
 
