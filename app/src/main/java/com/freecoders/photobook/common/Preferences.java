@@ -8,9 +8,11 @@ public final class Preferences {
 	private SharedPreferences settings;
 	
 	private String KEY_USERID = "userid";
+    private String KEY_USERID_PUBLIC = "publicid";
     private String KEY_USERNAME = "username";
     private String KEY_CONTACTKEY = "contactkey";
-	
+
+    public Integer intPublicID = 0;
 	public String strUserID = "";
     public String strUserName = "";
     public String strContactKey = "";
@@ -20,6 +22,7 @@ public final class Preferences {
 	}
 	
 	public final Boolean loadPreferences(){
+        intPublicID = settings.getInt(KEY_USERID_PUBLIC, 0);
 		strUserID = settings.getString(KEY_USERID, "");
         strUserName = settings.getString(KEY_USERNAME, "");
         strContactKey = settings.getString(KEY_CONTACTKEY, "");
@@ -31,6 +34,7 @@ public final class Preferences {
 		editor.putString(KEY_USERID, strUserID);
         editor.putString(KEY_USERNAME, strUserName);
         editor.putString(KEY_CONTACTKEY, strContactKey);
+        editor.putInt(KEY_USERID_PUBLIC, intPublicID);
 		editor.commit();
 	}
 	
