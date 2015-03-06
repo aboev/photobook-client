@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="5dp"
-            android:background="@drawable/container_dropshadow_rounded">
+            android:background="@drawable/container_dropshadow_rounded_bottom">
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="5dp"
-    android:layout_gravity="right">
+    android:layout_gravity="right|center_vertical">
     <TextView
         android:id="@+id/textLikeCountDetails"
         android:layout_width="wrap_content"
@@ -77,11 +77,5 @@
         android:layout_height="15dp"
         android:layout_margin="5dp"
         android:background="@drawable/ic_like"/>
-    <ImageView
-        android:id="@+id/imgViewDownload"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_margin="5dp"
-        android:background="@drawable/ic_download"/>
     </LinearLayout>
 </LinearLayout>
