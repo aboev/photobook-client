@@ -48,8 +48,8 @@ public class MainActivityHandler {
         File avatar = new File(activity.getFilesDir(), Constants.FILENAME_AVATAR);
         if (avatar.exists()) {
             activity.mDrawerAvatarImage.setImageURI(Uri.fromFile(avatar));
-            activity.mDrawerAvatarImage.setOnClickListener(avatarClickListener);
         }
+        activity.mDrawerAvatarImage.setOnClickListener(avatarClickListener);
         activity.mDrawerUserName.setText(prefs.strUserName);
         activity.mDrawerContactKey.setText(prefs.strContactKey);
 
