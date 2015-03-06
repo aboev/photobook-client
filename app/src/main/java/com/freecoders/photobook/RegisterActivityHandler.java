@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -52,7 +53,17 @@ public class RegisterActivityHandler {
                             profile.setNullFields();
                             profile.avatar = strUrl;
                             ServerInterface.updateProfileRequest(context, profile,
-                                    strUserID, null, null);
+                                    strUserID,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            File avatar = new File(Photobook.getMainActivity().
+                                                    getFilesDir(), Constants.FILENAME_AVATAR);
+                                            if (avatar.exists())
+                                                Photobook.getMainActivity().mDrawerAvatarImage.
+                                                        setImageURI(Uri.fromFile(avatar));
+                                        }
+                                    }, null);
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
@@ -96,12 +107,14 @@ public class RegisterActivityHandler {
 		                        Log.d(Constants.LOG_TAG, response.toString());
 		                        pDialog.dismiss();
 		                        String strID = "";
+                                Integer intPublicID = 0;
 								try {
 									String strResult = response.getString("result");
 									if (strResult.equals("OK")) {
 										String strData = response.getString("data");
 										JSONObject obj = new JSONObject(strData);
 										strID = obj.getString("id");
+                                        intPublicID = obj.getInt("public_id");
 									}
 								} catch (JSONException e) {
 									e.printStackTrace();
@@ -110,6 +123,7 @@ public class RegisterActivityHandler {
 		                            Toast.makeText(context, "Registration failed",
 		                        		   Toast.LENGTH_LONG).show();
                                 Photobook.getPreferences().strUserID = strID;
+                                Photobook.getPreferences().intPublicID = intPublicID;
                                 Photobook.getPreferences().strUserName = strName;
                                 Photobook.getPreferences().savePreferences();
 
