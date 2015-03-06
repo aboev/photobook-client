@@ -3,12 +3,11 @@ package com.freecoders.photobook;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +28,6 @@ import com.freecoders.photobook.utils.ImageUtils;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("NewApi") 
@@ -132,7 +130,15 @@ public class GalleryFragmentTab extends Fragment {
                 alertDialog.getWindow().setSoftInputMode(
                         WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 alertDialog.show();
+            } else if (image.getStatus() == ImageEntry.INT_STATUS_SHARED) {
+                Intent mIntent = new Intent(Photobook.getMainActivity(), ImageDetailsActivity.class);
+                Bundle b = new Bundle();
+                b.putBoolean(Photobook.intentExtraImageDetailsSource, true);
+                mIntent.putExtras(b);
+                Photobook.setGalleryImageDetails(image);
+                startActivity(mIntent);
             }
         }
     };
+
 }
