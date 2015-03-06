@@ -1,21 +1,17 @@
 package com.freecoders.photobook.common;
 
 import android.app.Application;
-import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.view.Window;
-import android.widget.Toast;
 
 import com.freecoders.photobook.FriendsFragmentTab;
+import com.freecoders.photobook.ImageDetailsActivity;
 import com.freecoders.photobook.MainActivity;
-import com.freecoders.photobook.R;
 import com.freecoders.photobook.db.FriendsDataSource;
+import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.db.ImagesDataSource;
 import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
-import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.IOException;
 
@@ -27,11 +23,15 @@ public class Photobook extends Application {
     private static ImagesDataSource imagesDataSource;
     private static FriendsFragmentTab mFriendsTab;
     private static MainActivity mActivity;
+    private static ImageDetailsActivity mImageDetailsActivity;
     private static Preferences mPreferences;
     private static DiskLruBitmapCache mAvatarDiskLruCache;
     private static DiskLruBitmapCache mImageDiskLruCache;
     private static Boolean isFirstStart = true;
     private static FeedEntryJson mImageDetails;
+    private static ImageEntry mGalleryImageDetails;
+
+    public static String intentExtraImageDetailsSource = "gallery_image";
 
     @Override
     public void onCreate() {
@@ -94,6 +94,22 @@ public class Photobook extends Application {
     public static void setImageDetails(FeedEntryJson imageDetails)
         {mImageDetails = imageDetails;}
 
+    public static void setImageDetailsActivity(ImageDetailsActivity activity)
+    {
+        mImageDetailsActivity = activity;}
+
+    public static void setGalleryImageDetails(ImageEntry imageDetails)
+    {
+        mGalleryImageDetails = imageDetails;}
+
     public static FeedEntryJson getImageDetails()
-        {return mImageDetails;}
+    {return mImageDetails;}
+
+    public static ImageDetailsActivity getImageDetailsActivity()
+    {return mImageDetailsActivity;}
+
+    public static ImageEntry getGalleryImageDetails()
+    {return mGalleryImageDetails;}
+
+
 }
