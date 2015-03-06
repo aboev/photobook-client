@@ -49,7 +49,7 @@ public class FriendsFragmentTab extends Fragment {
 
         Photobook.setFriendsFragmentTab(this);
 
-        if (boolUpdateList) {
+        if (boolUpdateList && !Photobook.getPreferences().strUserID.isEmpty()) {
             refreshContactList();
             boolUpdateList = false;
         }
