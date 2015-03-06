@@ -300,4 +300,67 @@ public class ServerInterface {
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getCommentsRequest);
     }
+
+    public static final void postCommentRequest(Context context,
+                                         String imageId, String userId,
+                                         String strText,
+                                         final Response.Listener<String> responseListener,
+                                         final Response.ErrorListener errorListener) {
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        HashMap<String, String> reqBody = new HashMap<String, String>();
+        reqBody.put("image_id", imageId);
+        reqBody.put("text", strText);
+        Log.d(Constants.LOG_TAG, "Comment request");
+        StringRequest request = new StringRequest(Request.Method.POST,
+                Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
+                gson.toJson(reqBody), headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static final void getImageDetailsRequest (Context context,
+                                          String imageId,
+                                          final Response.Listener<String> responseListener,
+                                          final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put("imageid", imageId);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Get image details request");
+        StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                        if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getCommentsRequest);
+    }
 }
