@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -7,6 +7,30 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/commentsListDetails"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_comment"
+        android:layout_above="@+id/footerDetails"/>
+    <LinearLayout
+        android:id="@+id/footerDetails"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/item_comment"/>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:background="#FFFFFF"
+        android:orientation="horizontal">
+        <include layout="@layout/button_like"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight=".33"
+            android:layout_margin="5dp"/>
+        <include layout="@layout/button_comment"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight=".33"
+            android:layout_margin="5dp"/>
+        <include layout="@layout/button_download"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight=".33"
+            android:layout_margin="5dp"/>
+    </LinearLayout>
+</RelativeLayout>
