@@ -21,8 +21,17 @@
     <string name="drawer_open">My profile</string>
     <string name="drawer_close">Hide</string>
     <string-array name="menu_items">
-        <item>My shares</item>
-        <item>My likes</item>
-        <item>Settings</item>
+        <item>Profile</item>
     </string-array>
+    <string name="btn_like">Like</string>
+    <string name="btn_unlike">Unlike</string>
+    <string name="btn_comment">Comment</string>
+    <string name="btn_download">Download</string>
+    <string name="alert_title_comment">New comment</string>
+    <string name="alert_message_comment">What do you think?</string>
+    <string name="alert_send_button">Send</string>
+    <string name="alert_cancel_button">Cancel</string>
+    <string name="dialog_downloading">Downloading</string>
+    <string name="dialog_download_complete">Image downloaded</string>
+    <string name="author_name_self">me</string>
 </resources>
