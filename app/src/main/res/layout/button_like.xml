@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/buttonLike"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/button_style"
+    android:gravity="center_horizontal"
+    android:clickable="true">
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_like"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/textViewButtonLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_like"
+        android:textSize="15dp"
+        android:layout_marginRight="5dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_gravity="center_vertical"/>
+
+</LinearLayout>
