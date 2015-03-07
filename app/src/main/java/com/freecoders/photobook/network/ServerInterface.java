@@ -334,6 +334,13 @@ public class ServerInterface {
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
+    public static final void deleteCommentRequest(Context context,
+                                                String commendId,
+                                                final Response.Listener<String> responseListener,
+                                                final Response.ErrorListener errorListener) {
+        // Code here
+    }
+
     public static final void getImageDetailsRequest (Context context,
                                           String imageId,
                                           final Response.Listener<String> responseListener,
