@@ -113,8 +113,10 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             this.mPosition = position;
             this.mImageEntry = getItem(position);
             mImgUri = mImageEntry.getThumbUri();
-            if (mImageEntry.getThumbUri().isEmpty() == true)
+            if (mImageEntry.getThumbUri().isEmpty() == true) {
                 mImgUri = mImageEntry.getOrigUri();
+                Log.d(Constants.LOG_TAG, "Not thumb for " + mImgUri);
+            }
             mBoolPrefetch = boolPrefetch;
 
             if (!boolPrefetch) {
