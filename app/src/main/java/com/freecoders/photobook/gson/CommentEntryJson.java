@@ -7,5 +7,6 @@ public class CommentEntryJson {
     public UserProfile author;
     public long timestamp = 0;
     public String text = "";
+    public String author_id = "";
     public long id = 0;
 }
