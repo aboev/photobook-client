@@ -335,10 +335,33 @@ public class ServerInterface {
     }
 
     public static final void deleteCommentRequest(Context context,
-                                                String commendId,
+                                                String commendId, String userId,
                                                 final Response.Listener<String> responseListener,
                                                 final Response.ErrorListener errorListener) {
         // Code here
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("userid", userId);
+        headers.put("commentid", commendId);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Comment delete request");
+        StringRequest request = new StringRequest(Request.Method.DELETE,
+                Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response.toString());
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
     public static final void getImageDetailsRequest (Context context,
