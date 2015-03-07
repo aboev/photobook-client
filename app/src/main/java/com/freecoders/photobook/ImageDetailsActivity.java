@@ -10,15 +10,19 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.URLUtil;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,6 +110,8 @@ public class ImageDetailsActivity extends ActionBarActivity {
         mButtonComment = (LinearLayout) findViewById(R.id.buttonComment);
         mButtonDownload = (LinearLayout) findViewById(R.id.buttonDownload);
 
+
+
         if (Photobook.getAvatarDiskLruCache() != null) {
             mAvatarLoader = new ImageLoader(VolleySingleton.getInstance(
                     Photobook.getMainActivity()).getRequestQueue(),
@@ -128,6 +134,50 @@ public class ImageDetailsActivity extends ActionBarActivity {
                 mAvatarLoader);
         mCommentsList.setAdapter(mCommentListAdapter);
         mCommentsList.addHeaderView(view);
+
+        mCommentsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                                           int index, long arg3) {
+
+
+                final int adapterItemPos = index-1;
+
+                final PopupMenu mPopupComments = new PopupMenu(getApplicationContext(), mCommentsList.getChildAt(index));
+                mPopupComments.getMenuInflater().inflate(R.menu.popup_menu_comments, mPopupComments.getMenu());
+
+                mPopupComments.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        mPopupComments.dismiss();
+
+                        if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
+                            ServerInterface.deleteCommentRequest(Photobook.getImageDetailsActivity(),
+                                    String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id),
+                                    Photobook.getPreferences().strUserID,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            processDeleteComment(adapterItemPos);
+                                        }
+                                    }, null);
+
+                        //Toast.makeText(getApplicationContext(),"Comment was deleted successfully",Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                });
+
+
+                if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
+                    mPopupComments.show();
+                else
+                    Log.d("Listener","long click : author ids: /"+Photobook.getPreferences().intPublicID+"/"+mCommentListAdapter.mCommentList.get(adapterItemPos).author_id+"/ ");
+
+
+                Log.d("Listener","long click : " +String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id)+"  "+mCommentListAdapter.mCommentList.get(adapterItemPos).text);
+                return true;
+            }
+        });
 
         Photobook.setImageDetailsActivity(this);
 
@@ -364,6 +414,11 @@ public class ImageDetailsActivity extends ActionBarActivity {
                     (Photobook.getImageDetails().image!=null))
                 Photobook.getImageDetails().image.likes = newLikeList;
         }
+    }
+
+    public void processDeleteComment(int index) {
+        mCommentListAdapter.mCommentList.remove(index);
+        mCommentListAdapter.notifyDataSetChanged();
     }
 
     class DownloadImage extends AsyncTask<String,Integer,Long> {
