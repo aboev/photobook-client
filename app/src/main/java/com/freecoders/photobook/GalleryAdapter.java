@@ -3,6 +3,7 @@ package com.freecoders.photobook;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -30,6 +31,8 @@ import com.freecoders.photobook.utils.MemoryLruCache;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.freecoders.photobook.utils.FileUtils.getRealPathFromURI;
 
 /**
  * Created by Alex on 2014-12-03.
@@ -107,6 +110,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         private final ViewHolder mViewHolder;
         private final ImageEntry mImageEntry;
         private Boolean mBoolPrefetch;
+        private int orientation = 0;
 
         public ImageLoadTask(ViewHolder holder, int position, Boolean boolPrefetch){
             this.mViewHolder = holder;
@@ -123,7 +127,12 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(mImgUri, options);
-                double ratio = options.outHeight * 1.0 / options.outWidth;
+                orientation = ImageUtils.getExifOrientation(mImgUri);
+                double ratio;
+                if ((orientation == 90) || (orientation == 270))
+                    ratio = options.outWidth * 1.0 / options.outHeight;
+                else
+                    ratio = options.outHeight * 1.0 / options.outWidth;
                 mViewHolder.imgView.setHeightRatio(ratio);
             }
         }
@@ -144,7 +153,14 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 Photobook.getMainActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mViewHolder.imgView.setImageBitmap(bitmap);
+                        if ((orientation == 90) || (orientation == 270)) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(orientation);
+                            Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                                    bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                            mViewHolder.imgView.setImageBitmap(rotatedBitmap);
+                        } else
+                            mViewHolder.imgView.setImageBitmap(bitmap);
                         mViewHolder.textView.setText(mImageEntry.getTitle());
                         if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
                             mViewHolder.textView.setVisibility(View.VISIBLE);
