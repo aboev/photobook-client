@@ -40,7 +40,7 @@ import static com.freecoders.photobook.utils.FileUtils.getRealPathFromURI;
 public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
     private int mLastPosition = -1;
-    private int imageWidth = ImageUtils.dpToPx(50);
+    private int imageWidth = ImageUtils.dpToPx(100);
     private int maxImageHeight = ImageUtils.dpToPx(1000);
     private MemoryLruCache cache;
 
@@ -86,6 +86,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         //    new ImageLoadTask(holder, position + 10, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         holder.shareImgView.setVisibility(View.GONE);
+        holder.textView.setText(imageEntry.getTitle());
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.INVISIBLE);
@@ -161,7 +162,6 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                             mViewHolder.imgView.setImageBitmap(rotatedBitmap);
                         } else
                             mViewHolder.imgView.setImageBitmap(bitmap);
-                        mViewHolder.textView.setText(mImageEntry.getTitle());
                         if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
                             mViewHolder.textView.setVisibility(View.VISIBLE);
                         } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
