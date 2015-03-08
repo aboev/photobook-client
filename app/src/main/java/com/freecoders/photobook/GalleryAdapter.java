@@ -37,7 +37,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
     private int mLastPosition = -1;
-    private int imageWidth = ImageUtils.dpToPx(100);
+    private int imageWidth = ImageUtils.dpToPx(50);
     private int maxImageHeight = ImageUtils.dpToPx(1000);
     private MemoryLruCache cache;
 
@@ -78,9 +78,9 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
         holder.position = position;
         holder.imgView.setImageResource(android.R.color.transparent);
-        new ImageLoadTask(holder, position, false).execute();
-        if ((position + 10) < getCount() )
-            new ImageLoadTask(holder, position + 10, true).execute();
+        new ImageLoadTask(holder, position, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        //if ((position + 10) < getCount() )
+        //    new ImageLoadTask(holder, position + 10, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         holder.shareImgView.setVisibility(View.GONE);
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
