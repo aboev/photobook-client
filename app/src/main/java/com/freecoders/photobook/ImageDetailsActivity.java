@@ -274,7 +274,6 @@ public class ImageDetailsActivity extends ActionBarActivity {
                                             resJson.get("data").toString(), type);
                                     if (map.containsKey(mGalleryImage.getServerId())) {
                                         ImageJson image = map.get(mGalleryImage.getServerId());
-                                        Photobook.getImageDetails().image = image;
                                         if (image.likes != null) {
                                             for (String id : image.likes)
                                                 if (id.equals(Photobook.getPreferences().intPublicID.
@@ -290,7 +289,8 @@ public class ImageDetailsActivity extends ActionBarActivity {
                                     }
 
                                 }
-                            } catch (Exception e) { }
+                            } catch (Exception e) {
+                            }
                         }
                     }, null);
         }
