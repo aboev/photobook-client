@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.freecoders.photobook.common.Constants;
@@ -115,13 +116,16 @@ public class GalleryFragmentTab extends Fragment {
                                 strDestThumbName);
                         destOrigFile.getParentFile().mkdirs();
                         destThumbFile.getParentFile().mkdirs();
-                        if (FileUtils.copyFileFromUri(new File(strOrigUri), destOrigFile) &&
-                              FileUtils.copyFileFromUri(new File(strThumbUri), destThumbFile)) {
+                        if (FileUtils.copyFileFromUri(new File(strOrigUri), destOrigFile)) {
                             mImageList.get(pos).setOrigUri(destOrigFile.toString());
-                            mImageList.get(pos).setThumbUri(destThumbFile.toString());
+                            Log.d(Constants.LOG_TAG, "Saved local image to " +
+                                    destOrigFile.toString());
                         }
-                        Log.d(Constants.LOG_TAG, "Saving new image " +
-                                (new Gson()).toJson(mImageList.get(pos)));
+                        if (FileUtils.copyFileFromUri(new File(strThumbUri), destThumbFile)) {
+                            mImageList.get(pos).setThumbUri(destThumbFile.toString());
+                            Log.d(Constants.LOG_TAG, "Saved local thumbnail to " +
+                                    destThumbFile.toString());
+                        }
                         Photobook.getImagesDataSource().saveImage(mImageList.get(pos));
                         mImageLoader.uploadImage(mImageList, pos, mAdapter);
                         alertDialog.dismiss();
