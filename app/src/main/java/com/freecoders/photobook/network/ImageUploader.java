@@ -76,10 +76,11 @@ public class ImageUploader {
                     }
                 }
         );
-        uploadRequest.setRetryPolicy(new DefaultRetryPolicy(
+        /*uploadRequest.setRetryPolicy(new DefaultRetryPolicy(
                 60000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                */
         VolleySingleton.getInstance(Photobook.getMainActivity()).addToRequestQueue(uploadRequest);
     }
 
