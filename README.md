@@ -1,4 +1,4 @@
 ## Photobook
 Photobook is an open-source messaging service for Android
-![alt text](https://github.com/aboev/photobook-client/screenshot.png "Logo Title Text 1")
+![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.png)
 
