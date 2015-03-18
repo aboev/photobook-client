@@ -87,6 +87,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
         holder.shareImgView.setVisibility(View.GONE);
         holder.textView.setText(imageEntry.getTitle());
+        if (Photobook.getPreferences().hsetUnreadImages.contains(imageEntry.getServerId()))
+            holder.textView.setText(imageEntry.getTitle() + " (+)");
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.INVISIBLE);
