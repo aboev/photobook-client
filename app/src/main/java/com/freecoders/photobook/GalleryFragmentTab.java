@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -103,9 +104,18 @@ public class GalleryFragmentTab extends Fragment {
                 Button button = (Button) layout.findViewById(R.id.fragmentButton);
 
                 Bitmap b = ImageUtils.decodeSampledBitmap(image.getOrigUri());
-                imgView.setImageBitmap(b);
+                int orientation = ImageUtils.getExifOrientation(image.getOrigUri());
+                Log.d(Constants.LOG_TAG, "Orientation1 = " + orientation + " for image " + image.getOrigUri()
+                        +" "+image.getThumbUri());
+                if ((orientation == 90) || (orientation == 270)) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(orientation);
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(b, 0, 0,
+                            b.getWidth(), b.getHeight(), matrix, true);
+                    imgView.setImageBitmap(rotatedBitmap);
+                } else
+                    imgView.setImageBitmap(b);
                 //imgView.setImageURI(Uri.parse(image.getOrigUri()));
-
                 dialog.setView(layout);
                 final AlertDialog alertDialog = dialog.create();
                 button.setOnClickListener(new View.OnClickListener() {
