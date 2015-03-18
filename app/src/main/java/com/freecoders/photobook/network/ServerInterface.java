@@ -17,6 +17,7 @@ import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
+import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -301,6 +302,62 @@ public class ServerInterface {
                 addToRequestQueue(getCommentsRequest);
     }
 
+    public static final void getComments (String imageId,
+                                          Boolean withModTime,
+                                          final Response.Listener<String> responseListener,
+                                          final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("userid", Photobook.getPreferences().strUserID);
+        if ((imageId != null) && (!imageId.isEmpty()))
+            headers.put("imageid", imageId);
+        if (withModTime)
+            headers.put("from", Photobook.getPreferences().strCommentsTimestamp);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Load comments request with timestamp " +
+                Photobook.getPreferences().strCommentsTimestamp);
+        StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        try {
+                            Gson gson = new Gson();
+                            JSONObject resJson = null;
+                            resJson = new JSONObject(response);
+                            String strRes = resJson.getString("result");
+                            if ((strRes.equals("OK")) && (resJson.has("timestamp"))
+                                    && (resJson.has("data"))) {
+                                String strTimestamp = resJson.getString("timestamp");
+                                Photobook.getPreferences().strCommentsTimestamp = strTimestamp;
+                                Photobook.getPreferences().savePreferences();
+                                String strData = resJson.getString("data");
+                                Type type = new TypeToken<ArrayList<CommentEntryJson>>(){}.getType();
+                                ArrayList<CommentEntryJson> commentList = gson.fromJson(strData,
+                                        type);
+                                for (int i = 0; i < commentList.size(); i++)
+                                    if (!Photobook.getPreferences().hsetUnreadImages.
+                                            contains(commentList.get(i).image_id))
+                                        Photobook.getPreferences().hsetUnreadImages.add(
+                                                commentList.get(i).image_id);
+                            }
+                        } catch (JSONException e) {
+                            Log.d(Constants.LOG_TAG, "JSON parsing error for " + response);
+                        }
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                            if (errorListener != null) errorListener.onErrorResponse(error);
+                    }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getCommentsRequest);
+    }
+
     public static final void postCommentRequest(Context context,
                                          String imageId, String userId,
                                          String strText,
@@ -370,7 +427,8 @@ public class ServerInterface {
                                           final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("userid", Photobook.getPreferences().strUserID);
-        headers.put("imageid", imageId);
+        if ((imageId != null) && !imageId.isEmpty())
+            headers.put("imageid", imageId);
         headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Get image details request");
         StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
@@ -394,3 +452,4 @@ public class ServerInterface {
                 addToRequestQueue(getCommentsRequest);
     }
 }
+
