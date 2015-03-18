@@ -8,5 +8,6 @@ public class CommentEntryJson {
     public long timestamp = 0;
     public String text = "";
     public String author_id = "";
+    public String image_id = "";
     public long id = 0;
 }
