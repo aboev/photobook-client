@@ -81,14 +81,14 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
         holder.position = position;
         holder.imgView.setImageResource(android.R.color.transparent);
-        new ImageLoadTask(holder, position, false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        int orientation = ImageUtils.getExifOrientation(imageEntry.getOrigUri());
+        new ImageLoadTask(holder, position, orientation,
+                false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         //if ((position + 10) < getCount() )
         //    new ImageLoadTask(holder, position + 10, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         holder.shareImgView.setVisibility(View.GONE);
         holder.textView.setText(imageEntry.getTitle());
-        if (Photobook.getPreferences().hsetUnreadImages.contains(imageEntry.getServerId()))
-            holder.textView.setText(imageEntry.getTitle() + " (+)");
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.INVISIBLE);
@@ -115,10 +115,12 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         private Boolean mBoolPrefetch;
         private int orientation = 0;
 
-        public ImageLoadTask(ViewHolder holder, int position, Boolean boolPrefetch){
+        public ImageLoadTask(ViewHolder holder, int position, int orientation,
+                             Boolean boolPrefetch){
             this.mViewHolder = holder;
             this.mPosition = position;
             this.mImageEntry = getItem(position);
+            this.orientation = orientation;
             mImgUri = mImageEntry.getThumbUri();
             if (mImageEntry.getThumbUri().isEmpty() == true) {
                 mImgUri = mImageEntry.getOrigUri();
@@ -130,8 +132,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(mImgUri, options);
-                orientation = ImageUtils.getExifOrientation(mImgUri);
                 double ratio;
+                Log.d(Constants.LOG_TAG, "Orientation = " + orientation + " for image " + mImgUri );
                 if ((orientation == 90) || (orientation == 270))
                     ratio = options.outWidth * 1.0 / options.outHeight;
                 else
