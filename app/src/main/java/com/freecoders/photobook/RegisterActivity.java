@@ -10,12 +10,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.File;
 
@@ -25,6 +30,7 @@ public class RegisterActivity extends ActionBarActivity {
 	
 	EditText nameEditText;
 	EditText emailEditText;
+    EditText phoneEditText;
     CircleImageView avatarImage;
 	
 	RegisterActivityHandler handler;
@@ -37,6 +43,7 @@ public class RegisterActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_register);
 		nameEditText = (EditText) findViewById(R.id.name);
 		emailEditText = (EditText) findViewById(R.id.email);
+        phoneEditText = (EditText) findViewById(R.id.phone);
 		avatarImage = (CircleImageView) findViewById(R.id.imageViewAvatar);
 		
 		avatarImage.setOnClickListener(new View.OnClickListener() {
@@ -47,8 +54,6 @@ public class RegisterActivity extends ActionBarActivity {
 	    });
 		
 		handler = new RegisterActivityHandler(this);
-
-
 	}
 
 	@Override
