@@ -34,8 +34,6 @@ import android.widget.Toast;
 
 public class RegisterActivityHandler {
 	private Context context;
-    private GoogleCloudMessaging gcm;
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	
 	public RegisterActivityHandler(Context context){
 		this.context = context;
@@ -97,7 +95,6 @@ public class RegisterActivityHandler {
 		params.put("email", strEmail);
         String strPhoneNumber = PhoneUtils.getPhoneNumber();
         params.put("phone", strPhoneNumber);
-        //params.put("pushid", getPushID());
         Photobook.getPreferences().strContactKey = strEmail;
         if ((strPhoneNumber != null) && (strPhoneNumber.isEmpty() == false))
             Photobook.getPreferences().strContactKey = strPhoneNumber;
@@ -152,45 +149,4 @@ public class RegisterActivityHandler {
 				);
 		VolleySingleton.getInstance(context).addToRequestQueue(registerRequest);
 	}
-
-    private void getPushID(final String strName, final String strEmail,
-                           final Boolean boolUploadAvatar) {
-        new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                String strPushID = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
-                    strPushID = gcm.register(Constants.PUSH_SENDER_ID);
-                    Photobook.getPreferences().strPushRegID = strPushID;
-                    Log.d(Constants.LOG_TAG, "Device registered, push id = " +
-                        Photobook.getPreferences().strPushRegID);
-                } catch (IOException ex) {
-                    Log.d(Constants.LOG_TAG, "Error: " + ex.getMessage());
-                }
-                return strPushID;
-            }
-            @Override
-            protected void onPostExecute(Object obj) {
-            }
-
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, Photobook.getMainActivity(),
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i(Constants.LOG_TAG, "This device is not supported for google play services");
-            }
-            return false;
-        }
-        return true;
-    }
-
 }
