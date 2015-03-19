@@ -63,6 +63,8 @@ public class MainActivity extends FragmentActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().hide();
 
+        Photobook.setMainActivity(this);
+
         if (Photobook.isFirstStart()) {
             mSplashDialog = new Dialog(this, R.style.SplashScreen);
             mSplashDialog.setContentView(R.layout.activity_splash);
@@ -218,3 +220,4 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
+
