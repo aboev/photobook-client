@@ -369,6 +369,9 @@ public class ImageDetailsActivity extends ActionBarActivity {
         });
 
         ServerInterface.getComments(this, strImageID, mCommentListAdapter);
+        
+        if (Photobook.getPreferences().hsetUnreadImages.contains(strImageID))
+            Photobook.getPreferences().hsetUnreadImages.remove(strImageID);
     }
 
     public void processLike () {
@@ -535,3 +538,4 @@ public class ImageDetailsActivity extends ActionBarActivity {
                 }
             }
         }
+
