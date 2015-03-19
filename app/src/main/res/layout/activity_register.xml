@@ -53,6 +53,14 @@
 		    	android:hint="@string/email_hint"
 		    	android:layout_marginTop="20dp"
 		    	android:inputType="textEmailAddress"/>
+
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone_hint"
+                android:layout_marginTop="20dp"
+                android:inputType="phone"/>
 			
 			 <Button
 		     	android:layout_height="wrap_content"
@@ -65,3 +73,4 @@
 	    
 	</LinearLayout>
 </ScrollView>
+
