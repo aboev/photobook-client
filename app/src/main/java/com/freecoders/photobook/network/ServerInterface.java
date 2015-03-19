@@ -451,5 +451,37 @@ public class ServerInterface {
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getCommentsRequest);
     }
-}
 
+    public static final void getSMSCodeRequest (Context context,
+                                            String strPhoneNumber,
+                                            final Response.Listener<String> responseListener,
+                                            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("number", strPhoneNumber);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Receive sms code request");
+        StringRequest getSMSCodeRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_USER+"/code",
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        if (responseListener != null) responseListener.onResponse(response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if ((error != null) && (error.networkResponse != null)
+                                && (error.networkResponse.data != null))
+                            Log.d(Constants.LOG_TAG, "Error: " +
+                                    new String(error.networkResponse.data));
+                        if (errorListener != null) errorListener.onErrorResponse(error);
+                    }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getSMSCodeRequest);
+    }
+}
