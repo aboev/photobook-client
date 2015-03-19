@@ -38,4 +38,5 @@ dependencies {
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.googlecode.libphonenumber:libphonenumber:5.5'
+    compile 'com.google.android.gms:play-services:3.1.+'
 }
