@@ -61,7 +61,8 @@ public class MainActivityHandler {
         activity.mDrawerUserName.setText(prefs.strUserName);
         activity.mDrawerContactKey.setText(prefs.strContactKey);
 
-        if (Photobook.getPreferences().strPushRegID.isEmpty())
+        if (Photobook.getPreferences().strPushRegID.isEmpty() &&
+                !Photobook.getPreferences().strUserID.isEmpty())
             registerPushID();
 	}
 
@@ -134,7 +135,7 @@ public class MainActivityHandler {
         VolleySingleton.getInstance(activity).addToRequestQueue(avatarRequest);
     }
 
-    private void registerPushID() {
+    public void registerPushID() {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
