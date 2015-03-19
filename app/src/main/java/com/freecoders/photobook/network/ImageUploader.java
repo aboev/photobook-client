@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -24,17 +26,25 @@ import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.utils.FileUtils;
+import com.freecoders.photobook.utils.ImageUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -166,6 +176,7 @@ public class ImageUploader {
         Photobook.getImagesDataSource().updateImage(imgList.get(position));
         adapter.notifyDataSetChanged();
         HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("Accept", "*/*");
         headers.put("userid", Photobook.getPreferences().strUserID);
         Log.d(Constants.LOG_TAG, "Get pre-signed url request");
         StringRequest getPresignedURLRequest = new StringRequest(Request.Method.GET,
@@ -221,19 +232,19 @@ public class ImageUploader {
         protected Boolean doInBackground(String... params) {
             Boolean res = false;
             try {
+                Bitmap bitmap = ImageUtils.
+                        decodeSampledBitmap(mImgList.get(mPosition).getOrigUri(), 2048, 1536);
                 URL url = new URL(strPresignedURL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "image/jpeg");
                 connection.setRequestMethod("PUT");
-                BufferedInputStream bis = new BufferedInputStream(
-                        new FileInputStream(new File(mImgList.get(mPosition).getOrigUri())));
-                OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-                int i;
-                while ((i = bis.read()) > 0) {
-                    out.write(i);
-                }
-                out.close();
+                OutputStream outputStream = connection.getOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                outputStream.close();
                 int responseCode = connection.getResponseCode();
+
                 if (responseCode == 200) {
                     res = true;
                     Log.d(Constants.LOG_TAG, "Upload to S3 successful");
