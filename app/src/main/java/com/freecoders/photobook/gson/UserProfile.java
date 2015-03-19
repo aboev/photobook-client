@@ -9,6 +9,7 @@ public class UserProfile {
     public String email = "";
     public String avatar = "";
     public String id = "";
+    public String pushid = "";
 
     public void setNullFields(){
         if (name.isEmpty()) name = null;
@@ -16,6 +17,7 @@ public class UserProfile {
         if (email.isEmpty()) email = null;
         if (avatar.isEmpty()) avatar = null;
         if (id.isEmpty()) id = null;
+        if (pushid.isEmpty()) pushid = null;
     }
 }
 
