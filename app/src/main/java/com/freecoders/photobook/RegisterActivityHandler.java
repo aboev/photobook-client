@@ -136,6 +136,7 @@ public class RegisterActivityHandler {
 
                                 if (Photobook.getFriendsFragmentTab() != null)
                                     Photobook.getFriendsFragmentTab().refreshContactList();
+                                Photobook.getMainActivity().mHandler.registerPushID();
 		                        ((Activity) context).finish();
                             }
 		                }, new Response.ErrorListener() {
