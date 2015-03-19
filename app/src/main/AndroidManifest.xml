@@ -19,6 +19,7 @@
     <permission android:name="com.example.gcm.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name="com.freecoders.photobook.common.Photobook"
@@ -47,6 +48,14 @@
             android:launchMode="singleInstance"
             android:theme="@style/AppThemeNoActionBar">
         </activity>
+        <receiver
+            android:name="com.freecoders.photobook.gcm.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.freecoders.photobook" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
