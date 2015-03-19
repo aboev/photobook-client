@@ -17,6 +17,7 @@ public final class Preferences {
     private String KEY_PUSH_REGID = "pushregid";
     private String KEY_COMMENTS_TIMESTAMP = "comments_timestamp"; //Last timestamp for comments request
     private String KEY_UNREAD_IMAGES = "images_unread";
+    private String KEY_REGISTER_STATUS = "status";
 
     public Integer intPublicID = 0;
 	public String strUserID = "";
@@ -25,6 +26,8 @@ public final class Preferences {
     public String strPushRegID = "";
     public String strCommentsTimestamp = "0";
     public Set<String> hsetUnreadImages = new HashSet<String>(); //Image IDs that have unread comments
+    public Integer intRegisterStatus = 0;   // 0 - not registered, 
+            // 1 - waiting for sms code, 2 registered
 	
 	public Preferences(Context context) {
 		settings = context.getSharedPreferences(Constants.PREFS_NAME, 0);
@@ -38,6 +41,7 @@ public final class Preferences {
         strPushRegID = settings.getString(KEY_PUSH_REGID, "");
         strCommentsTimestamp = settings.getString(KEY_COMMENTS_TIMESTAMP, "0");
         hsetUnreadImages = settings.getStringSet(KEY_UNREAD_IMAGES, new HashSet<String>());
+        intRegisterStatus = settings.getInt(KEY_REGISTER_STATUS, 0);
 		return strUserID.length() != 0;
 	}
 	
@@ -50,7 +54,9 @@ public final class Preferences {
         editor.putString(KEY_PUSH_REGID, strPushRegID);
         editor.putString(KEY_COMMENTS_TIMESTAMP, strCommentsTimestamp);
         editor.putStringSet(KEY_UNREAD_IMAGES, hsetUnreadImages);
+        editor.putInt(KEY_REGISTER_STATUS, intRegisterStatus);
 		editor.commit();
 	}
 	
 }
+
