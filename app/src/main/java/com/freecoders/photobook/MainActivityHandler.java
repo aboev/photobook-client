@@ -10,6 +10,9 @@ import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.soundcloud.android.crop.Crop;
@@ -19,6 +22,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +40,9 @@ public class MainActivityHandler {
 	private Preferences prefs;
     private MainActivity activity;
     private ProgressDialog progress;
+
+    private GoogleCloudMessaging gcm;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	
 	public void init(MainActivity activity) {
         this.activity = activity;
@@ -53,6 +61,8 @@ public class MainActivityHandler {
         activity.mDrawerUserName.setText(prefs.strUserName);
         activity.mDrawerContactKey.setText(prefs.strContactKey);
 
+        if (Photobook.getPreferences().strPushRegID.isEmpty())
+            registerPushID();
 	}
 
     private View.OnClickListener avatarClickListener = new View.OnClickListener() {
@@ -124,5 +134,57 @@ public class MainActivityHandler {
         VolleySingleton.getInstance(activity).addToRequestQueue(avatarRequest);
     }
 
+    private void registerPushID() {
+        new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                String strPushID = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(activity);
+                    }
+                    strPushID = gcm.register(Constants.PUSH_SENDER_ID);
+                    Log.d(Constants.LOG_TAG, "Received push id = " + strPushID);
+                } catch (IOException ex) {
+                    Log.d(Constants.LOG_TAG, "Error: " + ex.getMessage());
+                }
+                return strPushID;
+            }
+            @Override
+            protected void onPostExecute(Object res) {
+                final String strPushID = res != null ? (String) res : "";
+                if (!strPushID.isEmpty()) {
+                    UserProfile profile = new UserProfile();
+                    profile.setNullFields();
+                    profile.pushid = strPushID;
+                    Log.d(Constants.LOG_TAG, "Sending pushId " + strPushID + " to server");
+                    ServerInterface.updateProfileRequest(activity, profile,
+                            Photobook.getPreferences().strUserID,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Photobook.getPreferences().strPushRegID = strPushID;
+                                    Photobook.getPreferences().savePreferences();
+                                    Log.d(Constants.LOG_TAG, "Delivered pushId to server");
+                                }
+                            }, null);
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, Photobook.getMainActivity(),
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(Constants.LOG_TAG, "This device is not supported for google play services");
+            }
+            return false;
+        }
+        return true;
+    }
 
 }
