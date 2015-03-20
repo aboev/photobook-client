@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
@@ -17,11 +18,14 @@ import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
+import com.freecoders.photobook.network.StringRequest;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -140,12 +144,12 @@ public class RegisterActivityHandler {
 
 	public void doRegister(final String strName, String strEmail, String strCode,
                            final Boolean boolUploadAvatar){
-		
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("name", activity.nameEditText.getText().toString() );
 		params.put("email", activity.emailEditText.getText().toString() );
         params.put("code", strCode);
-        params.put("Accept", "*/*");
         String strPhoneNumber = PhoneUtils.getPhoneNumber();
         if (!activity.phoneEditText.getText().toString().isEmpty()) {
             strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
@@ -160,61 +164,62 @@ public class RegisterActivityHandler {
 
 		final ProgressDialog pDialog = new ProgressDialog(activity);
 		pDialog.setMessage("Creating account...");
-		pDialog.show();   
-		
-		JsonObjectRequest registerRequest = new JsonObjectRequest(Method.POST,
-				Constants.SERVER_URL+"/user", new JSONObject(params),
-				new Response.Listener<JSONObject>() {
-		 
-		                    @Override
-		                    public void onResponse(JSONObject response) {
-		                        Log.d(Constants.LOG_TAG, response.toString());
-		                        pDialog.dismiss();
-		                        String strID = "";
-                                Integer intPublicID = 0;
-								try {
-									String strResult = response.getString("result");
-									if (strResult.equals("OK")) {
-										String strData = response.getString("data");
-										JSONObject obj = new JSONObject(strData);
-										strID = obj.getString("id");
-                                        intPublicID = obj.getInt("public_id");
-                                        Photobook.getPreferences().strUserID = strID;
-                                        Photobook.getPreferences().intPublicID = intPublicID;
-                                        Photobook.getPreferences().strUserName = strName;
-                                        Photobook.getPreferences().intRegisterStatus =
-                                                Constants.STATUS_REGISTERED;
-                                        Photobook.getPreferences().savePreferences();
+		pDialog.show();
 
-                                        if (boolUploadAvatar) sendAvatar();
+        StringRequest registerRequest = new StringRequest(Request.Method.POST,
+                Constants.SERVER_URL+"/user",
+                new Gson().toJson(params), headers,
+                new Response.Listener<String>() {
 
-                                        if (Photobook.getFriendsFragmentTab() != null)
-                                            Photobook.getFriendsFragmentTab().refreshContactList();
-                                        if (Photobook.getGalleryFragmentTab() != null)
-                                            Photobook.getGalleryFragmentTab().syncGallery();
-                                        Photobook.getMainActivity().mHandler.registerPushID();
-                                        activity.finish();
-									} else if (response.has("code") &&
-                                            response.getInt("code") == 121) {
-                                        Toast.makeText(activity, R.string.alert_wrong_sms,
-                                                Toast.LENGTH_LONG).show();
-                                    }
-								} catch (JSONException e) {
-                                    Log.d(Constants.LOG_TAG, "Json parse error");
-								}
-                                if ((strID == null) || (strID.isEmpty() == true))
-		                            Toast.makeText(activity, "Registration failed",
-		                        		   Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        pDialog.dismiss();
+                        String strID = "";
+                        Integer intPublicID = 0;
+                        try {
+                            JSONObject resJson = new JSONObject(response);
+                            String strResult = resJson.getString("result");
+                            if (strResult.equals("OK")) {
+                                String strData = resJson.getString("data");
+                                JSONObject obj = new JSONObject(strData);
+                                strID = obj.getString("id");
+                                intPublicID = obj.getInt("public_id");
+                                Photobook.getPreferences().strUserID = strID;
+                                Photobook.getPreferences().intPublicID = intPublicID;
+                                Photobook.getPreferences().strUserName = strName;
+                                Photobook.getPreferences().intRegisterStatus =
+                                        Constants.STATUS_REGISTERED;
+                                Photobook.getPreferences().savePreferences();
+
+                                if (boolUploadAvatar) sendAvatar();
+
+                                if (Photobook.getFriendsFragmentTab() != null)
+                                    Photobook.getFriendsFragmentTab().refreshContactList();
+                                if (Photobook.getGalleryFragmentTab() != null)
+                                    Photobook.getGalleryFragmentTab().syncGallery();
+                                Photobook.getMainActivity().mHandler.registerPushID();
+                                activity.finish();
+                            } else if (resJson.has("code") &&
+                                    resJson.getInt("code") == 121) {
+                                Toast.makeText(activity, R.string.alert_wrong_sms,
+                                        Toast.LENGTH_LONG).show();
                             }
-		                }, new Response.ErrorListener() {
-		 
-		                    @Override
-		                    public void onErrorResponse(VolleyError error) {
-		                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
-                                pDialog.dismiss();
-		                    }
-		                }
-				);
+                        } catch (JSONException e) {
+                            Log.d(Constants.LOG_TAG, "Json parse error");
+                        }
+                        if ((strID == null) || (strID.isEmpty() == true))
+                            Toast.makeText(activity, "Registration failed",
+                                    Toast.LENGTH_LONG).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                        pDialog.dismiss();
+                    }
+                }
+        );
 		VolleySingleton.getInstance(activity).addToRequestQueue(registerRequest);
 	}
 
