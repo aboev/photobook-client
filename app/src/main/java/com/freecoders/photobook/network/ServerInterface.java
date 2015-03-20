@@ -331,16 +331,24 @@ public class ServerInterface {
                                     && (resJson.has("data"))) {
                                 String strTimestamp = resJson.getString("timestamp");
                                 Photobook.getPreferences().strCommentsTimestamp = strTimestamp;
-                                Photobook.getPreferences().savePreferences();
                                 String strData = resJson.getString("data");
                                 Type type = new TypeToken<ArrayList<CommentEntryJson>>(){}.getType();
                                 ArrayList<CommentEntryJson> commentList = gson.fromJson(strData,
                                         type);
-                                for (int i = 0; i < commentList.size(); i++)
+                                for (int i = 0; i < commentList.size(); i++) {
                                     if (!Photobook.getPreferences().hsetUnreadImages.
                                             contains(commentList.get(i).image_id))
                                         Photobook.getPreferences().hsetUnreadImages.add(
                                                 commentList.get(i).image_id);
+                                    int intCommentCount = Photobook.getPreferences().
+                                            unreadImagesMap.containsKey(commentList.get(i).
+                                            image_id) ? Photobook.getPreferences().
+                                            unreadImagesMap.get(commentList.get(i).
+                                            image_id) : 0;
+                                    Photobook.getPreferences().unreadImagesMap.put(
+                                            commentList.get(i).image_id, intCommentCount + 1);
+                                }
+                                Photobook.getPreferences().savePreferences();
                             }
                         } catch (JSONException e) {
                             Log.d(Constants.LOG_TAG, "JSON parsing error for " + response);
@@ -450,6 +458,18 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getCommentsRequest);
+    }
+
+    public static final void unShareImageRequest(Context context,
+                                                  String imageId,
+                                                  final Response.Listener<String> responseListener,
+                                                  final Response.ErrorListener errorListener) {
+        /*
+        Implement network request to un-share image
+        URL: DELETE /image,
+        Headers: 'id' - imageId
+         */
+
     }
 
     public static final void getSMSCodeRequest (Context context,
