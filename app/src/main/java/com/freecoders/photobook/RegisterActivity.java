@@ -2,9 +2,14 @@ package com.freecoders.photobook;
 
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.utils.FileUtils;
 import com.soundcloud.android.crop.Crop;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.apache.http.conn.HttpHostConnectException;
 
@@ -31,6 +38,8 @@ public class RegisterActivity extends ActionBarActivity {
 	EditText nameEditText;
 	EditText emailEditText;
     EditText phoneEditText;
+    TextView smsTextView;
+    EditText smsEditText;
     CircleImageView avatarImage;
 	
 	RegisterActivityHandler handler;
@@ -44,6 +53,8 @@ public class RegisterActivity extends ActionBarActivity {
 		nameEditText = (EditText) findViewById(R.id.name);
 		emailEditText = (EditText) findViewById(R.id.email);
         phoneEditText = (EditText) findViewById(R.id.phone);
+        smsTextView = (TextView) findViewById(R.id.text_sms_code);
+        smsEditText = (EditText) findViewById(R.id.sms_code);
 		avatarImage = (CircleImageView) findViewById(R.id.imageViewAvatar);
 		
 		avatarImage.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +65,7 @@ public class RegisterActivity extends ActionBarActivity {
 	    });
 		
 		handler = new RegisterActivityHandler(this);
+        handler.populateView();
 	}
 
 	@Override
@@ -76,9 +88,7 @@ public class RegisterActivity extends ActionBarActivity {
 	}
 	
 	public void doRegister(View view) {
-		String strName = nameEditText.getText().toString();
-		String strEmail = emailEditText.getText().toString();
-		handler.doRegister(strName, strEmail, boolAvatarSelected);
+		handler.doRegister();
 	}
 	
 	public void doAvatarPick(){
@@ -111,3 +121,4 @@ public class RegisterActivity extends ActionBarActivity {
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
 }
+
