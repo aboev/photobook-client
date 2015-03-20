@@ -121,6 +121,24 @@ public class ImagesDataSource {
         return images;
     }
 
+    public ImageEntry getImageByServerID(String strServerID) {
+
+        String selection = dbHelper.COLUMN_SERVER_ID + " = ?";
+        String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
+        Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
+                null, selection,new String[]{strServerID} ,
+                null, null, orderBy);
+
+        if (cursor == null) {
+            return null;
+        } else if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+
+        return cursorToImageEntry(cursor);
+    }
+
     public ArrayList<ImageEntry> getLocalImages(){
         ArrayList<ImageEntry> res = new ArrayList<ImageEntry>();
         ContentResolver cr = mContext.getContentResolver();
