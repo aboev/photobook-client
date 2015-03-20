@@ -235,4 +235,8 @@ public class GalleryFragmentTab extends Fragment {
                     }
                 }, null);
     }
+
+    public void refreshAdapter() {
+        mAdapter.notifyDataSetChanged();
+    }
 }
