@@ -36,6 +36,29 @@ public class PhoneUtils {
         return strNormPhoneNUmber;
     }
 
+    public final static String getNormalizedPhoneNumber(String strRawPhoneNum,
+                                                        Boolean boolHasCountryCode) {
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        String strNormPhoneNUmber = strRawPhoneNum;
+        try {
+            if (boolHasCountryCode) {
+                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strRawPhoneNum, "");
+                strNormPhoneNUmber =
+                        phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+            } else {
+                String countryCode = getCountryISOCode().toUpperCase();
+                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strRawPhoneNum, 
+                        getCountryISOCode());
+                strNormPhoneNUmber =
+                        phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+            }
+        } catch (NumberParseException e) {
+            e.printStackTrace();
+        }
+
+        return strNormPhoneNUmber;
+    }
+
     // Implement local ISO country code from SIM
     private static String getCountryISOCode(){
         //Context aContext = Photobook.getMainActivity().getApplication();
