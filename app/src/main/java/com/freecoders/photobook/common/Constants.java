@@ -14,7 +14,8 @@ public class Constants {
     public static final int STATUS_SMS_WAIT = 1;
     public static final int STATUS_REGISTERED = 2;
 
-    public final static String SERVER_URL = "http://photobook-freecoders.rhcloud.com";
+    //public final static String SERVER_URL = "http://photobook-freecoders.rhcloud.com";
+    public final static String SERVER_URL = "http://dev.snufan.com";
     public final static String SERVER_PATH_USER = "/user";
     public final static String SERVER_PATH_IMAGE = "/image";
     public final static String SERVER_PATH_IMAGE_PRESIGNED_URL = "/image/upload_url";
