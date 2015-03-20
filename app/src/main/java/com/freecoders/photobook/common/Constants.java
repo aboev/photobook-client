@@ -10,6 +10,10 @@ public class Constants {
     public static final int EVENT_NEW_IMAGE = 1;
     public static final int EVENT_NEW_MESSAGE = 2;
 
+    public static final int STATUS_UNREGISTERED = 0;
+    public static final int STATUS_SMS_WAIT = 1;
+    public static final int STATUS_REGISTERED = 2;
+
     public final static String SERVER_URL = "http://photobook-freecoders.rhcloud.com";
     public final static String SERVER_PATH_USER = "/user";
     public final static String SERVER_PATH_IMAGE = "/image";
