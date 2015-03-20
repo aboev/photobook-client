@@ -188,4 +188,32 @@ public class MainActivityHandler {
         return true;
     }
 
+    public void handleIntent(Intent i) {
+        if (!i.hasExtra("event_type")) return;
+        if ((i.getIntExtra("event_type", 0) == Constants.EVENT_NEW_COMMENT) &&
+                i.hasExtra("data")) {
+            String strData = i.getStringExtra("data");
+            Photobook.getGalleryFragmentTab().syncComments();
+            try {
+                JSONObject dataJson = new JSONObject(strData);
+                Gson gson = new Gson();
+                if (dataJson.has("image_id")) {
+                    String strImageId = dataJson.getString("image_id");
+                    ImageEntry imageEntry =
+                            Photobook.getImagesDataSource().getImageByServerID(strImageId);
+                    Photobook.setGalleryImageDetails(imageEntry);
+                    if (imageEntry == null) return;
+                    Intent mIntent = new Intent(Photobook.getMainActivity(),
+                            ImageDetailsActivity.class);
+                    Bundle b = new Bundle();
+                    b.putBoolean(Photobook.intentExtraImageDetailsSource, true);
+                    mIntent.putExtras(b);
+                    Photobook.getMainActivity().startActivity(mIntent);
+                }
+            } catch (JSONException e) {
+                Log.d(Constants.LOG_TAG, "Json parse error");
+            }
+        }
+    }
+
 }
