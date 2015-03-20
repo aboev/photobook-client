@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.freecoders.photobook.FriendsFragmentTab;
+import com.freecoders.photobook.GalleryFragmentTab;
 import com.freecoders.photobook.ImageDetailsActivity;
 import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.db.FriendsDataSource;
@@ -22,6 +23,7 @@ public class Photobook extends Application {
     private static FriendsDataSource friendsDataSource;
     private static ImagesDataSource imagesDataSource;
     private static FriendsFragmentTab mFriendsTab;
+    private static GalleryFragmentTab mGalleryTab;
     private static MainActivity mActivity;
     private static ImageDetailsActivity mImageDetailsActivity;
     private static Preferences mPreferences;
@@ -83,6 +85,14 @@ public class Photobook extends Application {
 
     public final static FriendsFragmentTab getFriendsFragmentTab(){
         return mFriendsTab;
+    }
+
+    public final static void setGalleryFragmentTab(GalleryFragmentTab tab){
+        mGalleryTab = tab;
+    }
+
+    public final static GalleryFragmentTab getGalleryFragmentTab(){
+        return mGalleryTab;
     }
 
     public final static Preferences getPreferences() {return mPreferences;}
