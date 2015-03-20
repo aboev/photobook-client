@@ -54,6 +54,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         DynamicHeightImageView imgView;
         ImageView shareImgView;
         TextView textView;
+        ImageView newCommentImgView;
+        TextView newCommentTextView;
         ProgressBar progressBar;
     }
 
@@ -74,6 +76,9 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             holder.imgView = (DynamicHeightImageView)rowView.findViewById(R.id.imgView);
             holder.progressBar = (ProgressBar)rowView.findViewById(R.id.progressBar);
             holder.shareImgView = (ImageView)rowView.findViewById(R.id.imgViewShare);
+            holder.newCommentImgView = (ImageView)rowView.findViewById(R.id.imgNewComment);
+            holder.newCommentTextView =
+                    (TextView)rowView.findViewById(R.id.txtViewNewCommentCount);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
@@ -100,6 +105,16 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         } else {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.GONE);
+        }
+        if (Photobook.getPreferences().unreadImagesMap.containsKey(imageEntry.getServerId()) &&
+                Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId())>0) {
+            holder.newCommentImgView.setVisibility(View.INVISIBLE);
+            holder.newCommentTextView.setVisibility(View.INVISIBLE);
+            holder.newCommentTextView.setText(
+                    Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId()));
+        } else {
+            holder.newCommentImgView.setVisibility(View.GONE);
+            holder.newCommentTextView.setVisibility(View.GONE);
         }
 
         mLastPosition = position;
@@ -174,6 +189,13 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                         } else {
                             mViewHolder.shareImgView.setVisibility(View.VISIBLE);
                             mViewHolder.textView.setVisibility(View.GONE);
+                        }
+                        if (Photobook.getPreferences().unreadImagesMap.containsKey(
+                                mImageEntry.getServerId()) &&
+                                Photobook.getPreferences().unreadImagesMap.get(
+                                mImageEntry.getServerId())>0) {
+                            mViewHolder.newCommentImgView.setVisibility(View.VISIBLE);
+                            mViewHolder.newCommentTextView.setVisibility(View.VISIBLE);
                         }
                     }
                 });
