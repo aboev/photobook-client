@@ -374,7 +374,8 @@ public class ImageDetailsActivity extends ActionBarActivity {
             Photobook.getPreferences().hsetUnreadImages.remove(strImageID);
             Photobook.getPreferences().unreadImagesMap.put(strImageID, 0);
             Photobook.getPreferences().savePreferences();
-        }        
+            Photobook.getGalleryFragmentTab().refreshAdapter();
+        }
     }
 
     public void processLike () {
@@ -540,5 +541,16 @@ public class ImageDetailsActivity extends ActionBarActivity {
                     }
                 }
             }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (Photobook.getPreferences().hsetUnreadImages.contains(strImageID)) {
+            Photobook.getPreferences().hsetUnreadImages.remove(strImageID);
+            Photobook.getPreferences().unreadImagesMap.put(strImageID, 0);
+            Photobook.getPreferences().savePreferences();
+            Photobook.getGalleryFragmentTab().refreshAdapter();
+        }
+    }
+
         }
 
