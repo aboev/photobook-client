@@ -154,6 +154,7 @@ public class MainActivity extends FragmentActivity {
 
         mHandler = new MainActivityHandler();
         mHandler.init(this);
+        mHandler.handleIntent(getIntent());
 
         getActionBar().show();
 
