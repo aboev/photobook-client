@@ -369,9 +369,16 @@ public class ImageDetailsActivity extends ActionBarActivity {
         });
 
         ServerInterface.getComments(this, strImageID, mCommentListAdapter);
-        
-        if (Photobook.getPreferences().hsetUnreadImages.contains(strImageID))
+
+        if (Photobook.getPreferences().hsetUnreadImages.contains(strImageID)) {
             Photobook.getPreferences().hsetUnreadImages.remove(strImageID);
+            int intCommentCount = Photobook.getPreferences().
+                    unreadImagesMap.containsKey(strImageID) ? Photobook.getPreferences().
+                    unreadImagesMap.get(strImageID) : 0;
+            Photobook.getPreferences().unreadImagesMap.put(strImageID,
+                    Math.max(intCommentCount - 1, 0));
+            Photobook.getPreferences().savePreferences();
+        }        
     }
 
     public void processLike () {
