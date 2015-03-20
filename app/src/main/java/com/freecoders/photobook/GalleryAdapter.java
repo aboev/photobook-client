@@ -111,7 +111,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             holder.newCommentImgView.setVisibility(View.INVISIBLE);
             holder.newCommentTextView.setVisibility(View.INVISIBLE);
             holder.newCommentTextView.setText(
-                    Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId()));
+                    Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId()).
+                            toString());
         } else {
             holder.newCommentImgView.setVisibility(View.GONE);
             holder.newCommentTextView.setVisibility(View.GONE);
