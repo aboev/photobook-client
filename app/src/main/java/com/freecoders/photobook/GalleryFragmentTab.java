@@ -85,6 +85,9 @@ public class GalleryFragmentTab extends Fragment {
                     if (mAdapter != null) mAdapter.notifyDataSetChanged();
                 }
             });
+            if (!Photobook.getPreferences().strUserID.isEmpty()) {
+                syncGallery();
+            }
             return true;
         }
     }
@@ -154,7 +157,7 @@ public class GalleryFragmentTab extends Fragment {
                         }
                         Photobook.getImagesDataSource().saveImage(mImageList.get(pos));
                         //mImageLoader.uploadImage(mImageList, pos, mAdapter);
-                        mImageLoader.uploadImageS3(mImageList, pos, strOrigUri,
+                        mImageLoader.uploadImageS3(mImageList, pos, strOrigUri.toLowerCase() ,
                                 mAdapter);
                         alertDialog.dismiss();
                     }
@@ -194,7 +197,7 @@ public class GalleryFragmentTab extends Fragment {
                                 for (ImageJson image : map.values()) {
                                     if ((image.local_uri != null) &&
                                             !image.local_uri.isEmpty())
-                                        uriMap.put(image.local_uri, image);
+                                        uriMap.put(image.local_uri.toLowerCase(), image);
                                 }
                                 for (int i = 0; i < mImageList.size(); i++)
                                     if (uriMap.containsKey(mImageList.get(i).
