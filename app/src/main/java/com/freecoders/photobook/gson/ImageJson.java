@@ -11,6 +11,7 @@ public class ImageJson {
     public String url_medium = "";
     public String url_small = "";
     public String local_uri = "";
+    public Integer status = 0;
     public String[] likes = new String[]{};
     public double ratio = 1.0;
 }
