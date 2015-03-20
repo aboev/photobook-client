@@ -50,21 +50,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
+        android:layout_margin="4dp"
         android:orientation="horizontal"
         android:gravity="right" >
+        <ImageView
+            android:id="@+id/imgNewComment"
+            android:layout_margin="1dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_comment"/>
         <TextView
             android:id="@+id/txtViewNewCommentCount"
             android:layout_margin="1dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#F00"
-            android:visibility="gone"/>
-        <ImageView
-            android:id="@+id/imgNewComment"
-            android:layout_margin="1dp"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:visibility="gone"
-            android:background="@drawable/ic_comment"/>
+            android:textColor="#ffff464a"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:text="12"/>
     </LinearLayout>
 </LinearLayout>
