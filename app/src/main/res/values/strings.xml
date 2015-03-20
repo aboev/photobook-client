@@ -11,6 +11,8 @@
     <string name="name_hint">Alice Gallakher</string>
     <string name="email_hint">agallakher@gmail.com</string>
     <string name="phone_hint">+1(111)223-34-45</string>
+    <string name="sms_hint">1234</string>
+    <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
     <string name="btn_follow_text">follow</string>
     <string name="btn_unfollow_text">unfollow</string>
@@ -31,8 +33,12 @@
     <string name="alert_title_comment">New comment</string>
     <string name="alert_message_comment">What do you think?</string>
     <string name="alert_send_button">Send</string>
+    <string name="alert_ok_button">OK</string>
     <string name="alert_cancel_button">Cancel</string>
     <string name="dialog_downloading">Downloading</string>
     <string name="dialog_download_complete">Image downloaded</string>
     <string name="author_name_self">me</string>
+    <string name="alert_sms_title">SMS verification</string>
+    <string name="alert_sms_message">Please enter 4-digit verification code that you received in SMS</string>
+    <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
 </resources>
