@@ -64,6 +64,9 @@ public class GalleryFragmentTab extends Fragment {
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(OnItemClickListener);
         setRetainInstance(true);
+
+        Photobook.setGalleryFragmentTab(this);
+
         if (boolSyncGallery && !Photobook.getPreferences().strUserID.isEmpty()) {
             //syncGallery();
             boolSyncGallery = false;
@@ -196,8 +199,11 @@ public class GalleryFragmentTab extends Fragment {
                                 for (int i = 0; i < mImageList.size(); i++)
                                     if (uriMap.containsKey(mImageList.get(i).
                                             getOrigUri().toLowerCase()) &&
-                                            mImageList.get(i).getStatus() ==
-                                            ImageEntry.INT_STATUS_DEFAULT) {
+                                            (mImageList.get(i).getStatus() ==
+                                            ImageEntry.INT_STATUS_DEFAULT) &&
+                                            (uriMap.get(mImageList.get(i).
+                                                    getOrigUri().toLowerCase()).status ==
+                                                    ImageEntry.INT_STATUS_SHARED)) {
                                         ImageJson remoteImage = uriMap.get(mImageList.get(i).
                                                 getOrigUri().toLowerCase());
                                         mImageList.get(i).setStatus(ImageEntry.
@@ -211,6 +217,18 @@ public class GalleryFragmentTab extends Fragment {
                             }
                         } catch (Exception e) {
                         }
+                    }
+                }, null);
+    }
+
+    public void syncComments(){
+        ServerInterface.getComments(
+                null,
+                true,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (mAdapter != null) mAdapter.notifyDataSetChanged();
                     }
                 }, null);
     }
