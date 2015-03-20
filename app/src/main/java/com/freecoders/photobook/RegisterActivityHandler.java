@@ -145,6 +145,7 @@ public class RegisterActivityHandler {
 		params.put("name", activity.nameEditText.getText().toString() );
 		params.put("email", activity.emailEditText.getText().toString() );
         params.put("code", strCode);
+        params.put("Accept", "*/*");
         String strPhoneNumber = PhoneUtils.getPhoneNumber();
         if (!activity.phoneEditText.getText().toString().isEmpty()) {
             strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
@@ -218,12 +219,16 @@ public class RegisterActivityHandler {
 	}
 
     public void doRegister(){
+        final ProgressDialog pDialog = new ProgressDialog(activity);
+        pDialog.setMessage("Creating account...");
+        pDialog.show();
         ServerInterface.getSMSCodeRequest(
             activity, activity.phoneEditText.getText().toString(),
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.d(Constants.LOG_TAG, response);
+                    pDialog.dismiss();
                     try {
                         JSONObject obj = new JSONObject(response);
                         String strResult = obj.getString("result");
@@ -247,6 +252,7 @@ public class RegisterActivityHandler {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                pDialog.dismiss();
             }
         });
     }
