@@ -195,7 +195,7 @@ public class MainActivityHandler {
         if ((i.getIntExtra("event_type", 0) == Constants.EVENT_NEW_COMMENT) &&
                 i.hasExtra("data")) {
             String strData = i.getStringExtra("data");
-            Photobook.getGalleryFragmentTab().syncComments();
+            Log.d(Constants.LOG_TAG, "Handling data from intent "+ strData );
             try {
                 JSONObject dataJson = new JSONObject(strData);
                 Gson gson = new Gson();
@@ -204,7 +204,11 @@ public class MainActivityHandler {
                     ImageEntry imageEntry =
                             Photobook.getImagesDataSource().getImageByServerID(strImageId);
                     Photobook.setGalleryImageDetails(imageEntry);
-                    if (imageEntry == null) return;
+                    if (imageEntry == null) {
+                        Toast.makeText(activity, R.string.toast_img_not_found,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     Intent mIntent = new Intent(Photobook.getMainActivity(),
                             ImageDetailsActivity.class);
                     Bundle b = new Bundle();
