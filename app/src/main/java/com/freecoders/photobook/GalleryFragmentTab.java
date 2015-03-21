@@ -195,19 +195,18 @@ public class GalleryFragmentTab extends Fragment {
                                         resJson.get("data").toString(), type);
                                 HashMap<String, ImageJson> uriMap =
                                         new HashMap<String, ImageJson>();
-                                for (ImageJson image : map.values()) {
+                                for (ImageJson image : map.values())
                                     if ((image.local_uri != null) &&
                                             !image.local_uri.isEmpty())
                                         uriMap.put(image.local_uri.toLowerCase(), image);
-                                }
                                 for (int i = 0; i < mImageList.size(); i++)
                                     if (uriMap.containsKey(mImageList.get(i).
                                             getOrigUri().toLowerCase()) &&
                                             (mImageList.get(i).getStatus() ==
-                                            ImageEntry.INT_STATUS_DEFAULT) &&
+                                                    ImageEntry.INT_STATUS_DEFAULT) &&
                                             (uriMap.get(mImageList.get(i).
                                                     getOrigUri().toLowerCase()).status ==
-                                                    ImageEntry.INT_STATUS_SHARED)) {
+                                                    1)) {
                                         ImageJson remoteImage = uriMap.get(mImageList.get(i).
                                                 getOrigUri().toLowerCase());
                                         mImageList.get(i).setStatus(ImageEntry.
