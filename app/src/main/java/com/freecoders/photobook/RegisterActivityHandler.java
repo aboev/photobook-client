@@ -146,10 +146,10 @@ public class RegisterActivityHandler {
                            final Boolean boolUploadAvatar){
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", "*/*");
+        headers.put("code", strCode);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("name", activity.nameEditText.getText().toString() );
 		params.put("email", activity.emailEditText.getText().toString() );
-        params.put("code", strCode);
         String strPhoneNumber = PhoneUtils.getPhoneNumber();
         if (!activity.phoneEditText.getText().toString().isEmpty()) {
             strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
