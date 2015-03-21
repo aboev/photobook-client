@@ -69,6 +69,7 @@ public class GalleryFragmentTab extends Fragment {
 
         if (boolSyncGallery && !Photobook.getPreferences().strUserID.isEmpty()) {
             //syncGallery();
+            syncComments();
             boolSyncGallery = false;
         }
         return rootView;
