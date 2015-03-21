@@ -110,9 +110,14 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId())>0) {
             holder.newCommentImgView.setVisibility(View.INVISIBLE);
             holder.newCommentTextView.setVisibility(View.INVISIBLE);
-            holder.newCommentTextView.setText(
+            int intCommentCount = Photobook.getPreferences().
+                    unreadImagesMap.get(imageEntry.getServerId());
+            if (intCommentCount < 10)
+                holder.newCommentTextView.setText(
                     Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId()).
                             toString());
+            else
+                holder.newCommentTextView.setText("<9");
         } else {
             holder.newCommentImgView.setVisibility(View.GONE);
             holder.newCommentTextView.setVisibility(View.GONE);
