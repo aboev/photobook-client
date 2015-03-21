@@ -24,18 +24,20 @@
             android:background="@drawable/ic_share"
             android:layout_gravity="bottom|right"/>
     </FrameLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:orientation="horizontal" >
+        android:layout_margin="4dp">
         <TextView
             android:id="@+id/txtView"
             android:layout_margin="1dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:text="Undermines with fruitful and"
+            android:layout_alignParentLeft="true"/>
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
@@ -44,31 +46,24 @@
             android:layout_margin="2dp"
             android:layout_alignParentRight="true"
             android:indeterminate="true"
-            android:visibility="gone"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:gravity="right" >
-        <ImageView
-            android:id="@+id/imgNewComment"
-            android:layout_marginRight="1dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_comment"/>
-        <TextView
-            android:id="@+id/txtViewNewCommentCount"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:layout_toRightOf="@+id/txtView"/>
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffff464a"
-            android:textStyle="bold"
-            android:layout_gravity="center_vertical"
-            android:text="12"/>
-    </LinearLayout>
+            android:layout_alignParentRight="true">
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_new_comment"/>
+            <TextView
+                android:id="@+id/txtViewNewCommentCount"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:textColor="#ffff464a"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:text="12"/>
+        </FrameLayout>
+    </RelativeLayout>
 </LinearLayout>
