@@ -42,4 +42,5 @@
     <string name="alert_sms_message">Please enter 4-digit verification code that you received in SMS</string>
     <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
     <string name="notification_new_comment">New comment</string>
+    <string name="toast_img_not_found">Image not found</string>
 </resources>
