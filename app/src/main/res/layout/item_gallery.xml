@@ -27,8 +27,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:layout_margin="4dp">
+        android:background="#FFFFFF">
         <TextView
             android:id="@+id/txtView"
             android:layout_margin="1dp"
@@ -36,6 +35,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:visibility="gone"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:text="Undermines with fruitful and"
             android:layout_alignParentLeft="true"/>
         <ProgressBar
@@ -43,7 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?android:attr/android:progressBarStyleSmall"
-            android:layout_margin="2dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_alignParentRight="true"
             android:indeterminate="true"
             android:visibility="gone"
@@ -54,17 +56,23 @@
             android:layout_alignParentRight="true">
             <ImageView
                 android:id="@+id/imgNewComment"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
                 android:src="@drawable/ic_new_comment"/>
             <TextView
                 android:id="@+id/txtViewNewCommentCount"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:textColor="#ffff464a"
-                android:textStyle="bold"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:gravity="center"
-                android:text="12"/>
+                android:layout_marginBottom="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                android:paddingBottom="2dp"
+                android:text="2"
+                android:textSize="10dp"/>
         </FrameLayout>
     </RelativeLayout>
 </LinearLayout>
