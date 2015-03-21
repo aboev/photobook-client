@@ -208,7 +208,7 @@ public class ImageUploader {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(Constants.LOG_TAG, "Error: " +
-                                new String(error.networkResponse.data));
+                                new String(error.getMessage()));
                         handleFailure();
                     }
                 }
