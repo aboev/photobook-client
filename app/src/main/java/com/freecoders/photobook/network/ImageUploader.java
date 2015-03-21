@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -232,8 +233,17 @@ public class ImageUploader {
         protected Boolean doInBackground(String... params) {
             Boolean res = false;
             try {
-                Bitmap bitmap = ImageUtils.
+                int orientation = ImageUtils.
+                        getExifOrientation(mImgList.get(mPosition).getOrigUri());
+                Bitmap b = ImageUtils.
                         decodeSampledBitmap(mImgList.get(mPosition).getOrigUri(), 2048, 1536);
+                Bitmap bitmap;
+                if ((orientation == 90) || (orientation == 270)) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(orientation);
+                    bitmap = Bitmap.createBitmap(b, 0, 0,
+                            b.getWidth(), b.getHeight(), matrix, true);
+                } else bitmap = b;
                 URL url = new URL(strPresignedURL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
