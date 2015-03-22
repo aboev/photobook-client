@@ -1,23 +1,17 @@
 package com.freecoders.photobook.network;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.freecoders.photobook.CommentListAdapter;
 import com.freecoders.photobook.FriendsListAdapter;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.FriendEntry;
-import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
-import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,9 +33,7 @@ public class ServerInterface {
         final Response.Listener<String> responseListener,
         final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         Log.d(Constants.LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_CONTACTS,
@@ -71,9 +63,7 @@ public class ServerInterface {
                                                  final Response.Listener<String> responseListener,
                                                  final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         Log.d(Constants.LOG_TAG, "Update profile request");
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_USER ,
@@ -103,9 +93,7 @@ public class ServerInterface {
         Gson gson = new Gson();
         String userId = Photobook.getPreferences().strUserID;
         if (userId.isEmpty()) return;
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         final int position = pos;
         final FriendsListAdapter friendsListAdapter = adapter;
         Log.d(Constants.LOG_TAG, "Add friend request");
@@ -154,9 +142,7 @@ public class ServerInterface {
             for (int i = 1; i < friendIds.length; i++)
                 idList = idList + ", " + friendIds[i];
         }
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         headers.put("id", idList);
         final int position = pos;
         final FriendsListAdapter friendsListAdapter = adapter;
@@ -198,9 +184,7 @@ public class ServerInterface {
                                               final Response.Listener<String> responseListener,
                                               final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         headers.put("id", imageId);
         Log.d(Constants.LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.POST,
@@ -228,9 +212,7 @@ public class ServerInterface {
                                          final Response.Listener<String> responseListener,
                                          final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         headers.put("id", imageId);
         Log.d(Constants.LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
@@ -372,9 +354,7 @@ public class ServerInterface {
                                          final Response.Listener<String> responseListener,
                                          final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        HashMap<String, String> headers = createHeaders(userId);
         HashMap<String, String> reqBody = new HashMap<String, String>();
         reqBody.put("image_id", imageId);
         reqBody.put("text", strText);
@@ -403,7 +383,6 @@ public class ServerInterface {
                                                 String commendId, String userId,
                                                 final Response.Listener<String> responseListener,
                                                 final Response.ErrorListener errorListener) {
-        // Code here
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("userid", userId);
         headers.put("commentid", commendId);
@@ -433,14 +412,18 @@ public class ServerInterface {
                                           String imageId,
                                           final Response.Listener<String> responseListener,
                                           final Response.ErrorListener errorListener) {
-        HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        sendImageRequest(imageId, Request.Method.GET, responseListener, errorListener);
+    }
+
+    private static void sendImageRequest(String imageId, int httpMethod,
+                                         final Response.Listener<String> responseListener,
+                                         final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         if ((imageId != null) && !imageId.isEmpty())
             headers.put("imageid", imageId);
-        headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Get image details request");
-        StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
-                Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE,
+        StringRequest imageRequest = new StringRequest(httpMethod,
+                Constants.SERVER_URL + Constants.SERVER_PATH_IMAGE,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
@@ -457,19 +440,19 @@ public class ServerInterface {
         }
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
-                addToRequestQueue(getCommentsRequest);
+                addToRequestQueue(imageRequest);
     }
 
+    /**
+        Implements network request to un-share image
+        URL: DELETE /image,
+        Headers: 'id' - imageId
+    */
     public static final void unShareImageRequest(Context context,
                                                   String imageId,
                                                   final Response.Listener<String> responseListener,
                                                   final Response.ErrorListener errorListener) {
-        /*
-        Implement network request to un-share image
-        URL: DELETE /image,
-        Headers: 'id' - imageId
-         */
-
+        sendImageRequest(imageId, Request.Method.DELETE, responseListener, errorListener);
     }
 
     public static final void getSMSCodeRequest (Context context,
@@ -503,5 +486,17 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getSMSCodeRequest);
+    }
+
+    /**
+     * Create hash map with the headers for http request
+     * @param userId user id to be included to the headers
+     * @return created hash map with the headers
+     */
+    private static HashMap<String, String> createHeaders(String userId) {
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Accept", "*/*");
+        headers.put("userid", userId);
+        return headers;
     }
 }
