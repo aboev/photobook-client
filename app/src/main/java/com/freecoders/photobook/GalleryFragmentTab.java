@@ -2,6 +2,7 @@ package com.freecoders.photobook;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,9 +19,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.etsy.android.grid.StaggeredGridView;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
@@ -63,6 +64,7 @@ public class GalleryFragmentTab extends Fragment {
                 mImageList);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(OnItemClickListener);
+        gridView.setOnItemLongClickListener(new ImageLongClickListener());
         setRetainInstance(true);
 
         Photobook.setGalleryFragmentTab(this);
@@ -90,6 +92,50 @@ public class GalleryFragmentTab extends Fragment {
                 syncGallery();
             }
             return true;
+        }
+    }
+
+    private final class ImageLongClickListener implements AdapterView.OnItemLongClickListener {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            final ImageEntry image = mImageList.get(position);
+            final int pos = position;
+            if (image.getStatus() == ImageEntry.INT_STATUS_SHARED) {
+                ImageDialogFragment imageDialogFragment = new ImageDialogFragment();
+                imageDialogFragment.setImageMenuHandler(new ImageDialogFragment.ImageMenuHandler() {
+                    @Override
+                    public void onUnShareImage() {
+                        ServerInterface.unShareImageRequest(getActivity(), image.getServerId(),
+                                new UnShareImageResponse(image), new DefaultErrorListener());
+                    }
+                });
+                FragmentManager fm = getActivity().getFragmentManager();
+                imageDialogFragment.show(fm, "image_menu");
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private static class DefaultErrorListener implements Response.ErrorListener {
+        @Override
+        public void onErrorResponse(VolleyError volleyError) {
+
+        }
+    }
+
+    private class UnShareImageResponse implements Response.Listener<String> {
+        private final ImageEntry image;
+
+        private UnShareImageResponse(ImageEntry image) {
+            this.image = image;
+        }
+
+        @Override
+        public void onResponse(String s) {
+            image.setStatus(ImageEntry.INT_STATUS_DEFAULT);
+            if (mAdapter != null) mAdapter.notifyDataSetChanged();
         }
     }
 

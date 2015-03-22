@@ -43,4 +43,8 @@
     <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
     <string name="notification_new_comment">New comment</string>
     <string name="toast_img_not_found">Image not found</string>
+    <string name="image">Image</string>
+    <string-array name="image_menu">
+        <item>Stop sharing this image</item>
+    </string-array>
 </resources>
