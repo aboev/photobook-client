@@ -4,6 +4,7 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -20,83 +21,36 @@ public class PhoneUtils {
     // Implement phone number normalization. Ex. 010-1111-2222 -> +82 10-1111-2222
     public final static String getNormalizedPhoneNumber(String strRawPhoneNum) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-
-
-        String countryCode = getCountryISOCode().toUpperCase();
-        String strNormPhoneNUmber = strRawPhoneNum;
-        try {
-            Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strRawPhoneNum, countryCode);
-            strNormPhoneNUmber = phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-            //Log.d(Constants.LOG_TAG,"Norm phone number: "+strNormPhoneNUmber);
-
-        } catch (NumberParseException e) {
-            e.printStackTrace();
-        }
-
+        Integer intCountryCode = getCountryCode();
+        Phonenumber.PhoneNumber phoneNumber = new Phonenumber.PhoneNumber().
+                setCountryCode(intCountryCode).setRawInput(strRawPhoneNum);
+        String strNormPhoneNUmber = phoneUtil.format(phoneNumber,
+                PhoneNumberUtil.PhoneNumberFormat.E164);
         return strNormPhoneNUmber;
     }
 
-    public final static String getNormalizedPhoneNumber(String strRawPhoneNum,
-                                                        Boolean boolHasCountryCode) {
+    private static Integer getCountryCode(){
+        return Photobook.getPreferences().intCountryCode;
+    }
+
+    public static Integer getCountryCode(String strPhone){
+        Integer intCode = R.integer.default_country_code;
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-        String strNormPhoneNUmber = strRawPhoneNum;
         try {
-            if (boolHasCountryCode) {
-                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strRawPhoneNum, "");
-                strNormPhoneNUmber =
-                        phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-            } else {
-                String countryCode = getCountryISOCode().toUpperCase();
-                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strRawPhoneNum, 
-                        getCountryISOCode());
-                strNormPhoneNUmber =
-                        phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-            }
+            Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(strPhone, "");
+            intCode = phoneNumber.getCountryCode();
         } catch (NumberParseException e) {
-            e.printStackTrace();
+            Log.d(Constants.LOG_TAG, "NumberParseException " + e.getLocalizedMessage());
         }
-
-        return strNormPhoneNUmber;
-    }
-
-    // Implement local ISO country code from SIM
-    private static String getCountryISOCode(){
-        //Context aContext = Photobook.getMainActivity().getApplication();
-        //TelephonyManager tm = (TelephonyManager)aContext.getSystemService(aContext.TELEPHONY_SERVICE);
-        TelephonyManager tm =  (TelephonyManager)
-                Photobook.getMainActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        String countryCode = tm.getSimCountryIso();
-        if (countryCode.isEmpty()) {
-            try {
-                //countryCode = tm.getSimCountryIso();
-                Locale locale = Locale.getDefault();
-                countryCode = locale.getCountry();
-                Log.d(Constants.LOG_TAG, "Identified country code " +
-                        countryCode + " from locale");
-                //Log.d(Constants.LOG_TAG,"Country code: "+countryCode);
-            } catch (Exception e) {
-                Log.e(Constants.LOG_TAG, "getCountryISOCode exception");
-                countryCode = "KR";
-            }
-        } else {
-            Log.d(Constants.LOG_TAG, "Identified country code " + countryCode + " from SIM");
-        }
-        //String countryCode = tm.getNetworkCountryIso();
-        return countryCode;
+        return intCode;
     }
 
     public final static String getPhoneNumber() {
         TelephonyManager tm =  (TelephonyManager)
                 Photobook.getMainActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        String mPhoneNumber = tm.getLine1Number();
-        if ((mPhoneNumber != null) && (!mPhoneNumber.isEmpty())) {
-            mPhoneNumber = getNormalizedPhoneNumber(mPhoneNumber);
-        } else {
-            mPhoneNumber = "";
-        }
+        String mPhoneNumber = "";
+        if ((tm.getLine1Number() != null) && (!tm.getLine1Number().isEmpty()))
+            mPhoneNumber = tm.getLine1Number();
         return mPhoneNumber;
     }
 }
-
-
-
