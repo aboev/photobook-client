@@ -25,6 +25,26 @@ public class Constants {
     public final static String SERVER_PATH_LIKE = "/like";
     public final static String SERVER_PATH_COMMENTS = "/comments";
 
+    public final static String HEADER_USERID = "userid";
+    public final static String HEADER_IMAGEID = "imageid";
+    public final static String HEADER_COMMENTID = "commentid";
+    public final static String HEADER_MODTIME = "from";
+
+    public final static String RESPONSE_RESULT = "result";
+    public final static String RESPONSE_RESULT_OK = "OK";
+    public final static String RESPONSE_DATA = "data";
+    public final static String RESPONSE_CODE = "code";
+
+    public final static String KEY_TIMESTAMP = "timestamp";
+    public final static String KEY_IMAGEID = "image_id";
+    public final static String KEY_TEXT = "text";
+    public final static String KEY_NAME = "name";
+    public final static String KEY_EMAIL = "email";
+    public final static String KEY_PHONE = "phone";
+    public final static String KEY_CODE = "code";
+    public final static String KEY_ID = "id";
+    public final static String KEY_PUBLIC_ID = "public_id";
+
     public final static String FILENAME_AVATAR = "avatar.jpg";
     public final static String APP_FOLDER = "photobook";
     public final static String PUSH_SENDER_ID = "69387014044";
