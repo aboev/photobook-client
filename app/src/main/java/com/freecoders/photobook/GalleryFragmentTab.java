@@ -233,12 +233,13 @@ public class GalleryFragmentTab extends Fragment {
                         try {
                             Gson gson = new Gson();
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if ((strRes.equals("OK")) && (resJson.has("data"))) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if ((strRes.equals(Constants.RESPONSE_RESULT_OK)) && 
+                                    (resJson.has(Constants.RESPONSE_DATA))) {
                                 Type type = new TypeToken<HashMap<String, ImageJson>>() {}.
                                         getType();
                                 HashMap<String, ImageJson> map = gson.fromJson(
-                                        resJson.get("data").toString(), type);
+                                        resJson.get(Constants.RESPONSE_DATA).toString(), type);
                                 HashMap<String, ImageJson> uriMap =
                                         new HashMap<String, ImageJson>();
                                 for (ImageJson image : map.values())
