@@ -83,7 +83,7 @@ public class MainActivityHandler {
         File avatarImage = new File(activity.getFilesDir(), Constants.FILENAME_AVATAR);
         HashMap<String, String> params = new HashMap<String, String>();
         final String strUserID = Photobook.getPreferences().strUserID;
-        params.put("userid", strUserID);
+        params.put(Constants.HEADER_USERID, strUserID);
         MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
                 avatarImage, params,
                 new Response.Listener<String>() {
@@ -199,8 +199,8 @@ public class MainActivityHandler {
             try {
                 JSONObject dataJson = new JSONObject(strData);
                 Gson gson = new Gson();
-                if (dataJson.has("image_id")) {
-                    String strImageId = dataJson.getString("image_id");
+                if (dataJson.has(Constants.KEY_IMAGEID)) {
+                    String strImageId = dataJson.getString(Constants.KEY_IMAGEID);
                     ImageEntry imageEntry =
                             Photobook.getImagesDataSource().getImageByServerID(strImageId);
                     Photobook.setGalleryImageDetails(imageEntry);
