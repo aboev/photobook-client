@@ -41,7 +41,7 @@ public class FeedLoader {
 
     public void loadFeed() {
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Load feed request with offset = " + mOffset +
                 " and limit " + mPageSize);
@@ -57,11 +57,12 @@ public class FeedLoader {
                             Log.d(Constants.LOG_TAG, "Response " + response);
                             Gson gson = new Gson();
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if ((strRes.equals("OK")) && (resJson.has("data"))) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if ((strRes.equals(Constants.RESPONSE_RESULT_OK)) && 
+                                    (resJson.has(Constants.RESPONSE_DATA))) {
                                 Type type = new TypeToken<ArrayList<FeedEntryJson>>(){}.getType();
                                 ArrayList<FeedEntryJson> feedList = gson.fromJson(
-                                        resJson.get("data").toString(), type);
+                                        resJson.get(Constants.RESPONSE_DATA).toString(), type);
                                 if (mOffset == 0) {
                                     mFeedListView.addNewData(feedList, true);
                                     //mFeedList.clear();
