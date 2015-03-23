@@ -74,7 +74,7 @@ public class ImageUploader {
         Photobook.getImagesDataSource().updateImage(imgList.get(position));
         adapter.notifyDataSetChanged();
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         MultiPartRequest uploadRequest = new MultiPartRequest(
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE,
                 imgList.get(position).getOrigUri(),
@@ -86,7 +86,8 @@ public class ImageUploader {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject obj = new JSONObject( response);
-                            String strId = obj.getJSONObject("data").getString("id");
+                            String strId = obj.getJSONObject(Constants.RESPONSE_DATA).
+                                    getString(Constants.KEY_ID);
                             mImgList.get(mPosition).setServerId(strId);
                             Photobook.getImagesDataSource().updateImage(mImgList.get(mPosition));
                             putMetaData(strId, mImgList.get(mPosition).getTitle());
@@ -116,11 +117,11 @@ public class ImageUploader {
     private void putMetaData(String strId, String strTitle){
         Gson gson = new Gson();
         HashMap<String, String> reqBody = new HashMap<String, String>();
-        reqBody.put("id", strId);
-        reqBody.put("timestamp", String.valueOf(System.currentTimeMillis()));
+        reqBody.put(Constants.KEY_ID, strId);
+        reqBody.put(Constants.KEY_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
         reqBody.put("title", strTitle);
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put("Accept", "*/*");
         StringRequest putMetaDataRequest = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE ,
@@ -131,8 +132,8 @@ public class ImageUploader {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if (strRes.equals("OK")) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                                 mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
                                 Photobook.getImagesDataSource().
                                         updateImage(mImgList.get(mPosition));
@@ -178,7 +179,7 @@ public class ImageUploader {
         adapter.notifyDataSetChanged();
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("Accept", "*/*");
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         Log.d(Constants.LOG_TAG, "Get pre-signed url request");
         StringRequest getPresignedURLRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE+"/upload_url",
@@ -189,12 +190,14 @@ public class ImageUploader {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if (strRes.equals("OK") && resJson.has("data")) {
-                                JSONObject data = new JSONObject(resJson.getString("data"));
-                                if (data.has("url") && data.has("id")) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strRes.equals(Constants.RESPONSE_RESULT_OK) &&
+                                    resJson.has(Constants.RESPONSE_DATA)) {
+                                JSONObject data = new JSONObject(resJson.
+                                        getString(Constants.RESPONSE_DATA));
+                                if (data.has("url") && data.has(Constants.KEY_ID)) {
                                     String strPresignedURL = data.getString("url");
-                                    String strImageID = data.getString("id");
+                                    String strImageID = data.getString(Constants.KEY_ID);
                                     new S3UploaderTask(strPresignedURL, strImageID).
                                             executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
@@ -283,8 +286,8 @@ public class ImageUploader {
         reqBody.put("local_uri", strLocalURI);
         reqBody.put("title", mImgList.get(mPosition).getTitle());
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
-        headers.put("imageid", strImageID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_IMAGEID, strImageID);
         headers.put("Accept", "*/*");
         StringRequest putMetaDataRequest = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE+"/remote" ,
@@ -295,8 +298,8 @@ public class ImageUploader {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if (strRes.equals("OK")) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                                 mImgList.get(mPosition).setServerId(strImageID);
                                 mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
                                 Photobook.getImagesDataSource().
