@@ -4,6 +4,7 @@ package com.freecoders.photobook.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.freecoders.photobook.R;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,7 +37,7 @@ public final class Preferences {
 	public String strUserID = "";
     public String strUserName = "";
     public String strContactKey = "";
-    public String strCountryCode = "";
+    public Integer intCountryCode = 7;
     public String strPhone = "";
     public String strEmail = "";
     public String strPushRegID = "";
@@ -56,7 +57,8 @@ public final class Preferences {
 		strUserID = settings.getString(KEY_USERID, "");
         strUserName = settings.getString(KEY_USERNAME, "");
         strContactKey = settings.getString(KEY_CONTACTKEY, "");
-        strCountryCode = settings.getString(KEY_COUNTRY_CODE, "");
+        intCountryCode = settings.getInt(KEY_COUNTRY_CODE,
+                R.integer.default_country_code);
         strPhone = settings.getString(KEY_PHONE, "");
         strEmail = settings.getString(KEY_EMAIL, "");
         strPushRegID = settings.getString(KEY_PUSH_REGID, "");
@@ -74,7 +76,7 @@ public final class Preferences {
 		editor.putString(KEY_USERID, strUserID);
         editor.putString(KEY_USERNAME, strUserName);
         editor.putString(KEY_CONTACTKEY, strContactKey);
-        editor.putString(KEY_COUNTRY_CODE, strCountryCode);
+        editor.putInt(KEY_COUNTRY_CODE, intCountryCode);
         editor.putString(KEY_PHONE, strPhone);
         editor.putString(KEY_EMAIL, strEmail);
         editor.putInt(KEY_USERID_PUBLIC, intPublicID);
