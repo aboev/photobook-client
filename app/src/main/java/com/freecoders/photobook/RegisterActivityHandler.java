@@ -35,6 +35,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.widget.EditText;
@@ -62,6 +63,11 @@ public class RegisterActivityHandler {
                 activity.boolAvatarSelected = true;
             }
             showSMSCodeDialog();
+        } else {
+            String strPhone = PhoneUtils.getPhoneNumber();
+            if (!strPhone.isEmpty())
+                activity.phoneEditText.setText(
+                        PhoneUtils.getNormalizedPhoneNumber(strPhone));
         }
     }
 
@@ -97,7 +103,7 @@ public class RegisterActivityHandler {
         File avatarImage = new File(activity.getFilesDir(), Constants.FILENAME_AVATAR);
         HashMap<String, String> params = new HashMap<String, String>();
         final String strUserID = Photobook.getPreferences().strUserID;
-        params.put("userid", strUserID);
+        params.put(Constants.HEADER_USERID, strUserID);
         MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
                 avatarImage, params,
                 new Response.Listener<String>() {
@@ -107,7 +113,8 @@ public class RegisterActivityHandler {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject obj = new JSONObject( response);
-                            String strUrl = obj.getJSONObject("data").getString("url_small");
+                            String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
+                                    getString("url_small");
                             UserProfile profile = new UserProfile();
                             profile.setNullFields();
                             profile.avatar = strUrl;
@@ -146,24 +153,17 @@ public class RegisterActivityHandler {
                            final Boolean boolUploadAvatar){
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", "*/*");
-        headers.put("code", strCode);
+        headers.put(Constants.KEY_CODE, strCode);
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("name", activity.nameEditText.getText().toString() );
-		params.put("email", activity.emailEditText.getText().toString() );
-        String strPhoneNumber = PhoneUtils.getPhoneNumber();
-        if (!activity.phoneEditText.getText().toString().isEmpty()) {
-            strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
-                    activity.phoneEditText.getText().toString());
-            params.put("phone", activity.phoneEditText.getText().toString());
-        } else {
-            params.put("phone", strPhoneNumber);
-        }
-        Photobook.getPreferences().strContactKey = strEmail;
-        if ((strPhoneNumber != null) && (strPhoneNumber.isEmpty() == false))
-            Photobook.getPreferences().strContactKey = strPhoneNumber;
+		params.put(Constants.KEY_NAME, activity.nameEditText.getText().toString() );
+		params.put(Constants.KEY_EMAIL, activity.emailEditText.getText().toString() );
+        final String strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
+                activity.phoneEditText.getText().toString());
+        params.put(Constants.KEY_PHONE, strPhoneNumber);
+        Photobook.getPreferences().strContactKey = strPhoneNumber;
 
 		final ProgressDialog pDialog = new ProgressDialog(activity);
-		pDialog.setMessage("Creating account...");
+		pDialog.setMessage(activity.getResources().getString(R.string.dialog_creating_account));
 		pDialog.show();
 
         StringRequest registerRequest = new StringRequest(Request.Method.POST,
@@ -179,17 +179,19 @@ public class RegisterActivityHandler {
                         Integer intPublicID = 0;
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strResult = resJson.getString("result");
-                            if (strResult.equals("OK")) {
-                                String strData = resJson.getString("data");
+                            String strResult = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strResult.equals(Constants.RESPONSE_RESULT_OK)) {
+                                String strData = resJson.getString(Constants.RESPONSE_DATA);
                                 JSONObject obj = new JSONObject(strData);
-                                strID = obj.getString("id");
-                                intPublicID = obj.getInt("public_id");
+                                strID = obj.getString(Constants.KEY_ID);
+                                intPublicID = obj.getInt(Constants.KEY_PUBLIC_ID);
                                 Photobook.getPreferences().strUserID = strID;
                                 Photobook.getPreferences().intPublicID = intPublicID;
                                 Photobook.getPreferences().strUserName = strName;
                                 Photobook.getPreferences().intRegisterStatus =
                                         Constants.STATUS_REGISTERED;
+                                Photobook.getPreferences().intCountryCode = PhoneUtils.
+                                        getCountryCode(strPhoneNumber);
                                 Photobook.getPreferences().savePreferences();
 
                                 if (boolUploadAvatar) sendAvatar();
@@ -200,8 +202,8 @@ public class RegisterActivityHandler {
                                     Photobook.getGalleryFragmentTab().syncGallery();
                                 Photobook.getMainActivity().mHandler.registerPushID();
                                 activity.finish();
-                            } else if (resJson.has("code") &&
-                                    resJson.getInt("code") == 121) {
+                            } else if (resJson.has(Constants.RESPONSE_CODE) &&
+                                    resJson.getInt(Constants.RESPONSE_CODE) == 121) {
                                 Toast.makeText(activity, R.string.alert_wrong_sms,
                                         Toast.LENGTH_LONG).show();
                             }
@@ -224,8 +226,9 @@ public class RegisterActivityHandler {
 	}
 
     public void doRegister(){
+        if (!validateInput()) return;
         final ProgressDialog pDialog = new ProgressDialog(activity);
-        pDialog.setMessage("Creating account...");
+		pDialog.setMessage(activity.getResources().getString(R.string.dialog_creating_account));
         pDialog.show();
         ServerInterface.getSMSCodeRequest(
             activity, activity.phoneEditText.getText().toString(),
@@ -236,8 +239,8 @@ public class RegisterActivityHandler {
                     pDialog.dismiss();
                     try {
                         JSONObject obj = new JSONObject(response);
-                        String strResult = obj.getString("result");
-                        if (strResult.equals("OK")) {
+                        String strResult = obj.getString(Constants.RESPONSE_RESULT);
+                        if (strResult.equals(Constants.RESPONSE_RESULT_OK)) {
                             Photobook.getPreferences().strUserName =
                                     activity.nameEditText.getText().toString();
                             Photobook.getPreferences().strPhone =
@@ -261,5 +264,20 @@ public class RegisterActivityHandler {
             }
         });
     }
-}
 
+    public Boolean validateInput () {
+        Boolean res = true;
+        if (activity.nameEditText.getText().toString().isEmpty()) {
+            res = false;
+            Toast.makeText(activity, R.string.alert_input_name,
+                    Toast.LENGTH_LONG).show();
+        } else if (activity.phoneEditText.getText().toString().isEmpty() ||
+                activity.phoneEditText.getText().toString().charAt(0) != '+' ||
+                !activity.phoneEditText.getText().toString().substring(1).matches("[0-9]+")) {
+            res = false;
+            Toast.makeText(activity, R.string.alert_input_phone,
+                    Toast.LENGTH_LONG).show();
+        }
+        return res;
+    }
+}
