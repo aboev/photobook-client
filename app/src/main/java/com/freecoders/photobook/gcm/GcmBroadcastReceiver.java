@@ -58,10 +58,10 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
             String strAuthor = resJson.getString("author").replaceAll("\\\"", "\"");
             JSONObject author = new JSONObject(strAuthor);
             Log.d(Constants.LOG_TAG, "Author =  " + strAuthor);
-            String strText = resJson.getString("text");
+            String strText = resJson.getString(Constants.KEY_TEXT);
             strMessage = strText;
-            if (author.has("name"))
-                strMessage = author.getString("name") + ": " + strMessage;
+            if (author.has(Constants.KEY_NAME))
+                strMessage = author.getString(Constants.KEY_NAME) + ": " + strMessage;
         } catch (JSONException e) {
             Log.d(Constants.LOG_TAG, "JSON parsing error");
         }
