@@ -11,6 +11,7 @@
     <string name="name_hint">Alice Gallakher</string>
     <string name="email_hint">agallakher@gmail.com</string>
     <string name="phone_hint">+1(111)223-34-45</string>
+    <integer name="default_country_code">7</integer>
     <string name="sms_hint">1234</string>
     <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
@@ -37,10 +38,13 @@
     <string name="alert_cancel_button">Cancel</string>
     <string name="dialog_downloading">Downloading</string>
     <string name="dialog_download_complete">Image downloaded</string>
+    <string name="dialog_creating_account">Creating account...</string>
     <string name="author_name_self">me</string>
     <string name="alert_sms_title">SMS verification</string>
     <string name="alert_sms_message">Please enter 4-digit verification code that you received in SMS</string>
     <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
+    <string name="alert_input_name">Please input your name</string>
+    <string name="alert_input_phone">Please input phone in international format starting with +</string>
     <string name="notification_new_comment">New comment</string>
     <string name="toast_img_not_found">Image not found</string>
     <string name="image">Image</string>
