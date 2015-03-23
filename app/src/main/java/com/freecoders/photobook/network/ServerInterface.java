@@ -105,8 +105,8 @@ public class ServerInterface {
                     public void onResponse(String response) {
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if (strRes.equals("OK")) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                                 friendList.get(position).
                                         setStatus(FriendEntry.INT_STATUS_FRIEND);
                                 friendsListAdapter.notifyDataSetChanged();
@@ -143,7 +143,7 @@ public class ServerInterface {
                 idList = idList + ", " + friendIds[i];
         }
         HashMap<String, String> headers = createHeaders(userId);
-        headers.put("id", idList);
+        headers.put(Constants.KEY_ID, idList);
         final int position = pos;
         final FriendsListAdapter friendsListAdapter = adapter;
         Log.d(Constants.LOG_TAG, "Remove friend request");
@@ -155,8 +155,8 @@ public class ServerInterface {
                     public void onResponse(String response) {
                         try {
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if (strRes.equals("OK")) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                                 friendList.get(position).
                                         setStatus(FriendEntry.INT_STATUS_DEFAULT);
                                 friendsListAdapter.notifyDataSetChanged();
@@ -185,7 +185,7 @@ public class ServerInterface {
                                               final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
-        headers.put("id", imageId);
+        headers.put(Constants.KEY_ID, imageId);
         Log.d(Constants.LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
@@ -213,7 +213,7 @@ public class ServerInterface {
                                          final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
-        headers.put("id", imageId);
+        headers.put(Constants.KEY_ID, imageId);
         Log.d(Constants.LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
                 Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
@@ -239,8 +239,8 @@ public class ServerInterface {
                                          String imageId,
                                          final CommentListAdapter adapter) {
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
-        headers.put("imageid", imageId);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_IMAGEID, imageId);
         headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Load comments request");
         StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
@@ -254,11 +254,12 @@ public class ServerInterface {
                             Log.d(Constants.LOG_TAG, "Response " + response);
                             Gson gson = new Gson();
                             JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if ((strRes.equals("OK")) && (resJson.has("data"))) {
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if ((strRes.equals(Constants.RESPONSE_RESULT_OK))
+                                    && (resJson.has(Constants.RESPONSE_DATA))) {
                                 Type type = new TypeToken<ArrayList<CommentEntryJson>>(){}.getType();
                                 ArrayList<CommentEntryJson> commentList = gson.fromJson(
-                                        resJson.get("data").toString(), type);
+                                        resJson.get(Constants.RESPONSE_DATA).toString(), type);
                                 adapter.mCommentList.clear();
                                 adapter.mCommentList.addAll(commentList);
                                 adapter.notifyDataSetChanged();
@@ -289,11 +290,12 @@ public class ServerInterface {
                                           final Response.Listener<String> responseListener,
                                           final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("userid", Photobook.getPreferences().strUserID);
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         if ((imageId != null) && (!imageId.isEmpty()))
-            headers.put("imageid", imageId);
+            headers.put(Constants.HEADER_IMAGEID, imageId);
         if (withModTime)
-            headers.put("from", Photobook.getPreferences().strCommentsTimestamp);
+            headers.put(Constants.HEADER_MODTIME,
+                    Photobook.getPreferences().strCommentsTimestamp);
         headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Load comments request with timestamp " +
                 Photobook.getPreferences().strCommentsTimestamp);
@@ -308,12 +310,13 @@ public class ServerInterface {
                             Gson gson = new Gson();
                             JSONObject resJson = null;
                             resJson = new JSONObject(response);
-                            String strRes = resJson.getString("result");
-                            if ((strRes.equals("OK")) && (resJson.has("timestamp"))
-                                    && (resJson.has("data"))) {
-                                String strTimestamp = resJson.getString("timestamp");
+                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                            if ((strRes.equals(Constants.RESPONSE_RESULT_OK))
+                                    && (resJson.has(Constants.KEY_TIMESTAMP))
+                                    && (resJson.has(Constants.RESPONSE_DATA))) {
+                                String strTimestamp = resJson.getString(Constants.KEY_TIMESTAMP);
                                 Photobook.getPreferences().strCommentsTimestamp = strTimestamp;
-                                String strData = resJson.getString("data");
+                                String strData = resJson.getString(Constants.RESPONSE_DATA);
                                 Type type = new TypeToken<ArrayList<CommentEntryJson>>(){}.getType();
                                 ArrayList<CommentEntryJson> commentList = gson.fromJson(strData,
                                         type);
@@ -356,8 +359,8 @@ public class ServerInterface {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
         HashMap<String, String> reqBody = new HashMap<String, String>();
-        reqBody.put("image_id", imageId);
-        reqBody.put("text", strText);
+        reqBody.put(Constants.KEY_IMAGEID, imageId);
+        reqBody.put(Constants.KEY_TEXT, strText);
         Log.d(Constants.LOG_TAG, "Comment request");
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
@@ -384,8 +387,8 @@ public class ServerInterface {
                                                 final Response.Listener<String> responseListener,
                                                 final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("userid", userId);
-        headers.put("commentid", commendId);
+        headers.put(Constants.HEADER_USERID, userId);
+        headers.put(Constants.HEADER_COMMENTID, commendId);
         headers.put("Accept", "*/*");
         Log.d(Constants.LOG_TAG, "Comment delete request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
@@ -420,7 +423,7 @@ public class ServerInterface {
                                          final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         if ((imageId != null) && !imageId.isEmpty())
-            headers.put("imageid", imageId);
+            headers.put(Constants.HEADER_IMAGEID, imageId);
         Log.d(Constants.LOG_TAG, "Get image details request");
         StringRequest imageRequest = new StringRequest(httpMethod,
                 Constants.SERVER_URL + Constants.SERVER_PATH_IMAGE,
@@ -496,7 +499,7 @@ public class ServerInterface {
     private static HashMap<String, String> createHeaders(String userId) {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", "*/*");
-        headers.put("userid", userId);
+        headers.put(Constants.HEADER_USERID, userId);
         return headers;
     }
 }
