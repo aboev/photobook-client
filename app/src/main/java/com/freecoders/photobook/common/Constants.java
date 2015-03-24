@@ -37,13 +37,20 @@ public class Constants {
 
     public final static String KEY_TIMESTAMP = "timestamp";
     public final static String KEY_IMAGEID = "image_id";
+    public final static String KEY_TITLE = "title";
     public final static String KEY_TEXT = "text";
+    public final static String KEY_REPLY_TO = "reply_to";
     public final static String KEY_NAME = "name";
     public final static String KEY_EMAIL = "email";
     public final static String KEY_PHONE = "phone";
     public final static String KEY_CODE = "code";
     public final static String KEY_ID = "id";
     public final static String KEY_PUBLIC_ID = "public_id";
+    public final static String KEY_URL_SMALL = "url_small";
+    public final static String KEY_LOCAL_URI = "local_uri";
+    public final static String KEY_URL = "url";
+    public final static String KEY_IMAGE = "image";
+    public final static String KEY_AUTHOR = "author";
 
     public final static String FILENAME_AVATAR = "avatar.jpg";
     public final static String APP_FOLDER = "photobook";
