@@ -36,7 +36,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'commons-io:commons-io:2.4'
     compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.googlecode.libphonenumber:libphonenumber:5.5'
     compile 'com.google.android.gms:play-services:3.1.+'
+    compile project(':StaggeredGridView-1.0.5')
 }
