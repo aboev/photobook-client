@@ -190,7 +190,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                         if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
                             mViewHolder.textView.setVisibility(View.VISIBLE);
                         } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
-                            mViewHolder.textView.setText("Uploading image");
+                            mViewHolder.textView.setText(R.string.edit_uploading_image);
                             mViewHolder.textView.setVisibility(View.VISIBLE);
                         } else {
                             mViewHolder.shareImgView.setVisibility(View.VISIBLE);
