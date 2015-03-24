@@ -20,6 +20,7 @@
     <string name="btn_share_text">share</string>
     <string name="edit_title_hint">Fabulous morning</string>
     <string name="edit_loading">Loading feed</string>
+    <string name="edit_uploading_image">Uploading image</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_image_details">ImageDetailsActivity</string>
     <string name="drawer_open">My profile</string>
@@ -39,6 +40,8 @@
     <string name="dialog_downloading">Downloading</string>
     <string name="dialog_download_complete">Image downloaded</string>
     <string name="dialog_creating_account">Creating account...</string>
+    <string name="dialog_uploading_avatar">Uploading avatar...</string>
+    <string name="dialog_please_wait">Please wait</string>
     <string name="author_name_self">me</string>
     <string name="alert_sms_title">SMS verification</string>
     <string name="alert_sms_message">Please enter 4-digit verification code that you received in SMS</string>
