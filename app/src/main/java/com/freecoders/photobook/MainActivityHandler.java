@@ -7,6 +7,8 @@ import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
+import com.freecoders.photobook.gson.FeedEntryJson;
+import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
@@ -79,7 +81,9 @@ public class MainActivityHandler {
     };
 
     public void updateAvatar(){
-        progress = ProgressDialog.show(activity, "Uploading avatar", "Please wait", true);
+        progress = ProgressDialog.show(activity,
+                activity.getResources().getString(R.string.dialog_uploading_avatar),
+                activity.getResources().getString(R.string.dialog_please_wait), true);
         File avatarImage = new File(activity.getFilesDir(), Constants.FILENAME_AVATAR);
         HashMap<String, String> params = new HashMap<String, String>();
         final String strUserID = Photobook.getPreferences().strUserID;
@@ -93,7 +97,8 @@ public class MainActivityHandler {
                         Log.d(Constants.LOG_TAG, response.toString());
                         try {
                             JSONObject obj = new JSONObject( response);
-                            String strUrl = obj.getJSONObject("data").getString("url_small");
+                            String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
+                                    getString(Constants.KEY_URL_SMALL);
                             UserProfile profile = new UserProfile();
                             profile.setNullFields();
                             profile.avatar = strUrl;
@@ -214,6 +219,32 @@ public class MainActivityHandler {
                     Bundle b = new Bundle();
                     b.putBoolean(Photobook.intentExtraImageDetailsSource, true);
                     mIntent.putExtras(b);
+                    activity.mViewPager.setCurrentItem(1);
+                    Photobook.getMainActivity().startActivity(mIntent);
+                }
+            } catch (JSONException e) {
+                Log.d(Constants.LOG_TAG, "Json parse error");
+            }
+        } else if ((i.getIntExtra("event_type", 0) == Constants.EVENT_NEW_IMAGE) &&
+                i.hasExtra("data")) {
+            String strData = i.getStringExtra("data");
+            Log.d(Constants.LOG_TAG, "Handling data from intent "+ strData );
+            try {
+                JSONObject dataJson = new JSONObject(strData);
+                Gson gson = new Gson();
+                if ((dataJson.has(Constants.KEY_IMAGE)) &&
+                        (dataJson.has(Constants.KEY_AUTHOR))) {
+                    ImageJson image = gson.fromJson(dataJson.getString(Constants.KEY_IMAGE),
+                            ImageJson.class);
+                    UserProfile author = gson.fromJson(dataJson.getString(Constants.KEY_AUTHOR),
+                            UserProfile.class);
+                    FeedEntryJson feedEntry = new FeedEntryJson();
+                    feedEntry.author = author;
+                    feedEntry.image = image;
+                    Photobook.setImageDetails(feedEntry);
+                    Intent mIntent = new Intent(Photobook.getMainActivity(),
+                            ImageDetailsActivity.class);
+                    activity.mViewPager.setCurrentItem(2);
                     Photobook.getMainActivity().startActivity(mIntent);
                 }
             } catch (JSONException e) {
