@@ -114,7 +114,7 @@ public class RegisterActivityHandler {
                         try {
                             JSONObject obj = new JSONObject( response);
                             String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
-                                    getString("url_small");
+                                    getString(Constants.KEY_URL_SMALL);
                             UserProfile profile = new UserProfile();
                             profile.setNullFields();
                             profile.avatar = strUrl;
