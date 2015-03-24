@@ -24,7 +24,7 @@ public final class Preferences {
     private String KEY_USERID_PUBLIC = "publicid";
     private String KEY_USERNAME = "username";
     private String KEY_CONTACTKEY = "contactkey";
-    private String KEY_COUNTRY_CODE = "country_code";
+    private String KEY_COUNTRY_CODE = "countrycode";
     private String KEY_PHONE = "phone";
     private String KEY_EMAIL = "email";
     private String KEY_PUSH_REGID = "pushregid";
