@@ -451,7 +451,7 @@ public class ServerInterface {
     /**
         Implements network request to un-share image
         URL: DELETE /image,
-        Headers: 'id' - imageId
+        Headers: 'imageid' - imageId
     */
     public static final void unShareImageRequest(Context context,
                                                   String imageId,
