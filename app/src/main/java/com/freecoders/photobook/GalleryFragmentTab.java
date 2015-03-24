@@ -135,6 +135,7 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public void onResponse(String s) {
             image.setStatus(ImageEntry.INT_STATUS_DEFAULT);
+            Photobook.getImagesDataSource().updateImage(image);
             if (mAdapter != null) mAdapter.notifyDataSetChanged();
         }
     }
