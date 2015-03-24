@@ -354,17 +354,19 @@ public class ServerInterface {
     public static final void postCommentRequest(Context context,
                                          String imageId, String userId,
                                          String strText,
+                                         long replyTo,
                                          final Response.Listener<String> responseListener,
                                          final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
-        HashMap<String, String> reqBody = new HashMap<String, String>();
-        reqBody.put(Constants.KEY_IMAGEID, imageId);
-        reqBody.put(Constants.KEY_TEXT, strText);
+        CommentEntryJson comment = new CommentEntryJson(Request.Method.POST);
+        comment.text = strText;
+        comment.image_id = imageId;
+        comment.reply_to = replyTo;
         Log.d(Constants.LOG_TAG, "Comment request");
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
-                gson.toJson(reqBody), headers,
+                gson.toJson(comment), headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
