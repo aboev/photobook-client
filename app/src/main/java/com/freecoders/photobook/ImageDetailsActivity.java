@@ -339,7 +339,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
                                         Photobook.getImageDetailsActivity(),
                                         strImageID,
                                         Photobook.getPreferences().strUserID,
-                                        strComment,
+                                        strComment, 0,
                                         new Response.Listener<String>() {
                                             @Override
                                             public void onResponse(String response) {
