@@ -119,7 +119,7 @@ public class ImageUploader {
         HashMap<String, String> reqBody = new HashMap<String, String>();
         reqBody.put(Constants.KEY_ID, strId);
         reqBody.put(Constants.KEY_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
-        reqBody.put("title", strTitle);
+        reqBody.put(Constants.KEY_TITLE, strTitle);
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put("Accept", "*/*");
@@ -195,8 +195,8 @@ public class ImageUploader {
                                     resJson.has(Constants.RESPONSE_DATA)) {
                                 JSONObject data = new JSONObject(resJson.
                                         getString(Constants.RESPONSE_DATA));
-                                if (data.has("url") && data.has(Constants.KEY_ID)) {
-                                    String strPresignedURL = data.getString("url");
+                                if (data.has(Constants.KEY_URL) && data.has(Constants.KEY_ID)) {
+                                    String strPresignedURL = data.getString(Constants.KEY_URL);
                                     String strImageID = data.getString(Constants.KEY_ID);
                                     new S3UploaderTask(strPresignedURL, strImageID).
                                             executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -283,8 +283,8 @@ public class ImageUploader {
     private void postMetaData(final String strImageID) {
         Gson gson = new Gson();
         HashMap<String, String> reqBody = new HashMap<String, String>();
-        reqBody.put("local_uri", strLocalURI);
-        reqBody.put("title", mImgList.get(mPosition).getTitle());
+        reqBody.put(Constants.KEY_LOCAL_URI, strLocalURI);
+        reqBody.put(Constants.KEY_TITLE, mImgList.get(mPosition).getTitle());
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put(Constants.HEADER_IMAGEID, strImageID);
