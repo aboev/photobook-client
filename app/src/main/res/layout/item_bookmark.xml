@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#ffe7e7e7"
+    android:layout_marginLeft="10dp">
+    <TextView
+        android:id="@+id/txtViewBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Friends"
+        android:textSize="20dp"
+        android:paddingTop="0dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="0dp"
+        android:gravity="center"
+        android:background="#ffe7e7e7"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/drop_shadow_top_and_bottom"/>
+</FrameLayout>
