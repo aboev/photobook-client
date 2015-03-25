@@ -1,5 +1,7 @@
 package com.freecoders.photobook.gson;
 
+import com.freecoders.photobook.common.Constants;
+
 /**
  * Created by aleksey.boev on 2015-03-25.
  */
