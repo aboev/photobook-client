@@ -3,9 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <HorizontalScrollView
+        android:id="@+id/bookmarkScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/drop_shadow_bottom"
+        android:fillViewport="true"
+        android:padding="0dp">
+        <LinearLayout
+            android:id="@+id/bookmarkLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom">
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <ListView
         android:id="@+id/friendsList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bookmarkScrollView"
+        android:background="#ffe7e7e7"
+        tools:listitem="@layout/row_friend_list"/>
  
 </RelativeLayout>
