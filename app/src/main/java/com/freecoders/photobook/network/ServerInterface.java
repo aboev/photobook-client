@@ -12,6 +12,7 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
+import com.freecoders.photobook.gson.ServerResponse;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,6 +23,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Alex on 2014-11-27.
@@ -413,6 +416,56 @@ public class ServerInterface {
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
+    public static final void getUserProfileRequest (Context context,
+            String[] userIds,
+            final Response.Listener<HashMap<String, UserProfile>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        String strIdHeader = userIds.length > 0 ? userIds[0] : "";
+        for (int i = 1; i < userIds.length; i++) strIdHeader = strIdHeader + "," + userIds[i];
+        headers.put(Constants.KEY_ID, strIdHeader);
+        headers.put("Accept", "*/*");
+        Log.d(Constants.LOG_TAG, "Get user profile request");
+        StringRequest getUserProfileRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_USER,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(Constants.LOG_TAG, response.toString());
+                        try {
+                            Gson gson = new Gson();
+                            Type type = new TypeToken<ServerResponse
+                                    <HashMap<String, UserProfile>>>(){}.getType();
+                            ServerResponse<HashMap<String, UserProfile>> res =
+                                    gson.fromJson(response, type);
+                            if (res.isSuccess() && res.data != null)
+                                if (responseListener != null)
+                                    responseListener.onResponse(res.data);
+                        } catch (Exception e) {
+                            Log.d(Constants.LOG_TAG, "Exception in getUserProfile " +
+                                    e.getLocalizedMessage());
+                            if (responseListener != null)
+                                responseListener.onResponse(new HashMap<String, UserProfile>());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if ((error != null) && (error.networkResponse != null)
+                                && (error.networkResponse.data != null))
+                            Log.d(Constants.LOG_TAG, "Error: " +
+                                    new String(error.networkResponse.data));
+                        if (errorListener != null) errorListener.onErrorResponse(error);
+                    }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getUserProfileRequest);
+    }
+
     public static final void getImageDetailsRequest (Context context,
                                           String imageId,
                                           final Response.Listener<String> responseListener,
@@ -451,7 +504,7 @@ public class ServerInterface {
     /**
         Implements network request to un-share image
         URL: DELETE /image,
-        Headers: 'id' - imageId
+        Headers: 'imageid' - imageId
     */
     public static final void unShareImageRequest(Context context,
                                                   String imageId,
