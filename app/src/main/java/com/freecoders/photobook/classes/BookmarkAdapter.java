@@ -55,6 +55,9 @@ public class BookmarkAdapter {
             parentView.removeAllViews();
         for (int i = 0; i < items.length; i++) {
             View view = getView(i);
+            view.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
             parentView.addView(view);
         }
     }
