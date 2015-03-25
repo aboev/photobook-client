@@ -57,6 +57,13 @@ public class FriendsFragmentTab extends Fragment {
         return rootView;
     }
 
+    public void applyFilter(int[] status){
+        friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(status);
+        adapter.clear();
+        adapter.addAll(friendsList);
+        adapter.notifyDataSetChanged();
+    }
+
     public void refreshContactList(){
         Log.d(Constants.LOG_TAG, "Refreshing contact list");
         if (Photobook.getPreferences().strUserID.isEmpty()) return;
