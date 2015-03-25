@@ -1,9 +1,13 @@
 package com.freecoders.photobook.common;
 
+import com.freecoders.photobook.utils.ImageUtils;
+
 public class Constants {
 	public final static String LOG_TAG = "com.freecoders.photobook";
 	public static final String PREFS_NAME = "PhotoBookPrefs";
-	
+
+    public static final int BOOKMARKS_HEIGHT = ImageUtils.dpToPx(60);
+
 	public static final int INTENT_PICK_IMAGE = 1;
 
     public static final int EVENT_NEW_COMMENT = 0;
