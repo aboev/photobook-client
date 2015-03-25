@@ -64,7 +64,7 @@ public class GalleryFragmentTab extends Fragment {
                 mImageList);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(OnItemClickListener);
-        gridView.setOnItemLongClickListener(new ImageLongClickListener());
+        //gridView.setOnItemLongClickListener(new ImageLongClickListener());
         setRetainInstance(true);
 
         Photobook.setGalleryFragmentTab(this);
