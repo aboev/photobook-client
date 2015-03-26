@@ -6,8 +6,9 @@
     <HorizontalScrollView
         android:id="@+id/bookmarkScrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/drop_shadow_bottom"
+        android:layout_height="55dp"
+        android:background="#FFFFFF"
+        android:scrollbars="none"
         android:fillViewport="true"
         android:padding="0dp">
         <LinearLayout
@@ -15,7 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
-            android:layout_gravity="bottom">
+            android:gravity="bottom"
+            android:layout_gravity="bottom"
+            android:padding="0dp"
+            android:background="@drawable/dropshadow_bottom">
         </LinearLayout>
     </HorizontalScrollView>
 
