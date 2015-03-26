@@ -9,11 +9,9 @@
         android:layout_height="match_parent"
         android:text="Contacts"
         android:textSize="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:gravity="center"
-        android:paddingTop="0dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingBottom="0dp"
         android:background="#ffe7e7e7"/>
     <ImageView
         android:layout_width="match_parent"
