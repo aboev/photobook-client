@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.freecoders.photobook.R;
@@ -32,9 +33,9 @@ public class BookmarkAdapter {
         LayoutInflater vi = (LayoutInflater)context.getSystemService(inflater);
         View view;
         if (position == selectedPosition)
-            view = vi.inflate(R.layout.item_bookmark_selected, null);
+            view = vi.inflate(R.layout.item_bookmark_selected, parentView, false);
         else
-            view = vi.inflate(R.layout.item_bookmark, null);
+            view = vi.inflate(R.layout.item_bookmark, parentView, false);
         TextView tv = (TextView)view.findViewById(R.id.txtViewBookmark);
         tv.setText(items[position]);
 
@@ -55,9 +56,6 @@ public class BookmarkAdapter {
             parentView.removeAllViews();
         for (int i = 0; i < items.length; i++) {
             View view = getView(i);
-            view.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
             parentView.addView(view);
         }
     }
