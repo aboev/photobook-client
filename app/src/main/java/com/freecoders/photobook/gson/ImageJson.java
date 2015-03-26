@@ -1,5 +1,7 @@
 package com.freecoders.photobook.gson;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Alex on 2014-12-10.
  */
@@ -13,5 +15,7 @@ public class ImageJson {
     public String local_uri = "";
     public Integer status = 0;
     public String[] likes = new String[]{};
+    @SerializedName("aspect_ratio")
     public double ratio = 1.0;
 }
+
