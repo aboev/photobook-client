@@ -47,7 +47,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             View c = mAbsListView.getChildAt(0);
             startY = event.getY();
-            startPos = c.getTop();
+            startPos = c.getScrollY();
         } else if ((event.getAction() == MotionEvent.ACTION_MOVE) ) {
             float dY = event.getY() - startY + mViewGroup.getHeight();
             if ((startPos == 0) && (dY > 0)) {
