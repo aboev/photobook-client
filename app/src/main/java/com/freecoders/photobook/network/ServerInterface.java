@@ -12,6 +12,7 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
+import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.ServerResponse;
 import com.freecoders.photobook.gson.UserProfile;
 import com.google.gson.Gson;
@@ -30,6 +31,8 @@ import java.util.Map;
  * Created by Alex on 2014-11-27.
  */
 public class ServerInterface {
+    
+    private static String LOG_TAG = "ServerInterface";
 
     public static final void postContactsRequest(Context context,
         ArrayList<String> contacts, String userId,
@@ -37,7 +40,7 @@ public class ServerInterface {
         final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
-        Log.d(Constants.LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
+        Log.d(LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_CONTACTS,
                 gson.toJson(contacts), headers,
@@ -67,14 +70,14 @@ public class ServerInterface {
                                                  final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
-        Log.d(Constants.LOG_TAG, "Update profile request");
+        Log.d(LOG_TAG, "Update profile request");
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_USER ,
                 gson.toJson(profile), headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -99,7 +102,7 @@ public class ServerInterface {
         HashMap<String, String> headers = createHeaders(userId);
         final int position = pos;
         final FriendsListAdapter friendsListAdapter = adapter;
-        Log.d(Constants.LOG_TAG, "Add friend request");
+        Log.d(LOG_TAG, "Add friend request");
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
                 gson.toJson(friendIds), headers,
@@ -115,18 +118,18 @@ public class ServerInterface {
                                 friendsListAdapter.notifyDataSetChanged();
                                 int res = Photobook.getFriendsDataSource().updateFriend(
                                         friendList.get(position));
-                                Log.d(Constants.LOG_TAG, "Updated " + res + "friend items");
+                                Log.d(LOG_TAG, "Updated " + res + "friend items");
                             }
                         } catch (JSONException e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                         }
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(Constants.LOG_TAG, "Error: " + error.getLocalizedMessage());
+                        Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
                     }
                 }
         );
@@ -149,7 +152,7 @@ public class ServerInterface {
         headers.put(Constants.KEY_ID, idList);
         final int position = pos;
         final FriendsListAdapter friendsListAdapter = adapter;
-        Log.d(Constants.LOG_TAG, "Remove friend request");
+        Log.d(LOG_TAG, "Remove friend request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
                 gson.toJson(friendIds), headers,
@@ -167,15 +170,15 @@ public class ServerInterface {
                                         friendList.get(position));
                             }
                         } catch (JSONException e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                         }
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                     }
                 }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(Constants.LOG_TAG, "Error: " + error.getLocalizedMessage());
+                Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
             }
         }
         );
@@ -189,14 +192,14 @@ public class ServerInterface {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
         headers.put(Constants.KEY_ID, imageId);
-        Log.d(Constants.LOG_TAG, "Like request");
+        Log.d(LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -217,14 +220,14 @@ public class ServerInterface {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
         headers.put(Constants.KEY_ID, imageId);
-        Log.d(Constants.LOG_TAG, "Like request");
+        Log.d(LOG_TAG, "Like request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
                 Constants.SERVER_URL+Constants.SERVER_PATH_LIKE ,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -245,16 +248,16 @@ public class ServerInterface {
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put(Constants.HEADER_IMAGEID, imageId);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Load comments request");
+        Log.d(LOG_TAG, "Load comments request");
         StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
-                            Log.d(Constants.LOG_TAG, "Response " + response);
+                            Log.d(LOG_TAG, "Response " + response);
                             Gson gson = new Gson();
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
@@ -266,11 +269,11 @@ public class ServerInterface {
                                 adapter.mCommentList.clear();
                                 adapter.mCommentList.addAll(commentList);
                                 adapter.notifyDataSetChanged();
-                                Log.d(Constants.LOG_TAG, "Loaded  " + commentList.size()
+                                Log.d(LOG_TAG, "Loaded  " + commentList.size()
                                         + " comments");
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -279,7 +282,7 @@ public class ServerInterface {
             public void onErrorResponse(VolleyError error) {
                 if ((error != null) && (error.networkResponse != null)
                         && (error.networkResponse.data != null))
-                    Log.d(Constants.LOG_TAG, "Error: " +
+                    Log.d(LOG_TAG, "Error: " +
                             new String(error.networkResponse.data));
             }
         }
@@ -300,7 +303,7 @@ public class ServerInterface {
             headers.put(Constants.HEADER_MODTIME,
                     Photobook.getPreferences().strCommentsTimestamp);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Load comments request with timestamp " +
+        Log.d(LOG_TAG, "Load comments request with timestamp " +
                 Photobook.getPreferences().strCommentsTimestamp);
         StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS,
@@ -308,7 +311,7 @@ public class ServerInterface {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                         try {
                             Gson gson = new Gson();
                             JSONObject resJson = null;
@@ -339,7 +342,7 @@ public class ServerInterface {
                                 Photobook.getPreferences().savePreferences();
                             }
                         } catch (JSONException e) {
-                            Log.d(Constants.LOG_TAG, "JSON parsing error for " + response);
+                            Log.d(LOG_TAG, "JSON parsing error for " + response);
                         }
                         if (responseListener != null) responseListener.onResponse(response);
                     }
@@ -366,14 +369,14 @@ public class ServerInterface {
         comment.text = strText;
         comment.image_id = imageId;
         comment.reply_to = replyTo;
-        Log.d(Constants.LOG_TAG, "Comment request");
+        Log.d(LOG_TAG, "Comment request");
         StringRequest request = new StringRequest(Request.Method.POST,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
                 gson.toJson(comment), headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response);
+                        Log.d(LOG_TAG, "Response: " + response);
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -395,14 +398,14 @@ public class ServerInterface {
         headers.put(Constants.HEADER_USERID, userId);
         headers.put(Constants.HEADER_COMMENTID, commendId);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Comment delete request");
+        Log.d(LOG_TAG, "Comment delete request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
                 Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response: " + response.toString());
+                        Log.d(LOG_TAG, "Response: " + response.toString());
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -426,41 +429,41 @@ public class ServerInterface {
         for (int i = 1; i < userIds.length; i++) strIdHeader = strIdHeader + "," + userIds[i];
         headers.put(Constants.KEY_ID, strIdHeader);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Get user profile request");
+        Log.d(LOG_TAG, "Get user profile request");
         StringRequest getUserProfileRequest = new StringRequest(Request.Method.GET,
-                Constants.SERVER_URL+Constants.SERVER_PATH_USER,
-                "", headers,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
-                        try {
-                            Gson gson = new Gson();
-                            Type type = new TypeToken<ServerResponse
-                                    <HashMap<String, UserProfile>>>(){}.getType();
-                            ServerResponse<HashMap<String, UserProfile>> res =
-                                    gson.fromJson(response, type);
-                            if (res.isSuccess() && res.data != null)
-                                if (responseListener != null)
-                                    responseListener.onResponse(res.data);
-                        } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception in getUserProfile " +
-                                    e.getLocalizedMessage());
-                            if (responseListener != null)
-                                responseListener.onResponse(new HashMap<String, UserProfile>());
-                        }
+            Constants.SERVER_URL+Constants.SERVER_PATH_USER,
+            "", headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                            <HashMap<String, UserProfile>>>(){}.getType();
+                    try {
+                        ServerResponse<HashMap<String, UserProfile>> res =
+                                gson.fromJson(response, type);
+                        if (res != null && res.isSuccess() && res.data != null
+                                && responseListener != null)
+                            responseListener.onResponse(res.data);
+                        else if (responseListener != null)
+                            responseListener.onResponse(new HashMap<String, UserProfile>());
+                    } catch (Exception e) {
+                        if (responseListener != null)
+                            responseListener.onResponse(new HashMap<String, UserProfile>());
                     }
-                }, new Response.ErrorListener() {
+                }
+            }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if ((error != null) && (error.networkResponse != null)
-                                && (error.networkResponse.data != null))
-                            Log.d(Constants.LOG_TAG, "Error: " +
-                                    new String(error.networkResponse.data));
-                        if (errorListener != null) errorListener.onErrorResponse(error);
-                    }
-        }
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if ((error != null) && (error.networkResponse != null)
+                            && (error.networkResponse.data != null))
+                        Log.d(LOG_TAG, "Error: " +
+                                new String(error.networkResponse.data));
+                    if (errorListener != null) errorListener.onErrorResponse(error);
+                }
+            }
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getUserProfileRequest);
@@ -473,20 +476,65 @@ public class ServerInterface {
         sendImageRequest(imageId, Request.Method.GET, responseListener, errorListener);
     }
 
+    public static final void getImageDetailsRequestJson (Context context,
+            String imageId,
+            final Response.Listener<HashMap<String, ImageJson>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
+        if ((imageId != null) && !imageId.isEmpty())
+            headers.put(Constants.HEADER_IMAGEID, imageId);
+        Log.d(LOG_TAG, "Get image details request");
+        StringRequest imageRequest = new StringRequest(Request.Method.GET,
+            Constants.SERVER_URL + Constants.SERVER_PATH_IMAGE,
+            "", headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                        <HashMap<String, ImageJson>>>(){}.getType();
+                    try {
+                        ServerResponse<HashMap<String, ImageJson>> res =
+                                gson.fromJson(response, type);
+                        if ( res != null && res.isSuccess() && res.data != null
+                                && responseListener != null)
+                            responseListener.onResponse(res.data);
+                        else if (responseListener != null)
+                            responseListener.onResponse(
+                                    new HashMap<String, ImageJson>());
+                    } catch (Exception e) {
+                        if (responseListener != null)
+                            responseListener.onResponse(
+                                    new HashMap<String, ImageJson>());
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (errorListener != null) errorListener.onErrorResponse(error);
+                }
+            }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(imageRequest);
+    }
+
     private static void sendImageRequest(String imageId, int httpMethod,
                                          final Response.Listener<String> responseListener,
                                          final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         if ((imageId != null) && !imageId.isEmpty())
             headers.put(Constants.HEADER_IMAGEID, imageId);
-        Log.d(Constants.LOG_TAG, "Get image details request");
+        Log.d(LOG_TAG, "Get image details request");
         StringRequest imageRequest = new StringRequest(httpMethod,
                 Constants.SERVER_URL + Constants.SERVER_PATH_IMAGE,
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -520,14 +568,14 @@ public class ServerInterface {
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("number", strPhoneNumber);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Receive sms code request");
+        Log.d(LOG_TAG, "Receive sms code request");
         StringRequest getSMSCodeRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_USER+"/code",
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         if (responseListener != null) responseListener.onResponse(response);
                     }
                 }, new Response.ErrorListener() {
@@ -536,7 +584,7 @@ public class ServerInterface {
                     public void onErrorResponse(VolleyError error) {
                         if ((error != null) && (error.networkResponse != null)
                                 && (error.networkResponse.data != null))
-                            Log.d(Constants.LOG_TAG, "Error: " +
+                            Log.d(LOG_TAG, "Error: " +
                                     new String(error.networkResponse.data));
                         if (errorListener != null) errorListener.onErrorResponse(error);
                     }
