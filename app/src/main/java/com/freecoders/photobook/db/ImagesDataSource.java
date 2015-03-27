@@ -18,6 +18,8 @@ import java.util.ArrayList;
  * Created by Alex on 2014-12-03.
  */
 public class ImagesDataSource {
+    private static String LOG_TAG = "ImagesDataSource";
+    
     private SQLiteDatabase database;
     private SQLiteHelper dbHelper;
     private String[] allColumns = {SQLiteHelper.COLUMN_ID, SQLiteHelper.COLUMN_MEDIASTORE_ID,
@@ -71,7 +73,7 @@ public class ImagesDataSource {
         cv.put(dbHelper.COLUMN_STATUS,imageEntry.getStatus());
 
         imageEntry.setId(database.insert(dbHelper.TABLE_IMAGES, null, cv));
-        Log.d(Constants.LOG_TAG,"Last entry ID: "+imageEntry.getId());
+        Log.d(LOG_TAG,"Last entry ID: "+imageEntry.getId());
 
         return imageEntry;
     }
@@ -167,7 +169,7 @@ public class ImagesDataSource {
             imageEntry.setOrigUri(strOrigUri);
             imageEntry.setThumbUri(strThumbUri);
             res.add(imageEntry);
-            //Log.d(Constants.LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
+            //Log.d(LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
             //        "origUri = " + strOrigUri + ", thumbUri = " + strThumbUri);
         }
         return res;
@@ -194,7 +196,7 @@ public class ImagesDataSource {
 
     private ImageEntry cursorToImageEntry(Cursor cursor) {
 
-        //Log.d(Constants.LOG_TAG,""+cursor.getString(ContactKeyColIndex));
+        //Log.d(LOG_TAG,""+cursor.getString(ContactKeyColIndex));
         ImageEntry image = new ImageEntry();
         image.setId(cursor.getInt(idColIndex));
         image.setMediaStoreID(cursor.getString(mediaIdColIndex));
@@ -205,6 +207,46 @@ public class ImagesDataSource {
         image.setStatus(cursor.getInt(statusColIndex));
 
         return image;
+    }
+
+    public ArrayList<BucketEntry> getBuckets() {
+        ArrayList<BucketEntry> res = new ArrayList<BucketEntry>();
+        ContentResolver cr = mContext.getContentResolver();
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_ID,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_TAKEN,
+                MediaStore.Images.Media.DATA
+        };
+
+        String BUCKET_ORDER_BY = MediaStore.Images.Media.DATE_MODIFIED + " DESC";
+        String BUCKET_GROUP_BY = "1) GROUP BY 1,(2";
+
+        Cursor imageCursor = cr.query(images,
+                projection, // Which columns to return
+                BUCKET_GROUP_BY,       // Which rows to return (all rows)
+                null,       // Selection arguments (none)
+                BUCKET_ORDER_BY        // Ordering
+        );
+
+        for (int i = 0; i < imageCursor.getCount(); i++)
+        {
+            BucketEntry b = new BucketEntry();
+            imageCursor.moveToPosition(i);
+            int bucketColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+            String bucketDisplayName = imageCursor.getString(bucketColumnIndex);
+            int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
+            b.strBucketName = bucketDisplayName;
+            b.strTitleImageUrl = imageCursor.getString(dataColumnIndex);
+
+        }
+        return res;
+    }
+
+    public class BucketEntry {
+        public String strBucketName;
+        public String strTitleImageUrl;
     }
 
 }
