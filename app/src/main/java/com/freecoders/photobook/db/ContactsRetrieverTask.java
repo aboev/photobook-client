@@ -28,7 +28,9 @@ import java.util.Map;
  * Created by maximilian on 11/29/14.
  */
 
-public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<String>> {
+public class ContactsRetrieverTask extends AsyncTask<String, Void,
+        ArrayList<ContactsRetrieverTask.ContactEntry>> {
+    private static String LOG_TAG = "ContactsRetrieverTask";
 
     private FriendsFragmentTab mFriendsTab;
     private Boolean boolPopulateTab;
@@ -40,25 +42,31 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
     }
 
     @Override
-    protected ArrayList<String> doInBackground(String... params) {
+    protected ArrayList<ContactEntry> doInBackground(String... params) {
         return getContacts(mFriendsTab.mActivity);
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<String> contactList) {
-        for (int i = 0; i < contactList.size(); i++) {
-            if (Photobook.getFriendsDataSource().getFriendByContactKey(contactList.get(i))==null) {
-                Photobook.getFriendsDataSource().createFriend("", contactList.get(i), "", "",
+    protected void onPostExecute(final ArrayList<ContactEntry> contacts) {
+        final ArrayList<String> contactKeys = new ArrayList<String>();
+        for (int i = 0; i < contacts.size(); i++)
+            contactKeys.add(contacts.get(i).strContactKey);
+
+        for (int i = 0; i < contacts.size(); i++) {
+            if (Photobook.getFriendsDataSource().
+                    getFriendByContactKey(contacts.get(i).strContactKey)==null) {
+                Photobook.getFriendsDataSource().createFriend(contacts.get(i).strName,
+                        contacts.get(i).strContactKey, "", "",
                         FriendEntry.INT_STATUS_NULL);
             }
         }
 
         ServerInterface.postContactsRequest(mFriendsTab.mActivity,
-                contactList, Photobook.getPreferences().strUserID,
+                contactKeys, Photobook.getPreferences().strUserID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, "Response from server " + response.toString());
+                        Log.d(LOG_TAG, "Response from server " + response.toString());
                         try {
                             JSONObject obj = new JSONObject(response);
                             JSONObject objMap = obj.getJSONObject("data");
@@ -66,11 +74,11 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                                     new Gson().fromJson(objMap.toString(),
                                             new TypeToken<HashMap<String, UserProfile>>() {
                                             }.getType());
-                            for (int i = 0; i < contactList.size(); i++) {
-                                if (retMap.containsKey(contactList.get(i))) {
+                            for (int i = 0; i < contactKeys.size(); i++) {
+                                if (retMap.containsKey(contactKeys.get(i))) {
                                     FriendEntry friend = Photobook.getFriendsDataSource().
-                                            getFriendByContactKey(contactList.get(i));
-                                    UserProfile profile = retMap.get(contactList.get(i));
+                                            getFriendByContactKey(contactKeys.get(i));
+                                    UserProfile profile = retMap.get(contactKeys.get(i));
                                     if (friend != null) {
 
                                         friend.setName(profile.name);
@@ -92,18 +100,18 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                                                 FriendEntry.INT_STATUS_FRIEND}
                                          ));
                                 mFriendsTab.adapter.notifyDataSetChanged();
-                                Log.d(Constants.LOG_TAG,
+                                Log.d(LOG_TAG,
                                         "Notifying data set changed list length"
                                         + mFriendsTab.friendsList.size());
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception" + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception" + e.getLocalizedMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                        Log.d(LOG_TAG, "Error: " + error.getMessage());
                     }
                 });
     }
@@ -114,9 +122,8 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
     @Override
     protected void onProgressUpdate(Void... values) {}
 
-    public ArrayList<String> getContacts(Context context) {
-
-        ArrayList<String> telNumbers = new ArrayList<String>();
+    public ArrayList<ContactEntry> getContacts(Context context) {
+        ArrayList<ContactEntry> res = new ArrayList<ContactEntry>();
         ContentResolver cr = context.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cur.getCount() > 0) {
@@ -132,7 +139,10 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
                         String strNumber = pCur.getString(pCur.getColumnIndex
                                 (ContactsContract.CommonDataKinds.Phone.NUMBER));
                         String strNormalizedNumber = PhoneUtils.getNormalizedPhoneNumber(strNumber);
-                        telNumbers.add(strNormalizedNumber);
+                        ContactEntry contact = new ContactEntry();
+                        contact.strContactKey = strNormalizedNumber;
+                        contact.strName = name;
+                        res.add(contact);
                     }
                     pCur.close();
                 }
@@ -147,15 +157,21 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void, ArrayList<Str
 
                         String email = emailCursor.getString(emailCursor.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Email.DATA));
-                        telNumbers.add(email);
-
+                        ContactEntry contact = new ContactEntry();
+                        contact.strContactKey = email.toLowerCase();
+                        contact.strName = name;
+                        res.add(contact);
                     }
                 }
-
                 emailCursor.close();
             }
         }
 
-        return telNumbers;
+        return res;
+    }
+
+    public class ContactEntry {
+        private String strName = "";
+        private String strContactKey = "";
     }
 }
