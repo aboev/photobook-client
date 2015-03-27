@@ -59,7 +59,8 @@ import java.util.Map;
  * Created by Alex on 2014-12-05.
  */
 public class ImageUploader {
-
+    private static String LOG_TAG = "ImageUploader";
+    
     private int mPosition;
     private ArrayList<ImageEntry> mImgList;
     private GalleryAdapter mAdapter;
@@ -83,7 +84,7 @@ public class ImageUploader {
 
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
                             JSONObject obj = new JSONObject( response);
                             String strId = obj.getJSONObject(Constants.RESPONSE_DATA).
@@ -93,7 +94,7 @@ public class ImageUploader {
                             putMetaData(strId, mImgList.get(mPosition).getTitle());
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                             handleFailure();
                         }
                     }
@@ -101,7 +102,7 @@ public class ImageUploader {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                        Log.d(LOG_TAG, "Error: " + error.getMessage());
                         handleFailure();
                     }
                 }
@@ -129,7 +130,7 @@ public class ImageUploader {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
@@ -138,12 +139,12 @@ public class ImageUploader {
                                 Photobook.getImagesDataSource().
                                         updateImage(mImgList.get(mPosition));
 
-                                Log.d(Constants.LOG_TAG, "Saving new ImageEntry with " +
+                                Log.d(LOG_TAG, "Saving new ImageEntry with " +
                                         mImgList.get(mPosition).getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                             handleFailure();
                         }
                     }
@@ -151,7 +152,7 @@ public class ImageUploader {
 
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.d(Constants.LOG_TAG, "Error: " + new String(error.networkResponse.data));
+                            Log.d(LOG_TAG, "Error: " + new String(error.networkResponse.data));
                             handleFailure();
                         }
                 }
@@ -180,14 +181,14 @@ public class ImageUploader {
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("Accept", "*/*");
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
-        Log.d(Constants.LOG_TAG, "Get pre-signed url request");
+        Log.d(LOG_TAG, "Get pre-signed url request");
         StringRequest getPresignedURLRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE+"/upload_url",
                 "", headers,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
@@ -203,7 +204,7 @@ public class ImageUploader {
                                 }
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                             handleFailure();
                         }
                     }
@@ -211,7 +212,7 @@ public class ImageUploader {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(Constants.LOG_TAG, "Error: " +
+                        Log.d(LOG_TAG, "Error: " +
                                 new String(error.getMessage()));
                         handleFailure();
                     }
@@ -260,12 +261,12 @@ public class ImageUploader {
 
                 if (responseCode == 200) {
                     res = true;
-                    Log.d(Constants.LOG_TAG, "Upload to S3 successful");
+                    Log.d(LOG_TAG, "Upload to S3 successful");
                 } else {
-                    Log.d(Constants.LOG_TAG, "Upload to S3 failed with code " + responseCode);
+                    Log.d(LOG_TAG, "Upload to S3 failed with code " + responseCode);
                 }
             } catch (Exception e) {
-                Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                 handleFailure();
             }
             return res;
@@ -295,7 +296,7 @@ public class ImageUploader {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
@@ -305,12 +306,12 @@ public class ImageUploader {
                                 Photobook.getImagesDataSource().
                                         updateImage(mImgList.get(mPosition));
 
-                                Log.d(Constants.LOG_TAG, "Saving new ImageEntry with " +
+                                Log.d(LOG_TAG, "Saving new ImageEntry with " +
                                         mImgList.get(mPosition).getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                             handleFailure();
                         }
                     }
@@ -318,7 +319,7 @@ public class ImageUploader {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(Constants.LOG_TAG, "Error: " +
+                        Log.d(LOG_TAG, "Error: " +
                                 new String(error.networkResponse.data));
                         handleFailure();
                     }
