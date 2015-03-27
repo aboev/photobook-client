@@ -27,6 +27,8 @@ import org.json.JSONObject;
  * Created by Alex on 2015-03-08.
  */
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
+    private static String LOG_TAG = "GcmBroadcastReceiver";
+    
     public static final int NOTIFICATION_ID = 1;
 
     @Override
@@ -39,7 +41,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
                     MESSAGE_TYPE_DELETED.equals(messageType)) {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                Log.d(Constants.LOG_TAG, "Received push message " + extras.toString());
+                Log.d(LOG_TAG, "Received push message " + extras.toString());
                 if (extras.containsKey("event") && extras.containsKey("msg")) {
                    Integer intEventType = extras.getInt("event");
                    String strData = extras.getString("msg");
@@ -53,17 +55,17 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     public void showNotification(Context context, Integer intEventType, String strData) {
         String strMessage = "";
         try {
-            Log.d(Constants.LOG_TAG, "Parsing " + strData);
+            Log.d(LOG_TAG, "Parsing " + strData);
             JSONObject resJson = new JSONObject(strData);
             String strAuthor = resJson.getString("author").replaceAll("\\\"", "\"");
             JSONObject author = new JSONObject(strAuthor);
-            Log.d(Constants.LOG_TAG, "Author =  " + strAuthor);
+            Log.d(LOG_TAG, "Author =  " + strAuthor);
             String strText = resJson.getString(Constants.KEY_TEXT);
             strMessage = strText;
             if (author.has(Constants.KEY_NAME))
                 strMessage = author.getString(Constants.KEY_NAME) + ": " + strMessage;
         } catch (JSONException e) {
-            Log.d(Constants.LOG_TAG, "JSON parsing error");
+            Log.d(LOG_TAG, "JSON parsing error");
         }
 
         NotificationManager mNotificationManager = (NotificationManager)
@@ -94,3 +96,4 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }
+
