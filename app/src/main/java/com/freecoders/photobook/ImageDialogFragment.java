@@ -24,7 +24,7 @@ public class ImageDialogFragment extends DialogFragment {
     }
 
     private static class ImageMenuListener implements DialogInterface.OnClickListener {
-        public static final int UNSHARE_ITEM_INDEX = 1;
+        public static final int UNSHARE_ITEM_INDEX = 0;
 
         private final ImageMenuHandler imageMenuHandler;
 
