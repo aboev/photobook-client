@@ -1,17 +1,18 @@
 package com.freecoders.photobook;
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.ContactsRetrieverTask;
 import com.freecoders.photobook.db.FriendEntry;
 
@@ -46,6 +47,16 @@ public class FriendsFragmentTab extends Fragment {
         adapter = new FriendsListAdapter(getActivity(),
                 R.layout.row_friend_list, friendsList);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fm = getActivity().getFragmentManager();
+                UserProfileFragment profileDialogFragment = new UserProfileFragment();
+                profileDialogFragment.setUserId(friendsList.get(position).getUserId());
+                profileDialogFragment.show(fm, "users_profile");
+            }
+        });
 
         Photobook.setFriendsFragmentTab(this);
 

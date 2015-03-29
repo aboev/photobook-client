@@ -54,4 +54,8 @@
     <string-array name="image_menu">
         <item>Stop sharing this image</item>
     </string-array>
+    <string name="user_avatar">User avatar</string>
+    <string name="user_name">Name:</string>
+    <string name="user_phone">Phone:</string>
+    <string name="user_email">E-mail:</string>
 </resources>

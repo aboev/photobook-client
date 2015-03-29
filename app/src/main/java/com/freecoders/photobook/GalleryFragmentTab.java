@@ -100,7 +100,6 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             final ImageEntry image = mImageList.get(position);
-            final int pos = position;
             if (image.getStatus() == ImageEntry.INT_STATUS_SHARED) {
                 ImageDialogFragment imageDialogFragment = new ImageDialogFragment();
                 imageDialogFragment.setImageMenuHandler(new ImageDialogFragment.ImageMenuHandler() {
