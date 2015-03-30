@@ -165,7 +165,12 @@ public class ImageUploader {
         mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_DEFAULT);
         Photobook.getImagesDataSource().
                 updateImage(mImgList.get(mPosition));
-        mAdapter.notifyDataSetChanged();
+        Photobook.getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     public void uploadImageS3(ArrayList<ImageEntry> imgList, int position,
