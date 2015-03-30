@@ -57,6 +57,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         ImageView newCommentImgView;
         TextView newCommentTextView;
         ProgressBar progressBar;
+        int status = ImageEntry.INT_STATUS_DEFAULT;
     }
 
     @Override
@@ -82,7 +83,9 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
-            if (holder.position == position)
+            if (holder.position == position
+                    && holder.status == imageEntry.getStatus()
+                    && holder.textView.getText().equals(imageEntry.getTitle()))
                 return convertView;
         }
 
@@ -96,6 +99,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
         holder.shareImgView.setVisibility(View.GONE);
         holder.textView.setText(imageEntry.getTitle());
+        holder.status = imageEntry.getStatus();
         if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
             holder.progressBar.setVisibility(View.GONE);
             holder.textView.setVisibility(View.INVISIBLE);
