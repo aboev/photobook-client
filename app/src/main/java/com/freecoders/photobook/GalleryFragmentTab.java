@@ -80,7 +80,7 @@ public class GalleryFragmentTab extends Fragment {
     public class GalleryLoaderClass extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
-            ArrayList<ImageEntry> imgList = Photobook.getImagesDataSource().getAllImages();
+            ArrayList<ImageEntry> imgList = Photobook.getImagesDataSource().getAllImages(null);
             mImageList.addAll(imgList);
             Photobook.getMainActivity().runOnUiThread(new Runnable() {
                 @Override
