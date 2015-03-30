@@ -25,6 +25,7 @@ public class ImagesDataSource {
     private String[] allColumns = {SQLiteHelper.COLUMN_ID, SQLiteHelper.COLUMN_MEDIASTORE_ID,
             SQLiteHelper.COLUMN_ORIG_URI, SQLiteHelper.COLUMN_THUMB_URI,
             SQLiteHelper.COLUMN_SERVER_ID, SQLiteHelper.COLUMN_TITLE,
+            SQLiteHelper.COLUMN_BUCKET_ID,
             SQLiteHelper.COLUMN_STATUS};
     private Context mContext;
 
@@ -33,6 +34,7 @@ public class ImagesDataSource {
     int oriUriColIndex;
     int thumbUriColIndex;
     int serverIdColIndex;
+    int bucketIdColIndex;
     int titleColIndex;
     int statusColIndex;
 
@@ -50,6 +52,7 @@ public class ImagesDataSource {
         oriUriColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_ORIG_URI);
         thumbUriColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_THUMB_URI);
         serverIdColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_SERVER_ID);
+        bucketIdColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_BUCKET_ID);
         titleColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_TITLE);
         statusColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_STATUS);
     }
@@ -69,6 +72,7 @@ public class ImagesDataSource {
         cv.put(dbHelper.COLUMN_ORIG_URI,imageEntry.getOrigUri());
         cv.put(dbHelper.COLUMN_THUMB_URI,imageEntry.getThumbUri());
         cv.put(dbHelper.COLUMN_SERVER_ID,imageEntry.getServerId());
+        cv.put(dbHelper.COLUMN_BUCKET_ID,imageEntry.getBucketId());
         cv.put(dbHelper.COLUMN_TITLE,imageEntry.getTitle());
         cv.put(dbHelper.COLUMN_STATUS,imageEntry.getStatus());
 
@@ -86,6 +90,7 @@ public class ImagesDataSource {
         cv.put(dbHelper.COLUMN_ORIG_URI,image.getOrigUri());
         cv.put(dbHelper.COLUMN_THUMB_URI,image.getThumbUri());
         cv.put(dbHelper.COLUMN_SERVER_ID,image.getServerId());
+        cv.put(dbHelper.COLUMN_BUCKET_ID,image.getBucketId());
         cv.put(dbHelper.COLUMN_TITLE,image.getTitle());
         cv.put(dbHelper.COLUMN_STATUS,image.getStatus());
         // обновляем по id
@@ -99,12 +104,17 @@ public class ImagesDataSource {
     }
 
     //Implement requesting all shared images
-    public ArrayList<ImageEntry> getSharedImages() {
-
+    public ArrayList<ImageEntry> getSharedImages(String strBucketId) {
         String selection = dbHelper.COLUMN_STATUS + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED)};
+        if (strBucketId != null) {
+            selection = selection + " and " + dbHelper.COLUMN_BUCKET_ID + " = ?";
+            selectionArgs = new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED),
+                strBucketId};
+        }
         String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
         Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
-                null, selection,new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED)} ,
+                null, selection, selectionArgs,
                 null, null, orderBy);
 
         ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
@@ -141,12 +151,16 @@ public class ImagesDataSource {
         return cursorToImageEntry(cursor);
     }
 
-    public ArrayList<ImageEntry> getLocalImages(){
+    public ArrayList<ImageEntry> getLocalImages(String strBucketID){
         ArrayList<ImageEntry> res = new ArrayList<ImageEntry>();
         ContentResolver cr = mContext.getContentResolver();
         String orderBy = MediaStore.Images.Media._ID + " DESC";
+        String strSelection = null;
+        if (strBucketID != null)
+            strSelection = MediaStore.Images.ImageColumns.BUCKET_ID
+                    + " = '" + strBucketID + "'";
         Cursor cursorImg = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, orderBy);
+                null, strSelection, null, orderBy);
         int count = cursorImg.getCount();
         for (int i = 0; i < count; i++) {
             cursorImg.moveToPosition(i);
@@ -154,6 +168,8 @@ public class ImagesDataSource {
                     MediaStore.Images.Media._ID));
             String strOrigUri = cursorImg.getString(cursorImg.getColumnIndex(
                     MediaStore.Images.Media.DATA));
+            String strBucketId = cursorImg.getString(cursorImg.getColumnIndex(
+                    MediaStore.Images.ImageColumns.BUCKET_ID));
             String strThumbUri = "";
             Cursor cursorThumb = cr.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
                     new String[]{MediaStore.Images.Thumbnails.DATA},
@@ -167,6 +183,7 @@ public class ImagesDataSource {
             ImageEntry imageEntry = new ImageEntry();
             imageEntry.setMediaStoreID(strMediaStoreID);
             imageEntry.setOrigUri(strOrigUri);
+            imageEntry.setBucketId(strBucketId);
             imageEntry.setThumbUri(strThumbUri);
             res.add(imageEntry);
             //Log.d(LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
@@ -175,9 +192,9 @@ public class ImagesDataSource {
         return res;
     }
 
-    public ArrayList<ImageEntry> getAllImages() {
-        ArrayList<ImageEntry> resList = getSharedImages();
-        ArrayList<ImageEntry> localList = getLocalImages();
+    public ArrayList<ImageEntry> getAllImages(String strBucketID) {
+        ArrayList<ImageEntry> resList = getSharedImages(strBucketID);
+        ArrayList<ImageEntry> localList = getLocalImages(strBucketID);
         int pos = 0;
         for (int i = 0; i < localList.size(); i++) {
             while ((pos < resList.size()) && (localList.get(i).getMediaStoreID().
@@ -203,6 +220,7 @@ public class ImagesDataSource {
         image.setOrigUri(cursor.getString(oriUriColIndex));
         image.setThumbUri(cursor.getString(thumbUriColIndex));
         image.setServerId(cursor.getString(serverIdColIndex));
+        image.setBucketId(cursor.getString(bucketIdColIndex));
         image.setTitle(cursor.getString(titleColIndex));
         image.setStatus(cursor.getInt(statusColIndex));
 
@@ -234,11 +252,14 @@ public class ImagesDataSource {
         {
             BucketEntry b = new BucketEntry();
             imageCursor.moveToPosition(i);
-            int bucketColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-            String bucketDisplayName = imageCursor.getString(bucketColumnIndex);
+            int bucketColumnIndex = imageCursor.
+                    getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+            int bucketIdColumnIndex = imageCursor.
+                    getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
             int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            b.strBucketName = bucketDisplayName;
+            b.strBucketName = imageCursor.getString(bucketColumnIndex);
             b.strTitleImageUrl = imageCursor.getString(dataColumnIndex);
+            b.strBucketId = imageCursor.getString(bucketIdColumnIndex);
 
         }
         return res;
@@ -246,6 +267,7 @@ public class ImagesDataSource {
 
     public class BucketEntry {
         public String strBucketName;
+        public String strBucketId;
         public String strTitleImageUrl;
     }
 
