@@ -357,6 +357,71 @@ public class ServerInterface {
                 addToRequestQueue(getCommentsRequest);
     }
 
+    public static final void getCommentsJson (String imageId,
+            Boolean withModTime,
+            final Response.Listener<ArrayList<CommentEntryJson>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        if ((imageId != null) && (!imageId.isEmpty()))
+            headers.put(Constants.HEADER_IMAGEID, imageId);
+        if (withModTime)
+            headers.put(Constants.HEADER_MODTIME,
+                    Photobook.getPreferences().strCommentsTimestamp);
+        headers.put("Accept", "*/*");
+        Log.d(LOG_TAG, "Load comments request with timestamp " +
+                Photobook.getPreferences().strCommentsTimestamp);
+        StringRequest getCommentsRequest = new StringRequest(Request.Method.GET,
+            Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS,
+            "", headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, "Response: " + response);
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                            <ArrayList<CommentEntryJson>>>(){}.getType();
+                    try {
+                        ServerResponse<ArrayList<CommentEntryJson>> res =
+                                gson.fromJson(response, type);
+                        if ( res != null && res.isSuccess()
+                                && res.data != null
+                                && responseListener != null) {
+                            Photobook.getPreferences().strCommentsTimestamp = res.timestamp;
+                            for (int i = 0; i < res.data.size(); i++) {
+                                if (!Photobook.getPreferences().hsetUnreadImages.
+                                        contains(res.data.get(i).image_id))
+                                    Photobook.getPreferences().hsetUnreadImages.add(
+                                            res.data.get(i).image_id);
+                                int intCommentCount = Photobook.getPreferences().
+                                        unreadImagesMap.containsKey(res.data.get(i).
+                                        image_id) ? Photobook.getPreferences().
+                                        unreadImagesMap.get(res.data.get(i).
+                                        image_id) : 0;
+                                Photobook.getPreferences().unreadImagesMap.put(
+                                        res.data.get(i).image_id, intCommentCount + 1);
+                            }
+                            Photobook.getPreferences().savePreferences();
+                            if (responseListener != null) responseListener.onResponse(res.data);
+                        } else if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, "Exception: " + e.getLocalizedMessage());
+                        if (errorListener != null) errorListener.onErrorResponse(
+                                new VolleyError());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (errorListener != null) errorListener.onErrorResponse(error);
+                }
+            }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getCommentsRequest);
+    }
+
     public static final void postCommentRequest(Context context,
                                          String imageId, String userId,
                                          String strText,
@@ -386,6 +451,55 @@ public class ServerInterface {
                 if (errorListener != null) errorListener.onErrorResponse(error);
             }
         }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static final void postCommentRequestJson(Context context,
+            String imageId, String userId,
+            String strText,
+            long replyTo,
+            final Response.Listener<String> responseListener,
+            final Response.ErrorListener errorListener) {
+        Gson gson = new Gson();
+        HashMap<String, String> headers = createHeaders(userId);
+        CommentEntryJson comment = new CommentEntryJson(Request.Method.POST);
+        comment.text = strText;
+        comment.image_id = imageId;
+        comment.reply_to = replyTo;
+        Log.d(LOG_TAG, "Comment request");
+        StringRequest request = new StringRequest(Request.Method.POST,
+            Constants.SERVER_URL+Constants.SERVER_PATH_COMMENTS ,
+            gson.toJson(comment), headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, "Response: " + response);
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                            <HashMap<String, String>>>(){}.getType();
+                    try {
+                        ServerResponse<HashMap<String, String>> res =
+                                gson.fromJson(response, type);
+                        if ( res != null && res.isSuccess()
+                                && res.data != null
+                                && res.data.containsKey(Constants.KEY_ID)
+                                && responseListener != null)
+                            responseListener.onResponse(res.data.get(Constants.KEY_ID));
+                        else if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, "Exception: " + e.getLocalizedMessage());
+                        if (errorListener != null) errorListener.onErrorResponse(
+                                new VolleyError());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (errorListener != null) errorListener.onErrorResponse(error);
+                }
+            }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
