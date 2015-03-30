@@ -10,6 +10,7 @@ public class ImageEntry {
     private String ThumbUri = "";
     private String ServerId = "";
     private String Title = "";
+    private String BucketId = "";
     private int Status = INT_STATUS_DEFAULT;
     public final static int INT_STATUS_DEFAULT = 0;
     public final static int INT_STATUS_SHARING = 1;
@@ -69,5 +70,13 @@ public class ImageEntry {
 
     public void setStatus(int Status) {
         this.Status = Status;
+    }
+
+    public String getBucketId() {
+        return BucketId;
+    }
+
+    public void setBucketId(String BucketId) {
+        this.BucketId = BucketId;
     }
 }
