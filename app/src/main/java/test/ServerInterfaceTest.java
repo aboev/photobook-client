@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
@@ -48,11 +49,13 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
             "uploads/katiefritz.jpg\",\"email\":\"test@test.com\",\"id\":\"\"," +
             "\"name\":\"Katie Fritz\",\"phone\":\"116\",\"pushid\":\"\"}";
     private String strImageID = "fc2751ed-626c-4d32-bdab-bef5333498cc";
+    private String strSampleComment = "Intentional whatsoever including that";
+    private long longCommentId = 0;
     private Boolean boolRequestFinished = false;
     private Boolean boolImageDownloaded = false;
 
     public final static String strProxyHost = "";
-    public final static Integer intProxyPort = 0;
+    public final static Integer intProxyPort = 3128;
     private int intDefaultRequestTimeout = 5000;
     Gson gson = new Gson();
 
@@ -83,6 +86,10 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
 
     public void setImageDownloadFlag(){
         boolImageDownloaded = true;
+    }
+
+    public void setCommentId(String strId){
+        longCommentId = Long.parseLong(strId);
     }
 
     public void testGetUserProfileRequest() throws Exception {
@@ -208,6 +215,99 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         assertTrue(boolRequestFinished);
     }
 
+    public void testCommentRequest() throws Exception {
+        boolRequestFinished = false;
+        // Post comment
+        ServerInterface.postCommentRequestJson(getActivity(), strImageID, strMockUserID,
+            strSampleComment, 0,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    setCommentId(response);
+                    setRequestFinishedFlag();
+                }},
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    fail("Network error " + error.getMessage());
+                }
+            });
+        Thread.sleep(intDefaultRequestTimeout);
+        assertTrue(boolRequestFinished);
+        boolRequestFinished = false;
+
+        // Get comments - should return new comment
+        ServerInterface.getCommentsJson(strImageID, false,
+            new Response.Listener<ArrayList<CommentEntryJson>>() {
+                @Override
+                public void onResponse(ArrayList<CommentEntryJson> response) {
+                    CommentEntryJson comment = null;
+                    for (int i = 0; i < response.size(); i++)
+                        if (response.get(i).id == longCommentId) {
+                            comment = response.get(i);
+                            break;
+                        }
+                    assertNotNull(comment);
+                    compare(strSampleComment, comment.text);
+                    compare(strMockUserPublicID, comment.author_id );
+                    setRequestFinishedFlag();
+                }},
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    fail("Network error " + error.getMessage());
+                }
+            });
+
+        Thread.sleep(intDefaultRequestTimeout);
+        assertTrue(boolRequestFinished);
+        boolRequestFinished = false;
+
+        // Delete comment
+        ServerInterface.deleteCommentRequest (getActivity(),
+            String.valueOf(longCommentId),
+            strMockUserID,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    setRequestFinishedFlag();
+                }},
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    fail("Network error " + error.getMessage());
+                }
+            }
+        );
+
+        Thread.sleep(intDefaultRequestTimeout);
+        assertTrue(boolRequestFinished);
+        boolRequestFinished = false;
+
+        // Get comments should not return comment
+        ServerInterface.getCommentsJson(strImageID, false,
+            new Response.Listener<ArrayList<CommentEntryJson>>() {
+                @Override
+                public void onResponse(ArrayList<CommentEntryJson> response) {
+                    CommentEntryJson comment = null;
+                    for (int i = 0; i < response.size(); i++)
+                        if (response.get(i).id == longCommentId) {
+                            comment = response.get(i);
+                            break;
+                        }
+                    assertNull(comment);
+                    setRequestFinishedFlag();
+                }},
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    fail("Network error " + error.getMessage());
+                }
+            });
+        Thread.sleep(intDefaultRequestTimeout);
+        assertTrue(boolRequestFinished);
+    }
+
     public void compare(String a, String b) {
         System.out.println("Comparing " + a + " and " + b);
         assertEquals(a, b);
@@ -221,6 +321,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         protected Boolean doInBackground(ImageJson... images) {
             try {
                 image = images[0];
+                System.out.println("Loading image " + image.url_small);
                 URL url = new URL(image.url_small);
                 Proxy proxy = new Proxy(Proxy.Type.HTTP,
                         new InetSocketAddress(strProxyHost, intProxyPort));
@@ -240,7 +341,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         }
 
         protected void onPostExecute(Boolean b) {
-            assertNotNull(b);
+            assertNotNull(bitmap);
             assertNotSame(0, bitmap.getByteCount());
             double ratio = bitmap.getHeight() * 1.0 / bitmap.getWidth();
             assertEquals(ratio, image.ratio);
@@ -249,4 +350,3 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     }
 
 }
-
