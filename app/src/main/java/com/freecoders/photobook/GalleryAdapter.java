@@ -82,6 +82,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
+            if (holder.position == position)
+                return convertView;
         }
 
         holder.position = position;
