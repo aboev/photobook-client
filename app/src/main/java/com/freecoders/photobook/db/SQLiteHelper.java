@@ -26,9 +26,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_THUMB_URI = "thumbUri";
     public static final String COLUMN_SERVER_ID = "serverId";
     public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_BUCKET_ID = "bucketId";
 
     private static final String DATABASE_NAME = "photobook.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     // Database creation sql statement
     private static final String DATABASE_CREATE_FRIENDS_TABLE = "create table "
@@ -48,6 +49,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + COLUMN_THUMB_URI + " text, "
             + COLUMN_SERVER_ID + " text, "
             + COLUMN_TITLE + " text, "
+            + COLUMN_BUCKET_ID + " text, "
             + COLUMN_STATUS + " int);";
 
     public SQLiteHelper(Context context) {
