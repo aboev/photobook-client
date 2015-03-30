@@ -18,11 +18,15 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.etsy.android.grid.StaggeredGridView;
+import com.freecoders.photobook.classes.BookmarkAdapter;
+import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
@@ -47,6 +51,10 @@ public class GalleryFragmentTab extends Fragment {
     private ArrayList<ImageEntry> mImageList;
     private ImageUploader mImageLoader;
     private GalleryAdapter mAdapter;
+    private GestureListener gestureListener;
+    private HorizontalScrollView horizontalScrollView;
+    private LinearLayout linearLayout;
+    private BookmarkAdapter bookmarkAdapter;
     private Boolean boolSyncGallery = true;
 
     public GalleryFragmentTab(){
@@ -60,11 +68,19 @@ public class GalleryFragmentTab extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
         StaggeredGridView gridView = (StaggeredGridView) rootView.findViewById(R.id.gridView);
+        horizontalScrollView = (HorizontalScrollView)
+                rootView.findViewById(R.id.bookmarkScrollView);
+        linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
                 mImageList);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(OnItemClickListener);
         gridView.setOnItemLongClickListener(new ImageLongClickListener());
+        gestureListener = new GestureListener(getActivity(), horizontalScrollView, gridView);
+        //gridView.setOnTouchListener(gestureListener);
+
+        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
+                new String[]{"Gallery", "My shares"});
         setRetainInstance(true);
 
         Photobook.setGalleryFragmentTab(this);
