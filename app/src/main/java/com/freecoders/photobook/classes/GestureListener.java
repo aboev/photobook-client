@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.utils.ImageUtils;
 
 /**
  * Created by Alex on 2015-03-23.
@@ -21,7 +23,6 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     AbsListView mAbsListView;
 
     private float startY = 0;
-    private int startPos = 0;
 
     public GestureListener(Context context, ViewGroup viewGroup, AbsListView absListView) {
         this.context = context;
@@ -45,27 +46,34 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View v, MotionEvent event) {
         ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View c = mAbsListView.getChildAt(0);
             startY = event.getY();
-            startPos = c.getScrollY();
+            if (checkTopPosition() && (mAbsListView.getFirstVisiblePosition() == 0)) return true;
         } else if ((event.getAction() == MotionEvent.ACTION_MOVE) ) {
-            float dY = event.getY() - startY + mViewGroup.getHeight();
-            if ((startPos == 0) && (dY > 0)) {
+            float dY = event.getY() - startY + params.height;
+            if (checkTopPosition() && (mAbsListView.getFirstVisiblePosition() == 0) && (dY > 0)) {
                 params.height = Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT);
                 mViewGroup.setLayoutParams(params);
                 return true;
             } else if ((dY < 0) && (params.height > 0)) {
                 params.height = 0;
                 mViewGroup.setLayoutParams(params);
-                return true;
+                return false;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
             if (params.height < Constants.BOOKMARKS_HEIGHT / 2)
-                    params.height = 0;
+                params.height = 0;
             else
-                    params.height = Constants.BOOKMARKS_HEIGHT;
+                params.height = Constants.BOOKMARKS_HEIGHT;
             mViewGroup.setLayoutParams(params);
+            return false;
         }
         return mGestureDetector.onTouchEvent(event);
+    }
+
+    private Boolean checkTopPosition(){
+        if (mAbsListView instanceof StaggeredGridView)
+            return ((StaggeredGridView) mAbsListView).getDistanceToTop() == 0;
+        else
+            return mAbsListView.getScrollY() == 0;
     }
 }
