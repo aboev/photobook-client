@@ -60,12 +60,16 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
                 return false;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
-            if (params.height < Constants.BOOKMARKS_HEIGHT / 2)
+            if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && (params.height > 0)) {
                 params.height = 0;
-            else
+                mViewGroup.setLayoutParams(params);
+                return true;
+            } else if (params.height >= Constants.BOOKMARKS_HEIGHT / 2) {
                 params.height = Constants.BOOKMARKS_HEIGHT;
-            mViewGroup.setLayoutParams(params);
-            return false;
+                mViewGroup.setLayoutParams(params);
+                return true;
+            }
+
         }
         return mGestureDetector.onTouchEvent(event);
     }
