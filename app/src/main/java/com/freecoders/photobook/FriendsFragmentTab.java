@@ -9,8 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.freecoders.photobook.classes.BookmarkAdapter;
+import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ContactsRetrieverTask;
@@ -26,6 +30,10 @@ public class FriendsFragmentTab extends Fragment {
     public ArrayList<FriendEntry> friendsList;
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
+    private GestureListener gestureListener;
+    private HorizontalScrollView horizontalScrollView;
+    private LinearLayout linearLayout;
+    private BookmarkAdapter bookmarkAdapter;
     private Boolean boolUpdateList = true;
 
     public void setMainActivity(MainActivity activity) {
@@ -37,6 +45,9 @@ public class FriendsFragmentTab extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
         listView = (ListView) rootView.findViewById(R.id.friendsList);
+        horizontalScrollView = (HorizontalScrollView)
+                rootView.findViewById(R.id.bookmarkScrollView);
+        linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         setRetainInstance(true);
         Log.d(Constants.LOG_TAG, "Initializing FriendsFragmentTab");
 
@@ -57,6 +68,29 @@ public class FriendsFragmentTab extends Fragment {
                 profileDialogFragment.show(fm, "users_profile");
             }
         });
+
+        gestureListener = new GestureListener(getActivity(), horizontalScrollView, listView);
+        listView.setOnTouchListener(gestureListener);
+
+        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
+                new String[]{"Contacts", "Friends"});
+        bookmarkAdapter.setOnItemSelectedListener(
+                new BookmarkAdapter.onItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(int position) {
+                        if (position == 0)
+                            friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
+                                    new int[]{FriendEntry.INT_STATUS_NULL});
+                        else if (position == 1)
+                            friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
+                                    new int[]{FriendEntry.INT_STATUS_DEFAULT,
+                                            FriendEntry.INT_STATUS_FRIEND});
+                        adapter.clear();
+                        adapter.addAll(friendsList);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
 
         Photobook.setFriendsFragmentTab(this);
 
