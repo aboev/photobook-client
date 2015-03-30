@@ -73,15 +73,15 @@ public class FriendsFragmentTab extends Fragment {
         listView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
-                new String[]{"Contacts", "Friends"});
+                new String[]{"Friends", "Contacts"});
         bookmarkAdapter.setOnItemSelectedListener(
                 new BookmarkAdapter.onItemSelectedListener() {
                     @Override
                     public void onItemSelected(int position) {
-                        if (position == 0)
+                        if (position == 1)
                             friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                                     new int[]{FriendEntry.INT_STATUS_NULL});
-                        else if (position == 1)
+                        else if (position == 0)
                             friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                                     new int[]{FriendEntry.INT_STATUS_DEFAULT,
                                             FriendEntry.INT_STATUS_FRIEND});
