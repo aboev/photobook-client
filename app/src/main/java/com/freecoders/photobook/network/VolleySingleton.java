@@ -6,7 +6,16 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+
+import test.ServerInterfaceTest;
 
 public class VolleySingleton {
 	private static VolleySingleton mInstance;
@@ -47,7 +56,7 @@ public class VolleySingleton {
         @Override
         protected HttpURLConnection createConnection(URL url) throws IOException {
             Proxy proxy = new Proxy(Proxy.Type.HTTP,
-                    InetSocketAddress.createUnresolved(ServerInterfaceTest.strProxyHost, 
+                    InetSocketAddress.createUnresolved(ServerInterfaceTest.strProxyHost,
                             ServerInterfaceTest.intProxyPort));
             HttpURLConnection returnThis = (HttpURLConnection) url
                     .openConnection(proxy);
