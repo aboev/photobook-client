@@ -1,6 +1,7 @@
 package com.freecoders.photobook.classes;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.freecoders.photobook.utils.ImageUtils;
 public class GestureListener extends GestureDetector.SimpleOnGestureListener
         implements View.OnTouchListener
 {
+    private static String LOG_TAG = "GestureListener";
+
     Context context;
     GestureDetector mGestureDetector;
     ViewGroup mViewGroup;
@@ -65,7 +68,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
                 return true;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
-            if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && (params.height > 0)) {
+            if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && boolOpen) {
                 closeBookmarkTab();
                 return true;
             } else if (params.height >= Constants.BOOKMARKS_HEIGHT / 2) {
