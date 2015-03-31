@@ -29,7 +29,9 @@ import com.freecoders.photobook.classes.BookmarkAdapter;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
+import com.freecoders.photobook.db.ImagesDataSource;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.network.ServerInterface;
@@ -47,10 +49,12 @@ import java.util.HashMap;
 
 @SuppressLint("NewApi") 
 public class GalleryFragmentTab extends Fragment {
+    private static String LOG_TAG = "GalleryFragmentTab";
 
     private ArrayList<ImageEntry> mImageList;
     private ImageUploader mImageLoader;
     private GalleryAdapter mAdapter;
+    private StaggeredGridView mGridView;
     private GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
@@ -60,27 +64,45 @@ public class GalleryFragmentTab extends Fragment {
     public GalleryFragmentTab(){
         mImageLoader = new ImageUploader();
         mImageList = new ArrayList<ImageEntry>();
-        new GalleryLoaderClass().execute();
+        new GalleryLoaderClass(null, null).execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
-        StaggeredGridView gridView = (StaggeredGridView) rootView.findViewById(R.id.gridView);
+        mGridView = (StaggeredGridView) rootView.findViewById(R.id.gridView);
         horizontalScrollView = (HorizontalScrollView)
                 rootView.findViewById(R.id.bookmarkScrollView);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
                 mImageList);
-        gridView.setAdapter(mAdapter);
-        gridView.setOnItemClickListener(OnItemClickListener);
-        gridView.setOnItemLongClickListener(new ImageLongClickListener());
-        gestureListener = new GestureListener(getActivity(), horizontalScrollView, gridView);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setOnItemClickListener(OnItemClickListener);
+        mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+        gestureListener = new GestureListener(getActivity(), horizontalScrollView, mGridView);
         //gridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
-                new String[]{"Gallery", "My shares"});
+                new String[]{"Gallery", "Folders", "My shares"});
+        bookmarkAdapter.setOnItemSelectedListener(
+            new BookmarkAdapter.onItemSelectedListener() {
+                @Override
+                public void onItemSelected(int position) {
+                    if (position == 0) {
+                        new GalleryLoaderClass(null, null).execute();
+                        mGridView.setOnItemClickListener(OnItemClickListener);
+                        mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+                    } else if (position == 1) {
+                        showBuckets();
+                    } else if (position == 2) {
+                        new GalleryLoaderClass(null, ImageEntry.INT_STATUS_SHARED).execute();
+                        mGridView.setOnItemClickListener(OnItemClickListener);
+                        mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+                    }
+                }
+            });
+
         setRetainInstance(true);
 
         Photobook.setGalleryFragmentTab(this);
@@ -94,9 +116,19 @@ public class GalleryFragmentTab extends Fragment {
     }
 
     public class GalleryLoaderClass extends AsyncTask<String, Void, Boolean> {
+        private String strBucketId = null;
+        private Integer intImageStatus = null;
+
+        public GalleryLoaderClass(String strBucketId, Integer intImageStatus) {
+            this.strBucketId = strBucketId;
+            this.intImageStatus = intImageStatus;
+        }
+
         @Override
         protected Boolean doInBackground(String... params) {
-            ArrayList<ImageEntry> imgList = Photobook.getImagesDataSource().getAllImages(null);
+            ArrayList<ImageEntry> imgList = Photobook.
+                    getImagesDataSource().getImageList(strBucketId, intImageStatus);
+            mImageList.clear();
             mImageList.addAll(imgList);
             Photobook.getMainActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -174,7 +206,7 @@ public class GalleryFragmentTab extends Fragment {
 
                 Bitmap b = ImageUtils.decodeSampledBitmap(image.getOrigUri());
                 int orientation = ImageUtils.getExifOrientation(image.getOrigUri());
-                Log.d(Constants.LOG_TAG, "Orientation1 = " + orientation + " for image " + image.getOrigUri()
+                Log.d(LOG_TAG, "Orientation1 = " + orientation + " for image " + image.getOrigUri()
                         +" "+image.getThumbUri());
                 if ((orientation == 90) || (orientation == 270)) {
                     Matrix matrix = new Matrix();
@@ -210,12 +242,12 @@ public class GalleryFragmentTab extends Fragment {
                         destThumbFile.getParentFile().mkdirs();
                         if (FileUtils.copyFileFromUri(new File(strOrigUri), destOrigFile)) {
                             mImageList.get(pos).setOrigUri(destOrigFile.toString());
-                            Log.d(Constants.LOG_TAG, "Saved local image to " +
+                            Log.d(LOG_TAG, "Saved local image to " +
                                     destOrigFile.toString());
                         }
                         if (FileUtils.copyFileFromUri(new File(strThumbUri), destThumbFile)) {
                             mImageList.get(pos).setThumbUri(destThumbFile.toString());
-                            Log.d(Constants.LOG_TAG, "Saved local thumbnail to " +
+                            Log.d(LOG_TAG, "Saved local thumbnail to " +
                                     destThumbFile.toString());
                         }
                         Photobook.getImagesDataSource().saveImage(mImageList.get(pos));
@@ -239,52 +271,69 @@ public class GalleryFragmentTab extends Fragment {
         }
     };
 
+    public void showBuckets () {
+        ArrayList<ImagesDataSource.BucketEntry> buckets =
+                Photobook.getImagesDataSource().getBuckets();
+        ArrayList<ImageEntry> bucketThumbs = new ArrayList<ImageEntry>();
+        for (int i = 0; i < buckets.size(); i++) {
+            ImageEntry bucketThumb = new ImageEntry();
+            bucketThumb.setTitle(buckets.get(i).strBucketName);
+            bucketThumb.setThumbUri(buckets.get(i).strTitleImageUrl);
+            bucketThumb.setOrigUri(buckets.get(i).strTitleImageUrl);
+            bucketThumb.setBucketId(buckets.get(i).strBucketId);
+            bucketThumbs.add(bucketThumb);
+        }
+        mAdapter.clear();
+        mAdapter.addAll(bucketThumbs);
+        mAdapter.notifyDataSetChanged();
+        mGridView.setOnItemClickListener(OnBucketClickListener);
+    }
+
+    AdapterView.OnItemClickListener OnBucketClickListener
+            = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+            ImageEntry bucket = mAdapter.getItem(position);
+            new GalleryLoaderClass(bucket.getBucketId(), null).execute();
+            mGridView.setOnItemClickListener(OnItemClickListener);
+            mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+        }
+    };
+
     public void syncGallery(){
-        ServerInterface.getImageDetailsRequest(
-                Photobook.getMainActivity(),
-                null,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Gson gson = new Gson();
-                            JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
-                            if ((strRes.equals(Constants.RESPONSE_RESULT_OK)) && 
-                                    (resJson.has(Constants.RESPONSE_DATA))) {
-                                Type type = new TypeToken<HashMap<String, ImageJson>>() {}.
-                                        getType();
-                                HashMap<String, ImageJson> map = gson.fromJson(
-                                        resJson.get(Constants.RESPONSE_DATA).toString(), type);
-                                HashMap<String, ImageJson> uriMap =
-                                        new HashMap<String, ImageJson>();
-                                for (ImageJson image : map.values())
-                                    if ((image.local_uri != null) &&
-                                            !image.local_uri.isEmpty())
-                                        uriMap.put(image.local_uri.toLowerCase(), image);
-                                for (int i = 0; i < mImageList.size(); i++)
-                                    if (uriMap.containsKey(mImageList.get(i).
-                                            getOrigUri().toLowerCase()) &&
-                                            (mImageList.get(i).getStatus() ==
-                                                    ImageEntry.INT_STATUS_DEFAULT) &&
-                                            (uriMap.get(mImageList.get(i).
-                                                    getOrigUri().toLowerCase()).status ==
-                                                    1)) {
-                                        ImageJson remoteImage = uriMap.get(mImageList.get(i).
-                                                getOrigUri().toLowerCase());
-                                        mImageList.get(i).setStatus(ImageEntry.
-                                                INT_STATUS_SHARED);
-                                        mImageList.get(i).setServerId(remoteImage.image_id);
-                                        mImageList.get(i).setTitle(remoteImage.title);
-                                        Photobook.getImagesDataSource().saveImage(mImageList.
-                                                get(i));
-                                    }
-                                if (mAdapter != null) mAdapter.notifyDataSetChanged();
-                            }
-                        } catch (Exception e) {
+        ServerInterface.getImageDetailsRequestJson(
+            Photobook.getMainActivity(),
+            null,
+            new Response.Listener<HashMap<String, ImageJson>>() {
+                @Override
+                public void onResponse(HashMap<String, ImageJson> response) {
+                    HashMap<String, ImageJson> uriMap =
+                            new HashMap<String, ImageJson>();
+                    for (ImageJson image : response.values())
+                        if ((image.local_uri != null) &&
+                                !image.local_uri.isEmpty())
+                            uriMap.put(image.local_uri.toLowerCase(), image);
+                    for (int i = 0; i < mImageList.size(); i++)
+                        if (uriMap.containsKey(mImageList.get(i).
+                                getOrigUri().toLowerCase()) &&
+                                (mImageList.get(i).getStatus() ==
+                                        ImageEntry.INT_STATUS_DEFAULT) &&
+                                (uriMap.get(mImageList.get(i).
+                                        getOrigUri().toLowerCase()).status ==
+                                        1)) {
+                            ImageJson remoteImage = uriMap.get(mImageList.get(i).
+                                    getOrigUri().toLowerCase());
+                            mImageList.get(i).setStatus(ImageEntry.
+                                    INT_STATUS_SHARED);
+                            mImageList.get(i).setServerId(remoteImage.image_id);
+                            mImageList.get(i).setTitle(remoteImage.title);
+                            Photobook.getImagesDataSource().saveImage(mImageList.
+                                    get(i));
                         }
-                    }
-                }, null);
+                    if (mAdapter != null) mAdapter.notifyDataSetChanged();
+                }
+            }, null);
     }
 
     public void syncComments(){
