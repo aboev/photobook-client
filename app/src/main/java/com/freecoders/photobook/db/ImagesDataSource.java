@@ -266,7 +266,7 @@ public class ImagesDataSource {
             b.strBucketName = imageCursor.getString(bucketColumnIndex);
             b.strTitleImageUrl = imageCursor.getString(dataColumnIndex);
             b.strBucketId = imageCursor.getString(bucketIdColumnIndex);
-
+            res.add(b);
         }
         imageCursor.close();
         return res;
