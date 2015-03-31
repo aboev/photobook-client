@@ -42,4 +42,16 @@ public class VolleySingleton {
         req.setRetryPolicy(policy);
         getRequestQueue().add(req);
     }
+
+    public class ProxiedHurlStack extends HurlStack {
+        @Override
+        protected HttpURLConnection createConnection(URL url) throws IOException {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP,
+                    InetSocketAddress.createUnresolved(ServerInterfaceTest.strProxyHost, 
+                            ServerInterfaceTest.intProxyPort));
+            HttpURLConnection returnThis = (HttpURLConnection) url
+                    .openConnection(proxy);
+            return returnThis;
+        }
+    }
 }
