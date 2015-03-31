@@ -60,9 +60,9 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
             if (checkTopPosition() && (dY > 0) && (!boolOpen)) {
                 setBookmarkHeight(Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT));
                 return true;
-            } else if ((dY < 0) && (boolOpen)) {
-                closeBookmarkTab();
-                return false;
+            } else if (checkTopPosition() && (dY < 0) && boolOpen) {
+                setBookmarkHeight(Math.max(Constants.BOOKMARKS_HEIGHT + (int) dY / 2, 0));
+                return true;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
             if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && (params.height > 0)) {
