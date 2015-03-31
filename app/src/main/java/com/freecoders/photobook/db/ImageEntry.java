@@ -4,7 +4,7 @@ package com.freecoders.photobook.db;
  * Created by Alex on 2014-12-03.
  */
 public class ImageEntry {
-    private long id;
+    private long id = -1;
     private String MediaStoreID = "";
     private String OrigUri = "";
     private String ThumbUri = "";
