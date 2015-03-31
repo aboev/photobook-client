@@ -142,6 +142,16 @@ public class MainActivityHandler {
         VolleySingleton.getInstance(activity).addToRequestQueue(avatarRequest);
     }
 
+    public void checkLatestVersion () {
+        ServerInterface.getServerInfoRequest(activity,
+            new Response.Listener<HashMap<String,String>>() {
+                @Override
+                public void onResponse(HashMap<String,String> response) {
+
+                }
+            }, null);
+    }
+
     public void registerPushID() {
         new AsyncTask() {
             @Override
