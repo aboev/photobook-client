@@ -190,9 +190,11 @@ public class ImagesDataSource {
             imageEntry.setBucketId(strBucketId);
             imageEntry.setThumbUri(strThumbUri);
             res.add(imageEntry);
+            cursorThumb.close();
             //Log.d(LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
             //        "origUri = " + strOrigUri + ", thumbUri = " + strThumbUri);
         }
+        cursorImg.close();
         return res;
     }
 
@@ -266,6 +268,7 @@ public class ImagesDataSource {
             b.strBucketId = imageCursor.getString(bucketIdColumnIndex);
 
         }
+        imageCursor.close();
         return res;
     }
 
