@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -38,8 +39,8 @@ import static com.freecoders.photobook.utils.FileUtils.getRealPathFromURI;
  * Created by Alex on 2014-12-03.
  */
 public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
+    private static String LOG_TAG = "GalleryAdapter";    
 
-    private int mLastPosition = -1;
     private int imageWidth = ImageUtils.dpToPx(100);
     private int maxImageHeight = ImageUtils.dpToPx(1000);
     private MemoryLruCache cache;
@@ -83,53 +84,27 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
-            if (holder.position == position
-                    && holder.status == imageEntry.getStatus()
-                    && holder.textView.getText().equals(imageEntry.getTitle()))
+            if (checkHolderFresh(holder, position))
                 return convertView;
         }
 
-        holder.position = position;
-        holder.imgView.setImageResource(android.R.color.transparent);
-        int orientation = ImageUtils.getExifOrientation(imageEntry.getOrigUri());
-        new ImageLoadTask(holder, position, orientation,
+        // Prepare image frame size, but set invisible until image is loaded
+        initImageFrame(holder, position);
+        if (holder.position != position) {
+            // ViewHolder contains stale image - need to refresh
+            holder.position = position;
+            holder.imgView.setImageResource(android.R.color.transparent);
+            int orientation = ImageUtils.getExifOrientation(imageEntry.getOrigUri());
+            new ImageLoadTask(holder, position, orientation,
                 false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            // ViewHolder contains actual image - only need to make image frame visible
+            holder.position = position;
+            populateImageFrame(holder, position);
+        }
+
         //if ((position + 10) < getCount() )
         //    new ImageLoadTask(holder, position + 10, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        holder.shareImgView.setVisibility(View.GONE);
-        holder.textView.setText(imageEntry.getTitle());
-        holder.status = imageEntry.getStatus();
-        if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
-            holder.progressBar.setVisibility(View.GONE);
-            holder.textView.setVisibility(View.INVISIBLE);
-            holder.textView.setGravity(Gravity.CENTER);
-        } else if (imageEntry.getStatus() ==  imageEntry.INT_STATUS_SHARING){
-            holder.progressBar.setVisibility(View.VISIBLE);
-            holder.textView.setVisibility(View.INVISIBLE);
-            holder.textView.setGravity(Gravity.LEFT);
-        } else {
-            holder.progressBar.setVisibility(View.GONE);
-            holder.textView.setVisibility(View.GONE);
-        }
-        if (Photobook.getPreferences().unreadImagesMap.containsKey(imageEntry.getServerId()) &&
-                Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId())>0) {
-            holder.newCommentImgView.setVisibility(View.INVISIBLE);
-            holder.newCommentTextView.setVisibility(View.INVISIBLE);
-            int intCommentCount = Photobook.getPreferences().
-                    unreadImagesMap.get(imageEntry.getServerId());
-            if (intCommentCount < 10)
-                holder.newCommentTextView.setText(
-                    Photobook.getPreferences().unreadImagesMap.get(imageEntry.getServerId()).
-                            toString());
-            else
-                holder.newCommentTextView.setText("<9");
-        } else {
-            holder.newCommentImgView.setVisibility(View.GONE);
-            holder.newCommentTextView.setVisibility(View.GONE);
-        }
-
-        mLastPosition = position;
 
         return rowView;
     }
@@ -151,7 +126,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             mImgUri = mImageEntry.getThumbUri();
             if (mImageEntry.getThumbUri().isEmpty() == true) {
                 mImgUri = mImageEntry.getOrigUri();
-                Log.d(Constants.LOG_TAG, "Not thumb for " + mImgUri);
+                Log.d(LOG_TAG, "No thumb for " + mImgUri);
             }
             mBoolPrefetch = boolPrefetch;
 
@@ -160,7 +135,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(mImgUri, options);
                 double ratio;
-                Log.d(Constants.LOG_TAG, "Orientation = " + orientation + " for image " + mImgUri );
+                Log.d(LOG_TAG, "Orientation = " + orientation + " for image " + mImgUri );
                 if ((orientation == 90) || (orientation == 270))
                     ratio = options.outWidth * 1.0 / options.outHeight;
                 else
@@ -172,6 +147,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         protected Boolean doInBackground(Integer... position) {
             Bitmap b = null;
             if ((mBoolPrefetch == true) || (mViewHolder.position == mPosition)) {
+                // Prefetch image or load current image
                 b = cache.getBitmap(mImgUri);
                 if (b == null) {
                     b = ImageUtils.decodeSampledBitmap(mImgUri,
@@ -181,6 +157,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 }
             }
             if ((mViewHolder.position == mPosition) && (mBoolPrefetch == false)) {
+                // Set rotated image and populate image frame
                 final Bitmap bitmap = b;
                 Photobook.getMainActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -193,26 +170,89 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                             mViewHolder.imgView.setImageBitmap(rotatedBitmap);
                         } else
                             mViewHolder.imgView.setImageBitmap(bitmap);
-                        if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
-                            mViewHolder.textView.setVisibility(View.VISIBLE);
-                        } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
-                            mViewHolder.textView.setText(R.string.edit_uploading_image);
-                            mViewHolder.textView.setVisibility(View.VISIBLE);
-                        } else {
-                            mViewHolder.shareImgView.setVisibility(View.VISIBLE);
-                            mViewHolder.textView.setVisibility(View.GONE);
-                        }
-                        if (Photobook.getPreferences().unreadImagesMap.containsKey(
-                                mImageEntry.getServerId()) &&
-                                Photobook.getPreferences().unreadImagesMap.get(
-                                mImageEntry.getServerId())>0) {
-                            mViewHolder.newCommentImgView.setVisibility(View.VISIBLE);
-                            mViewHolder.newCommentTextView.setVisibility(View.VISIBLE);
-                        }
                     }
                 });
+                populateImageFrame(mViewHolder, mPosition);
             }
             return true;
         }
+    }
+
+    private void initImageFrame(ViewHolder holder, int position) {
+        // Set the title, progress bar(for sharing in-progress), comment count, etc.
+        ImageEntry imageEntry = getItem(position);
+        holder.shareImgView.setVisibility(View.GONE);
+        holder.textView.setText(imageEntry.getTitle());
+        holder.status = imageEntry.getStatus();
+        if (imageEntry.getStatus() == imageEntry.INT_STATUS_SHARED) {
+            holder.progressBar.setVisibility(View.GONE);
+            holder.textView.setVisibility(View.INVISIBLE);
+            holder.textView.setGravity(Gravity.CENTER);
+        } else if (imageEntry.getStatus() ==  imageEntry.INT_STATUS_SHARING){
+            holder.progressBar.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.INVISIBLE);
+            holder.textView.setGravity(Gravity.LEFT);
+        } else {
+            holder.progressBar.setVisibility(View.GONE);
+            holder.textView.setVisibility(View.GONE);
+        }
+        // Check new comments count
+        String strCommentCount = getUnreadCommentCount(imageEntry.getServerId());
+        holder.newCommentTextView.setText(strCommentCount);
+        if (!strCommentCount.isEmpty()) {
+            holder.newCommentImgView.setVisibility(View.INVISIBLE);
+            holder.newCommentTextView.setVisibility(View.INVISIBLE);
+        } else {
+            holder.newCommentImgView.setVisibility(View.GONE);
+            holder.newCommentTextView.setVisibility(View.GONE);
+        }
+    }
+
+    private void populateImageFrame (ViewHolder holder, int position) {
+        // Adjust the visibility of title, progress bar, comment count, etc.
+        final ImageEntry mImageEntry = getItem(position);
+        final ViewHolder mViewHolder = holder;
+        Photobook.getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
+                    mViewHolder.textView.setVisibility(View.VISIBLE);
+                } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
+                    mViewHolder.textView.setText(R.string.edit_uploading_image);
+                    mViewHolder.textView.setVisibility(View.VISIBLE);
+                } else {
+                    mViewHolder.shareImgView.setVisibility(View.VISIBLE);
+                    mViewHolder.textView.setVisibility(View.GONE);
+                }
+                if (!mViewHolder.newCommentTextView.getText().toString().isEmpty()) {
+                    mViewHolder.newCommentImgView.setVisibility(View.VISIBLE);
+                    mViewHolder.newCommentTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private String getUnreadCommentCount (String strImageID) {
+        String strCount = "";
+        if (Photobook.getPreferences().unreadImagesMap.containsKey(strImageID) &&
+                Photobook.getPreferences().unreadImagesMap.get(strImageID)>0) {
+            int intCommentCount = Photobook.getPreferences().
+                    unreadImagesMap.get(strImageID);
+            if (intCommentCount < 10)
+                strCount = Photobook.getPreferences().unreadImagesMap.get(strImageID).toString();
+            else
+                strCount = ">9";
+        }
+        return strCount;
+    }
+
+    private Boolean checkHolderFresh (ViewHolder holder, int position){
+        ImageEntry image = getItem(position);
+        Boolean boolFresh = holder.textView.getText().toString().equals(image.getTitle())
+                && holder.position == position
+                && holder.newCommentTextView.getText().toString().equals(
+                    getUnreadCommentCount(image.getServerId()))
+                && holder.status == image.getStatus();
+        return boolFresh;
     }
 }
