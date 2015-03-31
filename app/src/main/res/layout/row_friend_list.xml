@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/imgAvatar"
         android:textSize="25sp"
-        android:gravity="center"
+        android:gravity="left"
         android:layout_margin="5dp"
         android:text="" />
 
