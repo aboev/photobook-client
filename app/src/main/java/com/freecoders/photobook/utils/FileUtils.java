@@ -21,6 +21,8 @@ import java.security.NoSuchAlgorithmException;
  * Created by Alex on 2014-11-22.
  */
 public class FileUtils {
+    private static String LOG_TAG = "FileUtils";
+
     public final static Boolean copyFileFromUri(File srcFile, File dstFile) {
         try {
             InputStream in = new FileInputStream(srcFile);
@@ -32,10 +34,10 @@ public class FileUtils {
             }
             in.close();
             out.close();
-            Log.d(Constants.LOG_TAG, "File copied to " + dstFile.getAbsolutePath());
+            Log.d(LOG_TAG, "File copied to " + dstFile.getAbsolutePath());
             return true;
         } catch (java.io.IOException e) {
-            Log.d(Constants.LOG_TAG, "File access error: " + e.getLocalizedMessage());
+            Log.d(LOG_TAG, "File access error: " + e.getLocalizedMessage());
             return false;
         }
     }
@@ -70,7 +72,7 @@ public class FileUtils {
             }
             return hexStr;
         } catch (NoSuchAlgorithmException e) {
-            Log.d(Constants.LOG_TAG, "Hash exception: " + e.getLocalizedMessage());
+            Log.d(LOG_TAG, "Hash exception: " + e.getLocalizedMessage());
             return "";
         }
     }
