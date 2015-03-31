@@ -29,12 +29,15 @@ public class FileUtils {
             OutputStream out = new FileOutputStream(dstFile);
             byte[] buf = new byte[1024];
             int len;
+            int size = 0;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
+                size += len;
             }
             in.close();
             out.close();
-            Log.d(LOG_TAG, "File copied to " + dstFile.getAbsolutePath());
+            Log.d(LOG_TAG, "File copied from " + srcFile + " to " + dstFile.getAbsolutePath() +
+                " size = " + size);
             return true;
         } catch (java.io.IOException e) {
             Log.d(LOG_TAG, "File access error: " + e.getLocalizedMessage());
