@@ -708,6 +708,52 @@ public class ServerInterface {
                 addToRequestQueue(getSMSCodeRequest);
     }
 
+    public static final void getServerInfoRequest (Context context,
+            final Response.Listener<HashMap<String, String>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put("Accept", "*/*");
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        Log.d(LOG_TAG, "Get server info request");
+        StringRequest getServerInfoRequest = new StringRequest(Request.Method.GET,
+            Constants.SERVER_URL+Constants.SERVER_PATH_INFO,
+            "", headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                            <HashMap<String, String>>>(){}.getType();
+                    try {
+                        ServerResponse<HashMap<String, String>> res =
+                                gson.fromJson(response, type);
+                        if ( res != null && res.isSuccess() && res.data != null
+                                && responseListener != null)
+                            responseListener.onResponse(res.data);
+                        else if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    } catch (Exception e) {
+                        if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if ((error != null) && (error.networkResponse != null)
+                        && (error.networkResponse.data != null))
+                    Log.d(LOG_TAG, "Error: " +
+                            new String(error.networkResponse.data));
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getServerInfoRequest);
+    }
+
     /**
      * Create hash map with the headers for http request
      * @param userId user id to be included to the headers
