@@ -28,6 +28,7 @@ public class Constants {
     public final static String SERVER_PATH_FEED = "/feed";
     public final static String SERVER_PATH_LIKE = "/like";
     public final static String SERVER_PATH_COMMENTS = "/comments";
+    public final static String SERVER_PATH_INFO = "/info";
 
     public final static String HEADER_USERID = "userid";
     public final static String HEADER_IMAGEID = "imageid";
@@ -55,6 +56,10 @@ public class Constants {
     public final static String KEY_URL = "url";
     public final static String KEY_IMAGE = "image";
     public final static String KEY_AUTHOR = "author";
+    public final static String KEY_SERVER_VERSION  = "version";
+    public final static String KEY_MIN_CLIENT_VERSION= "min_client";
+    public final static String KEY_LATEST_APK_URL = "latest_apk";
+    public final static String KEY_LATEST_APK_VER ="latest_ver";
 
     public final static String FILENAME_AVATAR = "avatar.jpg";
     public final static String APP_FOLDER = "photobook";
