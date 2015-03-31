@@ -66,6 +66,10 @@ public class ImagesDataSource {
     //        String ServerID, String Title, long Status) {return new ImageEntry();}
 
     public ImageEntry saveImage(ImageEntry imageEntry) {
+        if (imageEntry.getId() != -1) {
+            updateImage(imageEntry);
+            return imageEntry;
+        }
         ContentValues cv = new ContentValues();
 
         cv.put(dbHelper.COLUMN_MEDIASTORE_ID,imageEntry.getMediaStoreID());
@@ -103,14 +107,31 @@ public class ImagesDataSource {
         database.delete(dbHelper.TABLE_IMAGES,"_id = ?",new String[] {String.valueOf(imageEntry.getId())});
     }
 
+    public ImageEntry getImageByServerID(String strServerID) {
+        String selection = dbHelper.COLUMN_SERVER_ID + " = ?";
+        String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
+        Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
+                null, selection,new String[]{strServerID} ,
+                null, null, orderBy);
+
+        if (cursor == null) {
+            return null;
+        } else if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+
+        return cursorToImageEntry(cursor);
+    }
+
     //Implement requesting all shared images
-    public ArrayList<ImageEntry> getSharedImages(String strBucketId) {
+    public ArrayList<ImageEntry> getSharedImages(String strBucketId, Integer status) {
+        if (status == null) status = ImageEntry.INT_STATUS_SHARED;
+        String[] selectionArgs = new String[]{String.valueOf(status)};
         String selection = dbHelper.COLUMN_STATUS + " = ?";
-        String[] selectionArgs = new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED)};
         if (strBucketId != null) {
             selection = selection + " and " + dbHelper.COLUMN_BUCKET_ID + " = ?";
-            selectionArgs = new String[]{String.valueOf(ImageEntry.INT_STATUS_SHARED),
-                strBucketId};
+            selectionArgs = new String[]{String.valueOf(status), strBucketId};
         }
         String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
         Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
@@ -133,25 +154,8 @@ public class ImagesDataSource {
         return images;
     }
 
-    public ImageEntry getImageByServerID(String strServerID) {
-
-        String selection = dbHelper.COLUMN_SERVER_ID + " = ?";
-        String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
-        Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
-                null, selection,new String[]{strServerID} ,
-                null, null, orderBy);
-
-        if (cursor == null) {
-            return null;
-        } else if (!cursor.moveToFirst()) {
-            cursor.close();
-            return null;
-        }
-
-        return cursorToImageEntry(cursor);
-    }
-
-    public ArrayList<ImageEntry> getLocalImages(String strBucketID){
+    public ArrayList<ImageEntry> getLocalImages(String strBucketID, Integer status){
+        if (status != null) return new ArrayList<ImageEntry>();
         ArrayList<ImageEntry> res = new ArrayList<ImageEntry>();
         ContentResolver cr = mContext.getContentResolver();
         String orderBy = MediaStore.Images.Media._ID + " DESC";
@@ -192,9 +196,9 @@ public class ImagesDataSource {
         return res;
     }
 
-    public ArrayList<ImageEntry> getAllImages(String strBucketID) {
-        ArrayList<ImageEntry> resList = getSharedImages(strBucketID);
-        ArrayList<ImageEntry> localList = getLocalImages(strBucketID);
+    public ArrayList<ImageEntry> getImageList(String strBucketID, Integer status) {
+        ArrayList<ImageEntry> resList = getSharedImages(strBucketID, status);
+        ArrayList<ImageEntry> localList = getLocalImages(strBucketID, status);
         int pos = 0;
         for (int i = 0; i < localList.size(); i++) {
             while ((pos < resList.size()) && (localList.get(i).getMediaStoreID().
