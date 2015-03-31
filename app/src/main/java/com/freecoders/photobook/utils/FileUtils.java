@@ -24,6 +24,10 @@ public class FileUtils {
     private static String LOG_TAG = "FileUtils";
 
     public final static Boolean copyFileFromUri(File srcFile, File dstFile) {
+        if (srcFile.getAbsolutePath().equals(dstFile.getAbsolutePath())) {
+            Log.d(LOG_TAG, "Skipping file copy, src = dest");
+            return true;
+        }
         try {
             InputStream in = new FileInputStream(srcFile);
             OutputStream out = new FileOutputStream(dstFile);
@@ -36,8 +40,8 @@ public class FileUtils {
             }
             in.close();
             out.close();
-            Log.d(LOG_TAG, "File copied from " + srcFile + " to " + dstFile.getAbsolutePath() +
-                " size = " + size);
+            Log.d(LOG_TAG, "File copied from " + srcFile.getAbsolutePath() +
+                " to " + dstFile.getAbsolutePath() + " size = " + size);
             return true;
         } catch (java.io.IOException e) {
             Log.d(LOG_TAG, "File access error: " + e.getLocalizedMessage());
