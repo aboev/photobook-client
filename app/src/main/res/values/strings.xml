@@ -43,6 +43,8 @@
     <string name="dialog_uploading_avatar">Uploading avatar...</string>
     <string name="dialog_please_wait">Please wait</string>
     <string name="author_name_self">me</string>
+    <string name="alert_new_version_available">New version is available. Would you like to update?</string>
+    <string name="alert_update_required">You must update application to proceed. Would you like to update now?</string>
     <string name="alert_sms_title">SMS verification</string>
     <string name="alert_sms_message">Please enter 4-digit verification code that you received in SMS</string>
     <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
@@ -52,7 +54,7 @@
     <string name="toast_img_not_found">Image not found</string>
     <string name="image">Image</string>
     <string-array name="image_menu">
-        <item>Stop sharing this image</item>
+        <item>Unshare</item>
     </string-array>
     <string name="user_avatar">User avatar</string>
     <string name="user_name">Name:</string>
