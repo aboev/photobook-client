@@ -51,7 +51,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
     }
 
     public class ViewHolder {
-        int position;
+        int position = -1;
         DynamicHeightImageView imgView;
         ImageView shareImgView;
         TextView textView;
