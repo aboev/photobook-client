@@ -81,7 +81,7 @@ public class GalleryFragmentTab extends Fragment {
         mGridView.setOnItemClickListener(OnItemClickListener);
         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
         gestureListener = new GestureListener(getActivity(), horizontalScrollView, mGridView);
-        //gridView.setOnTouchListener(gestureListener);
+        //mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
                 new String[]{"Gallery", "Folders", "My shares"});
@@ -90,12 +90,18 @@ public class GalleryFragmentTab extends Fragment {
                 @Override
                 public void onItemSelected(int position) {
                     if (position == 0) {
+                        mAdapter.clear();
+                        mAdapter.notifyDataSetChanged();
                         new GalleryLoaderClass(null, null).execute();
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     } else if (position == 1) {
+                        mAdapter.clear();
+                        mAdapter.notifyDataSetChanged();
                         showBuckets();
                     } else if (position == 2) {
+                        mAdapter.clear();
+                        mAdapter.notifyDataSetChanged();
                         new GalleryLoaderClass(null, ImageEntry.INT_STATUS_SHARED).execute();
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
@@ -126,13 +132,13 @@ public class GalleryFragmentTab extends Fragment {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            ArrayList<ImageEntry> imgList = Photobook.
+            final ArrayList<ImageEntry> imgList = Photobook.
                     getImagesDataSource().getImageList(strBucketId, intImageStatus);
-            mImageList.clear();
-            mImageList.addAll(imgList);
             Photobook.getMainActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mImageList.clear();
+                    mImageList.addAll(imgList);
                     if (mAdapter != null) mAdapter.notifyDataSetChanged();
                 }
             });
