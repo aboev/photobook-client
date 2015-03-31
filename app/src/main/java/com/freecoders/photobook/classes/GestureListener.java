@@ -22,6 +22,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     ViewGroup mViewGroup;
     AbsListView mAbsListView;
 
+    private Boolean boolOpen = false;
+    private Boolean boolPullingDown = false;
+    private Boolean boolPullingUp = false;
+
     private float startY = 0;
 
     public GestureListener(Context context, ViewGroup viewGroup, AbsListView absListView) {
@@ -29,6 +33,9 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         this.mViewGroup = viewGroup;
         this.mAbsListView = absListView;
         this.mGestureDetector = new GestureDetector(context, this);
+        ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
+        this.boolOpen = params.height > 0;
+
     }
 
     @Override
@@ -46,38 +53,56 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View v, MotionEvent event) {
         ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            startY = event.getY();
-            if (checkTopPosition() && (mAbsListView.getFirstVisiblePosition() == 0)) return true;
+            startY = event.getRawY();
+            if (checkTopPosition()) return true;
         } else if ((event.getAction() == MotionEvent.ACTION_MOVE) ) {
-            float dY = event.getY() - startY + params.height;
-            if (checkTopPosition() && (mAbsListView.getFirstVisiblePosition() == 0) && (dY > 0)) {
-                params.height = Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT);
-                mViewGroup.setLayoutParams(params);
+            float dY = event.getRawY() - startY;
+            if (checkTopPosition() && (dY > 0) && (!boolOpen)) {
+                setBookmarkHeight(Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT));
                 return true;
-            } else if ((dY < 0) && (params.height > 0)) {
-                params.height = 0;
-                mViewGroup.setLayoutParams(params);
+            } else if ((dY < 0) && (boolOpen)) {
+                closeBookmarkTab();
                 return false;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
             if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && (params.height > 0)) {
-                params.height = 0;
-                mViewGroup.setLayoutParams(params);
+                closeBookmarkTab();
                 return true;
             } else if (params.height >= Constants.BOOKMARKS_HEIGHT / 2) {
-                params.height = Constants.BOOKMARKS_HEIGHT;
-                mViewGroup.setLayoutParams(params);
+                openBookmarkTab();
                 return true;
             }
-
         }
         return mGestureDetector.onTouchEvent(event);
     }
 
-    private Boolean checkTopPosition(){
+    private Boolean checkTopPosition (){
         if (mAbsListView instanceof StaggeredGridView)
-            return ((StaggeredGridView) mAbsListView).getDistanceToTop() == 0;
+            return ((((StaggeredGridView) mAbsListView).getDistanceToTop() == 0)
+                    && (mAbsListView.getFirstVisiblePosition() == 0));
         else
-            return mAbsListView.getScrollY() == 0;
+            return ((mAbsListView.getScrollY() == 0)
+                    && (mAbsListView.getFirstVisiblePosition() == 0));
+    }
+
+    private void setPullDirection (Boolean boolDown) {
+        boolPullingDown = boolDown;
+        boolPullingUp = !boolDown;
+    }
+
+    private void closeBookmarkTab () {
+        setBookmarkHeight(0);
+        boolOpen = false;
+    }
+
+    private void openBookmarkTab () {
+        setBookmarkHeight(Constants.BOOKMARKS_HEIGHT);
+        boolOpen = true;
+    }
+
+    private void setBookmarkHeight (int height) {
+        ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
+        params.height = height;
+        mViewGroup.setLayoutParams(params);
     }
 }
