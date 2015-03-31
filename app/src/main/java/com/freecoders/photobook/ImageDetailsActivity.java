@@ -258,42 +258,28 @@ public class ImageDetailsActivity extends ActionBarActivity {
 
             mButtonLikeTextView.setText(R.string.btn_like);
 
-            ServerInterface.getImageDetailsRequest(Photobook.getImageDetailsActivity(),
-                    mGalleryImage.getServerId(),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                Gson gson = new Gson();
-                                JSONObject resJson = new JSONObject(response);
-                                String strRes = resJson.getString(Constants.RESPONSE_RESULT);
-                                if ((strRes.equals(Constants.RESPONSE_RESULT_OK)) &&
-                                        (resJson.has(Constants.RESPONSE_DATA))) {
-                                    Type type = new TypeToken<HashMap<String, ImageJson>>() {}.
-                                            getType();
-                                    HashMap<String, ImageJson> map = gson.fromJson(
-                                            resJson.get(Constants.RESPONSE_DATA).toString(), type);
-                                    if (map.containsKey(mGalleryImage.getServerId())) {
-                                        ImageJson image = map.get(mGalleryImage.getServerId());
-                                        if (image.likes != null) {
-                                            for (String id : image.likes)
-                                                if (id.equals(Photobook.getPreferences().intPublicID.
-                                                        toString())) {
-                                                    mButtonLikeTextView.setText(R.string.btn_unlike);
-                                                    boolImageLiked = true;
-                                                    break;
-                                                }
-                                            mLikeCountTextView.setText(
-                                                    String.valueOf(image.likes.length));
-                                            likes = image.likes;
-                                        }
+            ServerInterface.getImageDetailsRequestJson(Photobook.getImageDetailsActivity(),
+                mGalleryImage.getServerId(),
+                new Response.Listener<HashMap<String, ImageJson>>() {
+                    @Override
+                    public void onResponse(HashMap<String, ImageJson> response) {
+                        if (response.containsKey(mGalleryImage.getServerId())) {
+                            ImageJson image = response.get(mGalleryImage.getServerId());
+                            if (image.likes != null) {
+                                for (String id : image.likes)
+                                    if (id.equals(Photobook.getPreferences().intPublicID.
+                                            toString())) {
+                                        mButtonLikeTextView.setText(R.string.btn_unlike);
+                                        boolImageLiked = true;
+                                        break;
                                     }
-
-                                }
-                            } catch (Exception e) {
+                                mLikeCountTextView.setText(
+                                        String.valueOf(image.likes.length));
+                                likes = image.likes;
                             }
                         }
-                    }, null);
+                    }
+                }, null);
         }
 
         mButtonLike.setOnClickListener(new View.OnClickListener() {
@@ -554,4 +540,3 @@ public class ImageDetailsActivity extends ActionBarActivity {
     }
 
         }
-
