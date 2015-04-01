@@ -166,7 +166,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
                 emailCursor.close();
             }
         }
-
+        cur.close();
         return res;
     }
 
