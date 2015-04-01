@@ -1,19 +1,31 @@
 package com.freecoders.photobook.utils;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.freecoders.photobook.R;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -81,6 +93,75 @@ public class FileUtils {
         } catch (NoSuchAlgorithmException e) {
             Log.d(LOG_TAG, "Hash exception: " + e.getLocalizedMessage());
             return "";
+        }
+    }
+
+    public final static class DownloadTask extends AsyncTask<String,Integer,Long> {
+        String strURL = "";
+        String strLocalFilename = "";
+        CallbackInterface onResponse;
+        ProgressDialog mProgressDialog = new ProgressDialog(Photobook.getMainActivity());
+
+        public DownloadTask (String strURL, String strLocalFilename,
+                             CallbackInterface onResponse) {
+            this.strURL = strURL;
+            this.strLocalFilename = strLocalFilename;
+            this.onResponse = onResponse;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.setMessage(Photobook.getMainActivity().
+                    getResources().getString(R.string.dialog_downloading));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax(100);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.show();
+        }
+        @Override
+        protected Long doInBackground(String... arg) {
+            int count;
+            try {
+                URL url = new URL(strURL);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                String targetFileName =
+                        strURL.substring(strURL.lastIndexOf('/')+1, strURL.length() );
+                int fileLength = connection.getContentLength();
+                if (strLocalFilename == null || strLocalFilename.isEmpty())
+                    strLocalFilename = targetFileName;
+                File file = new File(Photobook.getMainActivity().getFilesDir(),
+                        Constants.APP_FOLDER +"/" + strLocalFilename);
+                if(!file.exists()) {
+                    file.getParentFile().mkdirs();
+                    file.createNewFile();
+                }
+                InputStream input = new BufferedInputStream(url.openStream());
+                OutputStream output = new FileOutputStream(file);
+                byte data[] = new byte[1024];
+                long total = 0;
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    publishProgress ((int)(total*100/fileLength));
+                    output.write(data, 0, count);
+                }
+                output.flush();
+                output.close();
+                input.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                mProgressDialog.dismiss();
+            }
+            return null;
+        }
+        protected void onProgressUpdate(Integer... progress) {
+            mProgressDialog.setProgress(progress[0]);
+            if(mProgressDialog.getProgress()==mProgressDialog.getMax()) {
+                mProgressDialog.dismiss();
+                onResponse.onResponse();
+            }
         }
     }
 }
