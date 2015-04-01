@@ -7,10 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.freecoders.photobook.CommentListAdapter;
-import com.freecoders.photobook.FriendsListAdapter;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.ServerResponse;
@@ -24,8 +22,6 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by Alex on 2014-11-27.
@@ -93,40 +89,16 @@ public class ServerInterface {
 
     }
 
-    public static final void addFriendRequest(final ArrayList<FriendEntry> friendList,
-        FriendsListAdapter adapter, int pos, Context context,
-        final String[] friendIds) {
-        Gson gson = new Gson();
+    public static final void addFriendRequest(Response.Listener<String> responseListener, Context context,
+                                                final String[] friendIds) {
         String userId = Photobook.getPreferences().strUserID;
         if (userId.isEmpty()) return;
         HashMap<String, String> headers = createHeaders(userId);
-        final int position = pos;
-        final FriendsListAdapter friendsListAdapter = adapter;
         Log.d(LOG_TAG, "Add friend request");
+        Gson gson = new Gson();
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
-                gson.toJson(friendIds), headers,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
-                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
-                                friendList.get(position).
-                                        setStatus(FriendEntry.INT_STATUS_FRIEND);
-                                friendsListAdapter.notifyDataSetChanged();
-                                int res = Photobook.getFriendsDataSource().updateFriend(
-                                        friendList.get(position));
-                                Log.d(LOG_TAG, "Updated " + res + "friend items");
-                            }
-                        } catch (JSONException e) {
-                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
-                        }
-                        Log.d(LOG_TAG, "Response: " + response);
-                    }
-                }, new Response.ErrorListener() {
-
+                gson.toJson(friendIds), headers, responseListener, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
@@ -136,8 +108,7 @@ public class ServerInterface {
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
-    public static final void removeFriendRequest(final ArrayList<FriendEntry> friendList,
-                                              FriendsListAdapter adapter, int pos, Context context,
+    public static final void removeFriendRequest(Response.Listener<String> responseListener, Context context,
                                               final String[] friendIds) {
         Gson gson = new Gson();
         String userId = Photobook.getPreferences().strUserID;
@@ -150,37 +121,16 @@ public class ServerInterface {
         }
         HashMap<String, String> headers = createHeaders(userId);
         headers.put(Constants.KEY_ID, idList);
-        final int position = pos;
-        final FriendsListAdapter friendsListAdapter = adapter;
         Log.d(LOG_TAG, "Remove friend request");
         StringRequest request = new StringRequest(Request.Method.DELETE,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
-                gson.toJson(friendIds), headers,
-                new Response.Listener<String>() {
+                gson.toJson(friendIds), headers, responseListener,
+                new Response.ErrorListener() {
                     @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject resJson = new JSONObject(response);
-                            String strRes = resJson.getString(Constants.RESPONSE_RESULT);
-                            if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
-                                friendList.get(position).
-                                        setStatus(FriendEntry.INT_STATUS_DEFAULT);
-                                friendsListAdapter.notifyDataSetChanged();
-                                Photobook.getFriendsDataSource().updateFriend(
-                                        friendList.get(position));
-                            }
-                        } catch (JSONException e) {
-                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
-                        }
-                        Log.d(LOG_TAG, "Response: " + response);
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
                     }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
-            }
-        }
+                }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }

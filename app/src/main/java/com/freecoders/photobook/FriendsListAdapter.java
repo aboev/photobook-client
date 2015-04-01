@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Constants;
@@ -23,15 +23,16 @@ import com.freecoders.photobook.utils.MemoryLruCache;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by Alex on 2014-11-28.
  */
 public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
-
+    private static String LOG_TAG = "FriendsListAdapter";
     int resource;
     String response;
     Context context;
@@ -62,12 +63,11 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(final int position, View convertView, ViewGroup parent)
     {
-        LinearLayout view;
         FriendEntry profile = getItem(position);
         View rowView = convertView;
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if(rowView == null) {
             String inflater = Context.LAYOUT_INFLATER_SERVICE;
@@ -96,13 +96,11 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
 
         if (profile.getStatus() == FriendEntry.INT_STATUS_FRIEND) {
             holder.followButton.setText(R.string.btn_unfollow_text);
-            final int pos = position;
             final String strUserId = profile.getUserId();
-            final FriendsListAdapter adapter = this;
             View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ServerInterface.removeFriendRequest(mFriendList, adapter, pos,
+                        ServerInterface.removeFriendRequest(createFollowChangeResponse(false, position),
                                 Photobook.getMainActivity(), new String[]{strUserId});
                     }
             };
@@ -116,7 +114,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ServerInterface.addFriendRequest(mFriendList, adapter, pos,
+                        ServerInterface.addFriendRequest(createFollowChangeResponse(true, position),
                                 Photobook.getMainActivity(), new String[]{strUserId});
                     }
                 };
@@ -125,6 +123,27 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         }
 
         return rowView;
+    }
+
+    private Response.Listener<String> createFollowChangeResponse(final boolean followRequest, final int position) {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject resJson = new JSONObject(response);
+                    String strRes = resJson.getString(Constants.RESPONSE_RESULT);
+                    if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
+                        mFriendList.get(position).setStatus(
+                                followRequest? FriendEntry.INT_STATUS_FRIEND : FriendEntry.INT_STATUS_DEFAULT);
+                        notifyDataSetChanged();
+                        Photobook.getFriendsDataSource().updateFriend(mFriendList.get(position));
+                    }
+                } catch (JSONException e) {
+                    Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
+                }
+                Log.d(LOG_TAG, "Response: " + response);
+            }
+        };
     }
 
     private class ImageListener implements ImageLoader.ImageListener {

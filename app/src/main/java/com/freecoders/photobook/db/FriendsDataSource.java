@@ -5,12 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import com.freecoders.photobook.common.Constants;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Alex on 2014-11-27.
@@ -68,25 +64,28 @@ public class FriendsDataSource {
         database.delete(dbHelper.TABLE_FRIENDS,"_id = ?",new String[] {String.valueOf(friendEntry.getId())});
     }
 
-    public FriendEntry getFriendByContactKey(String ContactKey) {
-        //Cursor c = database.query(dbHelper.TABLE_FRIENDS, null, null, null, null, null, null);
-        //String selection = dbHelper.COLUMN_CONTACT_KEY + " = ?";
-        String selection = dbHelper.COLUMN_CONTACT_KEY + " = ?";
+    private FriendEntry getFriendByColumnValue(String column, String value) {
+        String selection = column + " = ?";
 
         Cursor cursor = database.query(dbHelper.TABLE_FRIENDS,
-                null, selection,new String[]{ContactKey} , null, null, null);
+                null, selection, new String[]{value} , null, null, null);
 
-        //cursor.moveToFirst();
-        if (cursor == null) {
-            return null;
-        } else if (!cursor.moveToFirst()) {
+        if (!cursor.moveToFirst()) {
             cursor.close();
             return null;
         }
-        //Get FriendEntry using ContactKey
+
         FriendEntry friend  = cursorToFriendEntry(cursor);
         cursor.close();
         return friend;
+    }
+
+    public FriendEntry getFriendByUserId(String userId) {
+        return getFriendByColumnValue(dbHelper.COLUMN_USER_ID, userId);
+    }
+
+    public FriendEntry getFriendByContactKey(String contactKey) {
+        return getFriendByColumnValue(dbHelper.COLUMN_CONTACT_KEY, contactKey);
     }
 
     public ArrayList<FriendEntry> getFriendsByStatus(int StatusSet[]) {
