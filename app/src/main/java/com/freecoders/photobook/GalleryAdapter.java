@@ -140,7 +140,10 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                     ratio = options.outWidth * 1.0 / options.outHeight;
                 else
                     ratio = options.outHeight * 1.0 / options.outWidth;
-                mViewHolder.imgView.setHeightRatio(ratio);
+                if (mImageEntry.getRatio() != -1)
+                    mViewHolder.imgView.setHeightRatio(mImageEntry.getRatio());
+                else
+                    mViewHolder.imgView.setHeightRatio(ratio);
             }
         }
 
