@@ -60,4 +60,13 @@
     <string name="user_name">Name:</string>
     <string name="user_phone">Phone:</string>
     <string name="user_email">E-mail:</string>
+    <string-array name="contacts_bookmark_items">
+        <item>Friends</item>
+        <item>Contacts</item>
+    </string-array>
+    <string-array name="gallery_bookmark_items">
+        <item>Gallery</item>
+        <item>Folders</item>
+        <item>My shares</item>
+    </string-array>
 </resources>
