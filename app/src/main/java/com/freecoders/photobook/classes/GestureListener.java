@@ -40,7 +40,6 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         this.mGestureDetector = new GestureDetector(context, this);
         ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
         this.boolOpen = params.height > 0;
-
     }
 
     @Override
@@ -76,11 +75,9 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
             if ((params.height < Constants.BOOKMARKS_HEIGHT / 2)) {
                 closeBookmarkTab();
                 if (flingLen >= Constants.BOOKMARKS_HEIGHT) return true;
-                else mAbsListView.clearFocus();
             } else if ((params.height >= Constants.BOOKMARKS_HEIGHT / 2)) {
                 openBookmarkTab();
                 if (flingLen >= Constants.BOOKMARKS_HEIGHT) return true;
-                else mAbsListView.clearFocus();
             }
         }
         return mGestureDetector.onTouchEvent(event);
