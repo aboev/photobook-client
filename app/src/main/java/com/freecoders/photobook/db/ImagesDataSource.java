@@ -55,6 +55,7 @@ public class ImagesDataSource {
         bucketIdColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_BUCKET_ID);
         titleColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_TITLE);
         statusColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_STATUS);
+        cursor.close();
     }
 
     public void close() {
@@ -120,8 +121,9 @@ public class ImagesDataSource {
             cursor.close();
             return null;
         }
-
-        return cursorToImageEntry(cursor);
+        ImageEntry image = cursorToImageEntry(cursor);
+        cursor.close();
+        return image;
     }
 
     //Implement requesting all shared images
@@ -150,7 +152,7 @@ public class ImagesDataSource {
         do{
             images.add(cursorToImageEntry(cursor));
         }while (cursor.moveToNext());
-
+        cursor.close();
         return images;
     }
 
