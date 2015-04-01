@@ -11,6 +11,7 @@ public class ImageEntry {
     private String ServerId = "";
     private String Title = "";
     private String BucketId = "";
+    private double ratio = -1;
     private int Status = INT_STATUS_DEFAULT;
     public final static int INT_STATUS_DEFAULT = 0;
     public final static int INT_STATUS_SHARING = 1;
@@ -78,5 +79,13 @@ public class ImageEntry {
 
     public void setBucketId(String BucketId) {
         this.BucketId = BucketId;
+    }
+
+    public double getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(double ratio) {
+        this.ratio = ratio;
     }
 }
