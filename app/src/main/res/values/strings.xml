@@ -15,8 +15,8 @@
     <string name="sms_hint">1234</string>
     <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
-    <string name="btn_follow_text">follow</string>
-    <string name="btn_unfollow_text">unfollow</string>
+    <string name="btn_follow_text">Follow</string>
+    <string name="btn_unfollow_text">Unfollow</string>
     <string name="btn_share_text">share</string>
     <string name="edit_title_hint">Fabulous morning</string>
     <string name="edit_loading">Loading feed</string>
