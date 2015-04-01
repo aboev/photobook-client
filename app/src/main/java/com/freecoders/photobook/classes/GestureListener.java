@@ -30,6 +30,8 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     private Boolean boolPullingUp = false;
 
     private float startY = 0;
+    private float startX = 0;
+    private int flingLen = 0;
 
     public GestureListener(Context context, ViewGroup viewGroup, AbsListView absListView) {
         this.context = context;
@@ -38,7 +40,6 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         this.mGestureDetector = new GestureDetector(context, this);
         ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
         this.boolOpen = params.height > 0;
-
     }
 
     @Override
@@ -56,27 +57,35 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View v, MotionEvent event) {
         ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            startX = event.getRawX();
             startY = event.getRawY();
-            if (checkTopPosition()) return true;
+            flingLen = 0;
         } else if ((event.getAction() == MotionEvent.ACTION_MOVE) ) {
             float dY = event.getRawY() - startY;
             if (checkTopPosition() && (dY > 0) && (!boolOpen)) {
                 setBookmarkHeight(Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT));
+                updateFlingLen(event.getRawX(), event.getRawY());
                 return true;
             } else if (checkTopPosition() && (dY < 0) && boolOpen) {
                 setBookmarkHeight(Math.max(Constants.BOOKMARKS_HEIGHT + (int) dY / 2, 0));
+                updateFlingLen(event.getRawX(), event.getRawY());
                 return true;
             }
         } else if ((event.getAction() == MotionEvent.ACTION_UP) ) {
-            if ((params.height < Constants.BOOKMARKS_HEIGHT / 2) && boolOpen) {
+            if ((params.height < Constants.BOOKMARKS_HEIGHT / 2)) {
                 closeBookmarkTab();
-                return true;
-            } else if (params.height >= Constants.BOOKMARKS_HEIGHT / 2) {
+                if (flingLen >= Constants.BOOKMARKS_HEIGHT) return true;
+            } else if ((params.height >= Constants.BOOKMARKS_HEIGHT / 2)) {
                 openBookmarkTab();
-                return true;
+                if (flingLen >= Constants.BOOKMARKS_HEIGHT) return true;
             }
         }
         return mGestureDetector.onTouchEvent(event);
+    }
+
+    private void updateFlingLen (double x, double y) {
+        int dist = (int) Math.sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY));
+        flingLen = Math.max(dist, flingLen);
     }
 
     private Boolean checkTopPosition (){
