@@ -43,7 +43,7 @@ public class FriendsDataSource {
         avatarColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_AVATAR);
         statusColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_STATUS);
         ContactKeyColIndex = cursor.getColumnIndex(SQLiteHelper.COLUMN_CONTACT_KEY);
-
+        cursor.close();
     }
 
     public void close() {
@@ -84,7 +84,9 @@ public class FriendsDataSource {
             return null;
         }
         //Get FriendEntry using ContactKey
-        return cursorToFriendEntry(cursor);
+        FriendEntry friend  = cursorToFriendEntry(cursor);
+        cursor.close();
+        return friend;
     }
 
     public ArrayList<FriendEntry> getFriendsByStatus(int StatusSet[]) {
@@ -115,7 +117,7 @@ public class FriendsDataSource {
             listFriends.add(cursorToFriendEntry(cursor));
         }while (cursor.moveToNext());
 
-
+        cursor.close();
         return listFriends;
     }
 
@@ -139,7 +141,7 @@ public class FriendsDataSource {
             listFriends.add(cursorToFriendEntry(cursor));
         }while (cursor.moveToNext());
 
-
+        cursor.close();
         return listFriends;
     }
 
