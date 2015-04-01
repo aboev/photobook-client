@@ -81,7 +81,7 @@ public class GalleryFragmentTab extends Fragment {
         mGridView.setOnItemClickListener(OnItemClickListener);
         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
         gestureListener = new GestureListener(getActivity(), horizontalScrollView, mGridView);
-        //mGridView.setOnTouchListener(gestureListener);
+        mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
                 getResources().getStringArray(R.array.gallery_bookmark_items));
@@ -304,6 +304,8 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
             ImageEntry bucket = mAdapter.getItem(position);
             new GalleryLoaderClass(bucket.getBucketId(), null).
                     executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
