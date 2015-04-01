@@ -3,12 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <HorizontalScrollView
+        android:id="@+id/bookmarkScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:padding="0dp">
+        <LinearLayout
+            android:id="@+id/bookmarkLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            android:layout_gravity="bottom"
+            android:padding="0dp"
+            android:background="@drawable/dropshadow_bottom">
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <com.etsy.android.grid.StaggeredGridView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/bookmarkScrollView"
         app:item_margin="2dp"/>
  
 </RelativeLayout>
