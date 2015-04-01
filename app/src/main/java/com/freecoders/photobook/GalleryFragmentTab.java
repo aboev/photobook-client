@@ -64,7 +64,7 @@ public class GalleryFragmentTab extends Fragment {
     public GalleryFragmentTab(){
         mImageLoader = new ImageUploader();
         mImageList = new ArrayList<ImageEntry>();
-        new GalleryLoaderClass(null, null).execute();
+        new GalleryLoaderClass(null, null).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class GalleryFragmentTab extends Fragment {
         //mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
-                new String[]{"Gallery", "Folders", "My shares"});
+                getResources().getStringArray(R.array.gallery_bookmark_items));
         bookmarkAdapter.setOnItemSelectedListener(
             new BookmarkAdapter.onItemSelectedListener() {
                 @Override
@@ -92,7 +92,8 @@ public class GalleryFragmentTab extends Fragment {
                     if (position == 0) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null, null).execute();
+                        new GalleryLoaderClass(null, null).
+                                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     } else if (position == 1) {
@@ -102,7 +103,8 @@ public class GalleryFragmentTab extends Fragment {
                     } else if (position == 2) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null, ImageEntry.INT_STATUS_SHARED).execute();
+                        new GalleryLoaderClass(null, ImageEntry.INT_STATUS_SHARED).
+                                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     }
@@ -284,6 +286,8 @@ public class GalleryFragmentTab extends Fragment {
         for (int i = 0; i < buckets.size(); i++) {
             ImageEntry bucketThumb = new ImageEntry();
             bucketThumb.setTitle(buckets.get(i).strBucketName);
+            bucketThumb.setStatus(ImageEntry.INT_STATUS_SHARED);
+            bucketThumb.setRatio(1);
             bucketThumb.setThumbUri(buckets.get(i).strTitleImageUrl);
             bucketThumb.setOrigUri(buckets.get(i).strTitleImageUrl);
             bucketThumb.setBucketId(buckets.get(i).strBucketId);
@@ -301,7 +305,8 @@ public class GalleryFragmentTab extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
             ImageEntry bucket = mAdapter.getItem(position);
-            new GalleryLoaderClass(bucket.getBucketId(), null).execute();
+            new GalleryLoaderClass(bucket.getBucketId(), null).
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mGridView.setOnItemClickListener(OnItemClickListener);
             mGridView.setOnItemLongClickListener(new ImageLongClickListener());
         }
