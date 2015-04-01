@@ -304,9 +304,9 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
+            ImageEntry bucket = mAdapter.getItem(position);
             mAdapter.clear();
             mAdapter.notifyDataSetChanged();
-            ImageEntry bucket = mAdapter.getItem(position);
             new GalleryLoaderClass(bucket.getBucketId(), null).
                     executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mGridView.setOnItemClickListener(OnItemClickListener);
