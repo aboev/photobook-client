@@ -222,7 +222,7 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-            ImageEntry image = mImageList.get(position);
+            ImageEntry image = mAdapter.getItem(position);
             final int pos = position;
             if (image.getStatus() == ImageEntry.INT_STATUS_DEFAULT) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
