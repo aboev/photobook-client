@@ -94,6 +94,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                     new ImageListener(position, holder.imgAvatar));
         }
 
+        holder.followButton.setVisibility(View.VISIBLE);
         if (profile.getStatus() == FriendEntry.INT_STATUS_FRIEND) {
             holder.followButton.setText(R.string.btn_unfollow_text);
             final String strUserId = profile.getUserId();
@@ -106,7 +107,10 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
             };
             holder.followButton.setOnClickListener(onClickListener);
         } else {
-            holder.followButton.setText(R.string.btn_follow_text);
+            if (profile.getStatus() == FriendEntry.INT_STATUS_DEFAULT)
+                holder.followButton.setText(R.string.btn_follow_text);
+            else if (profile.getStatus() == FriendEntry.INT_STATUS_NULL)
+                holder.followButton.setVisibility(View.GONE);
             if (!profile.getUserId().isEmpty()) {
                 final int pos = position;
                 final String strUserId = profile.getUserId();
