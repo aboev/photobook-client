@@ -137,6 +137,7 @@ public class FileUtils {
                 } else {
                     file = new File(strLocalURI);
                 }
+                Log.d(LOG_TAG, "Downloading file to " + file.getAbsolutePath());
                 if(!file.exists()) {
                     file.getParentFile().mkdirs();
                     file.createNewFile();
