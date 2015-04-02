@@ -1,7 +1,9 @@
 package com.freecoders.photobook;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -15,10 +17,12 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -54,11 +58,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ImageDetailsActivity extends ActionBarActivity {
+    private static String LOG_TAG = "ImageDetailsActivity";
 
     CircleImageView mAvatarImageView;
     TextView mImageTitleTextView;
@@ -171,10 +178,10 @@ public class ImageDetailsActivity extends ActionBarActivity {
                 if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
                     mPopupComments.show();
                 else
-                    Log.d("Listener","long click : author ids: /"+Photobook.getPreferences().intPublicID+"/"+mCommentListAdapter.mCommentList.get(adapterItemPos).author_id+"/ ");
+                    Log.d(LOG_TAG,"long click : author ids: /"+Photobook.getPreferences().intPublicID+"/"+mCommentListAdapter.mCommentList.get(adapterItemPos).author_id+"/ ");
 
 
-                Log.d("Listener","long click : " +String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id)+"  "+mCommentListAdapter.mCommentList.get(adapterItemPos).text);
+                Log.d(LOG_TAG,"long click : " +String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id)+"  "+mCommentListAdapter.mCommentList.get(adapterItemPos).text);
                 return true;
             }
         });
@@ -486,48 +493,90 @@ public class ImageDetailsActivity extends ActionBarActivity {
         }
     }
 
-
-            @Override
-            public boolean onCreateOptionsMenu(Menu menu) {
-                // Inflate the menu; this adds items to the action bar if it is present.
-                getMenuInflater().inflate(R.menu.menu_image_details, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
-                // Handle action bar item clicks here. The action bar will
-                // automatically handle clicks on the Home/Up button, so long
-                // as you specify a parent activity in AndroidManifest.xml.
-                int id = item.getItemId();
-
-                //noinspection SimplifiableIfStatement
-                if (id == R.id.action_settings) {
-                    return true;
-                }
-
-                return super.onOptionsItemSelected(item);
-            }
-
-            private class ImageListener implements ImageLoader.ImageListener {
-                ImageView imgView;
-
-                public ImageListener(ImageView imgView) {
-                    this.imgView = imgView;
-                }
-
+    private View getLikesListView(){
+        int width = 300;
+        final int height = 50;
+        final int padding = 2;
+        final Context context = this;
+        final HorizontalScrollView scrollView = new HorizontalScrollView(context);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
+        scrollView.setPadding(padding, padding, padding, padding);
+        scrollView.setLayoutParams(params);
+        if (likes == null) return scrollView;
+        ServerInterface.getUserProfileRequest(this, likes,
+            new Response.Listener<HashMap<String, UserProfile>>() {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                }
-
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
-                    if (response.getBitmap() != null) {
-                        imgView.setImageResource(0);
-                        imgView.setImageBitmap(response.getBitmap());
+                public void onResponse(HashMap<String, UserProfile> response) {
+                    Iterator it = response.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        ImageView image = new ImageView(context);
+                        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(height, height);
+                        image.setLayoutParams(params);
+                        image.setPadding(padding, padding, padding, padding);
+                        image.setImageResource(R.drawable.avatar);
+                        scrollView.addView(image);
+                        final UserProfile user = (UserProfile) pair.getValue();
+                        if ((user != null) && (user.avatar != null)
+                                && (URLUtil.isValidUrl(user.avatar)))
+                            mAvatarLoader.get(user.avatar, new ImageListener(image));
+                        image.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                FragmentManager fm = getFragmentManager();
+                                UserProfileFragment profileDialogFragment =
+                                        new UserProfileFragment();
+                                profileDialogFragment.setUserId(user.id);
+                                profileDialogFragment.show(fm, "users_profile");
+                            }
+                        });
                     }
                 }
+            }, null);
+        return scrollView;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_image_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private class ImageListener implements ImageLoader.ImageListener {
+        ImageView imgView;
+
+        public ImageListener(ImageView imgView) {
+            this.imgView = imgView;
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+        }
+
+        @Override
+        public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+            if (response.getBitmap() != null) {
+                imgView.setImageResource(0);
+                imgView.setImageBitmap(response.getBitmap());
             }
+        }
+    }
 
     public void onDestroy() {
         super.onDestroy();
@@ -538,5 +587,4 @@ public class ImageDetailsActivity extends ActionBarActivity {
             Photobook.getGalleryFragmentTab().refreshAdapter();
         }
     }
-
-        }
+}
