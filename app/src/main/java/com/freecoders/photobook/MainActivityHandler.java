@@ -194,7 +194,7 @@ public class MainActivityHandler {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     new FileUtils.DownloadTask(strURL, strLocalFilename,
                         new CallbackInterface() {
-                            public void onResponse() {
+                            public void onResponse(Object obj) {
                                 Intent promptInstall = new Intent(Intent.ACTION_VIEW)
                                         .setDataAndType(Uri.fromFile(new File(strLocalFilename)),
                                                 "application/vnd.android.package-archive");
