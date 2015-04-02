@@ -33,6 +33,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -192,12 +193,16 @@ public class MainActivityHandler {
         alert.setPositiveButton(R.string.alert_ok_button,
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    new FileUtils.DownloadTask(strURL, strLocalFilename,
+                    String type = Environment.DIRECTORY_DOWNLOADS;
+                    File path = Environment.getExternalStoragePublicDirectory(type);
+                    path.mkdirs();
+                    final File file = new File(path, Constants.APP_FOLDER +"/" + strLocalFilename);
+                    new FileUtils.DownloadTask(strURL, file.getAbsolutePath(),
                         new CallbackInterface() {
                             public void onResponse(Object obj) {
                                 Intent promptInstall = new Intent(Intent.ACTION_VIEW)
-                                        .setDataAndType(Uri.fromFile(new File(strLocalFilename)),
-                                                "application/vnd.android.package-archive");
+                                        .setDataAndType(Uri.fromFile(file),
+                                        "application/vnd.android.package-archive");
                                 activity.startActivity(promptInstall);
                             }
                         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
