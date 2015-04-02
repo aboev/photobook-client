@@ -165,8 +165,12 @@ public class ImagesDataSource {
         if (strBucketID != null)
             strSelection = MediaStore.Images.ImageColumns.BUCKET_ID
                     + " = '" + strBucketID + "'";
+        String[] projection = new String[]{
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_ID};
         Cursor cursorImg = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, strSelection, null, orderBy);
+                projection, strSelection, null, orderBy);
         int count = cursorImg.getCount();
         for (int i = 0; i < count; i++) {
             cursorImg.moveToPosition(i);
