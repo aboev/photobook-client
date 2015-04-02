@@ -60,13 +60,18 @@
     <string name="user_name">Name:</string>
     <string name="user_phone">Phone:</string>
     <string name="user_email">E-mail:</string>
+    <string name="bookmark_friends">Friends</string>
+    <string name="bookmark_contacts">Contacts</string>
+    <string name="bookmark_gallery">Gallery</string>
+    <string name="bookmark_folders">Folders</string>
+    <string name="bookmark_shares">My shares</string>
     <string-array name="contacts_bookmark_items">
-        <item>Friends</item>
-        <item>Contacts</item>
+        <item>@string/bookmark_friends</item>
+        <item>@string/bookmark_contacts</item>
     </string-array>
     <string-array name="gallery_bookmark_items">
-        <item>Gallery</item>
-        <item>Folders</item>
-        <item>My shares</item>
+        <item>@string/bookmark_gallery</item>
+        <item>@string/bookmark_folders</item>
+        <item>@string/bookmark_shares</item>
     </string-array>
 </resources>
