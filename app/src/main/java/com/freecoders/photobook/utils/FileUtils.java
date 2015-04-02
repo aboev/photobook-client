@@ -98,14 +98,14 @@ public class FileUtils {
 
     public final static class DownloadTask extends AsyncTask<String,Integer,Long> {
         String strURL = "";
-        String strLocalFilename = "";
+        String strLocalURI = "";
         CallbackInterface onResponse;
         ProgressDialog mProgressDialog = new ProgressDialog(Photobook.getMainActivity());
 
-        public DownloadTask (String strURL, String strLocalFilename,
+        public DownloadTask (String strURL, String strLocalURI,
                              CallbackInterface onResponse) {
             this.strURL = strURL;
-            this.strLocalFilename = strLocalFilename;
+            this.strLocalURI = strLocalURI;
             this.onResponse = onResponse;
         }
 
@@ -130,10 +130,13 @@ public class FileUtils {
                 String targetFileName =
                         strURL.substring(strURL.lastIndexOf('/')+1, strURL.length() );
                 int fileLength = connection.getContentLength();
-                if (strLocalFilename == null || strLocalFilename.isEmpty())
-                    strLocalFilename = targetFileName;
-                File file = new File(Photobook.getMainActivity().getFilesDir(),
-                        Constants.APP_FOLDER +"/" + strLocalFilename);
+                File file;
+                if (strLocalURI == null || strLocalURI.isEmpty()) {
+                    file = new File(Photobook.getMainActivity().getFilesDir(),
+                            Constants.APP_FOLDER +"/" + targetFileName);
+                } else {
+                    file = new File(strLocalURI);
+                }
                 if(!file.exists()) {
                     file.getParentFile().mkdirs();
                     file.createNewFile();
