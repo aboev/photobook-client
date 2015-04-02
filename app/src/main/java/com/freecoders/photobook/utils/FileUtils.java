@@ -160,7 +160,7 @@ public class FileUtils {
             mProgressDialog.setProgress(progress[0]);
             if(mProgressDialog.getProgress()==mProgressDialog.getMax()) {
                 mProgressDialog.dismiss();
-                onResponse.onResponse();
+                onResponse.onResponse(null);
             }
         }
     }
