@@ -67,4 +67,8 @@ public class BookmarkAdapter {
     public interface onItemSelectedListener {
         public void onItemSelected(int position);
     }
+
+    public String[] getItems() {
+        return items;
+    }
 }
