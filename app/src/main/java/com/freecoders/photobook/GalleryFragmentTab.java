@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.etsy.android.grid.StaggeredGridView;
 import com.freecoders.photobook.classes.BookmarkAdapter;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
@@ -51,8 +53,8 @@ import java.util.HashMap;
 public class GalleryFragmentTab extends Fragment {
     private static String LOG_TAG = "GalleryFragmentTab";
 
-    private ArrayList<ImageEntry> mImageList;
-    private ImageUploader mImageLoader;
+    private ArrayList<ImageEntry> mImageList = new ArrayList<ImageEntry>();
+    private ImageUploader mImageLoader = new ImageUploader();
     private GalleryAdapter mAdapter;
     private StaggeredGridView mGridView;
     private GestureListener gestureListener;
@@ -60,12 +62,6 @@ public class GalleryFragmentTab extends Fragment {
     private LinearLayout linearLayout;
     private BookmarkAdapter bookmarkAdapter;
     private Boolean boolSyncGallery = true;
-
-    public GalleryFragmentTab(){
-        mImageLoader = new ImageUploader();
-        mImageList = new ArrayList<ImageEntry>();
-        new GalleryLoaderClass(null, null).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,7 +72,7 @@ public class GalleryFragmentTab extends Fragment {
                 rootView.findViewById(R.id.bookmarkScrollView);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
-                mImageList);
+                new ArrayList<ImageEntry>());
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(OnItemClickListener);
         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
@@ -91,9 +87,16 @@ public class GalleryFragmentTab extends Fragment {
                 public void onItemSelected(int position) {
                     if (position == 0) {
                         mAdapter.clear();
+                        mAdapter.addAll(mImageList);
                         mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null, null).
-                                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        new GalleryLoaderClass(null, null, new CallbackInterface() {
+                            public void onResponse(Object obj) {
+                                mImageList = (ArrayList<ImageEntry>) obj;
+                                mAdapter.clear();
+                                mAdapter.addAll((ArrayList<ImageEntry>) obj);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     } else if (position == 1) {
@@ -103,13 +106,33 @@ public class GalleryFragmentTab extends Fragment {
                     } else if (position == 2) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null, ImageEntry.INT_STATUS_SHARED).
-                                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        new GalleryLoaderClass(null,
+                                ImageEntry.INT_STATUS_SHARED, new CallbackInterface() {
+                            public void onResponse(Object obj) {
+                                mAdapter.clear();
+                                mAdapter.addAll((ArrayList<ImageEntry>) obj);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     }
                 }
             });
+
+        new GalleryLoaderClass(null, null, new CallbackInterface() {
+            public void onResponse(Object obj) {
+                mImageList.clear();
+                mImageList.addAll((ArrayList<ImageEntry>) obj);
+                mAdapter.clear();
+                mAdapter.addAll((ArrayList<ImageEntry>) obj);
+                mAdapter.notifyDataSetChanged();
+                if (Photobook.getPreferences().strUserID != null &&
+                        !Photobook.getPreferences().strUserID.isEmpty()) {
+                    syncGallery();
+                }
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         setRetainInstance(true);
 
@@ -126,10 +149,13 @@ public class GalleryFragmentTab extends Fragment {
     public class GalleryLoaderClass extends AsyncTask<String, Void, Boolean> {
         private String strBucketId = null;
         private Integer intImageStatus = null;
+        private CallbackInterface deliverResult;
 
-        public GalleryLoaderClass(String strBucketId, Integer intImageStatus) {
+        public GalleryLoaderClass(String strBucketId, Integer intImageStatus,
+                CallbackInterface deliverResult) {
             this.strBucketId = strBucketId;
             this.intImageStatus = intImageStatus;
+            this.deliverResult = deliverResult;
         }
 
         @Override
@@ -139,14 +165,9 @@ public class GalleryFragmentTab extends Fragment {
             Photobook.getMainActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mImageList.clear();
-                    mImageList.addAll(imgList);
-                    if (mAdapter != null) mAdapter.notifyDataSetChanged();
+                    deliverResult.onResponse(imgList);
                 }
             });
-            if (!Photobook.getPreferences().strUserID.isEmpty()) {
-                syncGallery();
-            }
             return true;
         }
     }
@@ -307,8 +328,13 @@ public class GalleryFragmentTab extends Fragment {
             ImageEntry bucket = mAdapter.getItem(position);
             mAdapter.clear();
             mAdapter.notifyDataSetChanged();
-            new GalleryLoaderClass(bucket.getBucketId(), null).
-                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new GalleryLoaderClass(bucket.getBucketId(), null, new CallbackInterface() {
+                public void onResponse(Object obj) {
+                    mAdapter.clear();
+                    mAdapter.addAll((ArrayList<ImageEntry>) obj);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mGridView.setOnItemClickListener(OnItemClickListener);
             mGridView.setOnItemLongClickListener(new ImageLongClickListener());
         }
