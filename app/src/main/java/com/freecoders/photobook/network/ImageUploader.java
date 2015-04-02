@@ -245,7 +245,7 @@ public class ImageUploader {
                 int orientation = ImageUtils.
                         getExifOrientation(mImgList.get(mPosition).getOrigUri());
                 Bitmap b = ImageUtils.
-                        decodeSampledBitmap(mImgList.get(mPosition).getOrigUri(), 2048, 1536);
+                        decodeSampledBitmap(mImgList.get(mPosition).getOrigUri(), 1536, 1152);
                 Bitmap bitmap;
                 if ((orientation == 90) || (orientation == 270)) {
                     Matrix matrix = new Matrix();
@@ -260,7 +260,7 @@ public class ImageUploader {
                 connection.setRequestMethod("PUT");
                 OutputStream outputStream = connection.getOutputStream();
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
                 outputStream.close();
                 int responseCode = connection.getResponseCode();
 
