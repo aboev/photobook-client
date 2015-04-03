@@ -17,11 +17,12 @@
             android:scaleType="centerCrop"/>
         <ImageView
             android:id="@+id/imgViewShare"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_marginRight="3dp"
-            android:layout_marginBottom="3dp"
-            android:background="@drawable/ic_share"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/ic_share_2"
             android:layout_gravity="bottom|right"/>
         <ImageView
             android:id="@+id/imgNewComment"
