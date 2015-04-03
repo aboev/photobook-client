@@ -510,7 +510,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         scrollView.setHorizontalScrollBarEnabled(false);
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(scrollView);
-        popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup));
+        popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_2));
         popup.setWidth(width);
         popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setFocusable(true);
