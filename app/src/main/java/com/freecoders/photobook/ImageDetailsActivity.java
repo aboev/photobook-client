@@ -494,32 +494,37 @@ public class ImageDetailsActivity extends ActionBarActivity {
         }
     }
 
-    private View getLikesListView(){
-        int width = 300;
-        final int height = 50;
+    public void getLikesListView(View view){
+        int width = ImageUtils.dpToPx(300);
+        final int height = ImageUtils.dpToPx(50);
         final int padding = 2;
         final Context context = this;
         final HorizontalScrollView scrollView = new HorizontalScrollView(context);
+        final LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         scrollView.setPadding(padding, padding, padding, padding);
         scrollView.setLayoutParams(params);
+        scrollView.addView(linearLayout);
+        scrollView.setHorizontalScrollBarEnabled(false);
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(scrollView);
         popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup));
         popup.setWidth(width);
-        popup.setHeight(height);
+        popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setFocusable(true);
         int[] location = new int[2];
         mLikeCountTextView.getLocationOnScreen(location);
-        popup.showAtLocation(scrollView, Gravity.NO_GRAVITY, location[0] - (int) 0.8 * width,
-                location[1] - height);
-        if (likes == null) return scrollView;
+        popup.showAtLocation(scrollView, Gravity.NO_GRAVITY, location[0],
+                location[1] - (int) (height * 1.2));
+        if (likes == null) return;
         ServerInterface.getUserProfileRequest(this, likes,
             new Response.Listener<HashMap<String, UserProfile>>() {
                 @Override
                 public void onResponse(HashMap<String, UserProfile> response) {
                     Iterator it = response.entrySet().iterator();
+                    Log.d(LOG_TAG, "Response size " + response.size());
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
                         ImageView image = new ImageView(context);
@@ -527,8 +532,9 @@ public class ImageDetailsActivity extends ActionBarActivity {
                         image.setLayoutParams(params);
                         image.setPadding(padding, padding, padding, padding);
                         image.setImageResource(R.drawable.avatar);
-                        scrollView.addView(image);
+                        linearLayout.addView(image);
                         final UserProfile user = (UserProfile) pair.getValue();
+                        final String id = (String) pair.getKey();
                         if ((user != null) && (user.avatar != null)
                                 && (URLUtil.isValidUrl(user.avatar)))
                             mAvatarLoader.get(user.avatar, new ImageListener(image));
@@ -538,14 +544,13 @@ public class ImageDetailsActivity extends ActionBarActivity {
                                 FragmentManager fm = getFragmentManager();
                                 UserProfileFragment profileDialogFragment =
                                         new UserProfileFragment();
-                                profileDialogFragment.setUserId(user.id);
+                                profileDialogFragment.setUserId(id);
                                 profileDialogFragment.show(fm, "users_profile");
                             }
                         });
                     }
                 }
             }, null);
-        return scrollView;
     }
 
     @Override
