@@ -18,13 +18,18 @@ public class BookmarkAdapter {
     private Context context;
     private String[] items;
     private ViewGroup parentView;
+    private View colorSelector;
     private onItemSelectedListener listener;
+    private int[] colors;
     public int selectedPosition = 0;
 
-    public BookmarkAdapter(Context context, ViewGroup parentView, String[] items) {
+    public BookmarkAdapter(Context context, ViewGroup parentView, View colorSelector,
+                           String[] items) {
         this.context = context;
         this.items = items;
         this.parentView = parentView;
+        this.colorSelector = colorSelector;
+        this.colors = context.getResources().getIntArray(R.array.bookmark_colors);;
         redraw();
     }
 
@@ -32,13 +37,16 @@ public class BookmarkAdapter {
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater vi = (LayoutInflater)context.getSystemService(inflater);
         View view;
-        if (position == selectedPosition)
+        if (position == selectedPosition) {
             view = vi.inflate(R.layout.item_bookmark_selected, parentView, false);
-        else
+            if (colors.length > 0)
+                colorSelector.setBackgroundColor(colors[position % colors.length]);
+        } else
             view = vi.inflate(R.layout.item_bookmark, parentView, false);
         TextView tv = (TextView)view.findViewById(R.id.txtViewBookmark);
         tv.setText(items[position]);
-
+        if (colors.length > 0)
+            tv.setBackgroundColor(colors[position % colors.length]);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
