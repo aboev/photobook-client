@@ -23,11 +23,19 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <View
+        android:id="@+id/bookmarkColorSelector1"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@+id/bookmarkScrollView"
+        android:background="#FFFFBC6A">
+    </View>
+
     <ListView
         android:id="@+id/friendsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/bookmarkScrollView"
+        android:layout_below="@+id/bookmarkColorSelector1"
         android:background="#ffe7e7e7"
         android:listSelector="@android:color/transparent"
         tools:listitem="@layout/row_friend_list"/>

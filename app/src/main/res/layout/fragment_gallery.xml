@@ -23,13 +23,21 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <View
+        android:id="@+id/bookmarkColorSelector2"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@+id/bookmarkScrollView"
+        android:background="#FFFFBC6A">
+    </View>
+
     <com.etsy.android.grid.StaggeredGridView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/bookmarkScrollView"
+        android:layout_below="@+id/bookmarkColorSelector2"
         app:item_margin="2dp"/>
  
 </RelativeLayout>
