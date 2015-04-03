@@ -517,7 +517,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         int[] location = new int[2];
         mLikeCountTextView.getLocationOnScreen(location);
         popup.showAtLocation(scrollView, Gravity.NO_GRAVITY, location[0],
-                location[1] - (int) (height * 1.2));
+                location[1] - (int) (height * 1.5));
         if (likes == null) return;
         ServerInterface.getUserProfileRequest(this, likes,
             new Response.Listener<HashMap<String, UserProfile>>() {
