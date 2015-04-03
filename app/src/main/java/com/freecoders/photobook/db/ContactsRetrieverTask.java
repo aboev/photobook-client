@@ -49,8 +49,11 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
     @Override
     protected void onPostExecute(final ArrayList<ContactEntry> contacts) {
         final ArrayList<String> contactKeys = new ArrayList<String>();
-        for (int i = 0; i < contacts.size(); i++)
+        final ArrayList<String> hContactKeys = new ArrayList<String>();
+        for (int i = 0; i < contacts.size(); i++) {
             contactKeys.add(contacts.get(i).strContactKey);
+            hContactKeys.add(FileUtils.makeSHA1Hash(contacts.get(i).strContactKey));
+        }
 
         for (int i = 0; i < contacts.size(); i++) {
             if (Photobook.getFriendsDataSource().
