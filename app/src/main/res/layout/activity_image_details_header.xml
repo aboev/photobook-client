@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:text="by "/>
+                    android:text="@string/word_by"/>
                 <TextView
                     android:id="@+id/textImageAuthorDetails"
                     android:layout_width="wrap_content"
