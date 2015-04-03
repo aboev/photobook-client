@@ -14,6 +14,7 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
+import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
