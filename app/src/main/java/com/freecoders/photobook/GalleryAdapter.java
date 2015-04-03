@@ -221,11 +221,11 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             public void run() {
                 if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARED) {
                     mViewHolder.textView.setVisibility(View.VISIBLE);
+                    mViewHolder.shareImgView.setVisibility(View.VISIBLE);
                 } else if (mImageEntry.getStatus() == mImageEntry.INT_STATUS_SHARING) {
                     mViewHolder.textView.setText(R.string.edit_uploading_image);
                     mViewHolder.textView.setVisibility(View.VISIBLE);
                 } else {
-                    mViewHolder.shareImgView.setVisibility(View.VISIBLE);
                     mViewHolder.textView.setVisibility(View.GONE);
                 }
                 if (!mViewHolder.newCommentTextView.getText().toString().isEmpty()) {
