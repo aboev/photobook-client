@@ -60,6 +60,7 @@ public class GalleryFragmentTab extends Fragment {
     private GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
+    private View colorSelector;
     private BookmarkAdapter bookmarkAdapter;
     private Boolean boolSyncGallery = true;
 
@@ -71,6 +72,7 @@ public class GalleryFragmentTab extends Fragment {
         horizontalScrollView = (HorizontalScrollView)
                 rootView.findViewById(R.id.bookmarkScrollView);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
+        colorSelector = (View) rootView.findViewById(R.id.bookmarkColorSelector2);
         mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
                 new ArrayList<ImageEntry>());
         mGridView.setAdapter(mAdapter);
@@ -79,7 +81,7 @@ public class GalleryFragmentTab extends Fragment {
         gestureListener = new GestureListener(getActivity(), horizontalScrollView, mGridView);
         mGridView.setOnTouchListener(gestureListener);
 
-        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
+        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
                 getResources().getStringArray(R.array.gallery_bookmark_items));
         bookmarkAdapter.setOnItemSelectedListener(
             new BookmarkAdapter.onItemSelectedListener() {

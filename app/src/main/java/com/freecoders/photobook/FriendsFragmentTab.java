@@ -33,6 +33,7 @@ public class FriendsFragmentTab extends Fragment {
     private GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
+    private View colorSelector;
     private BookmarkAdapter bookmarkAdapter;
     private Boolean boolUpdateList = true;
 
@@ -48,6 +49,7 @@ public class FriendsFragmentTab extends Fragment {
         horizontalScrollView = (HorizontalScrollView)
                 rootView.findViewById(R.id.bookmarkScrollView);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
+        colorSelector = (View) rootView.findViewById(R.id.bookmarkColorSelector1);
         setRetainInstance(true);
         Log.d(Constants.LOG_TAG, "Initializing FriendsFragmentTab");
 
@@ -72,7 +74,7 @@ public class FriendsFragmentTab extends Fragment {
         gestureListener = new GestureListener(getActivity(), horizontalScrollView, listView);
         listView.setOnTouchListener(gestureListener);
 
-        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout,
+        bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
                 getResources().getStringArray(R.array.contacts_bookmark_items));
         bookmarkAdapter.setOnItemSelectedListener(
                 new BookmarkAdapter.onItemSelectedListener() {
