@@ -95,7 +95,9 @@ public class RegisterActivity extends ActionBarActivity {
 		Intent intent = new Intent();
 		intent.setType("image/*");
 		intent.setAction(Intent.ACTION_GET_CONTENT);
-		startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.INTENT_PICK_IMAGE);
+		startActivityForResult(Intent.createChooser(intent, 
+                getResources().getString(R.string.alert_select_image)), 
+                Constants.INTENT_PICK_IMAGE);
 	}
 	
 	@Override
