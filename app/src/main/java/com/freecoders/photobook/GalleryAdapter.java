@@ -213,6 +213,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
 
     private void populateImageFrame (ViewHolder holder, int position) {
         // Adjust the visibility of title, progress bar, comment count, etc.
+        if (getCount() <= position) return;
         final ImageEntry mImageEntry = getItem(position);
         final ViewHolder mViewHolder = holder;
         Photobook.getMainActivity().runOnUiThread(new Runnable() {
