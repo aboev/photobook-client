@@ -32,6 +32,7 @@ public final class Preferences {
     private String KEY_UNREAD_IMAGES = "images_unread";
     private String KEY_UNREAD_IMAGES2 = "images_unread2";
     private String KEY_REGISTER_STATUS = "status";
+    private String KEY_SERVER_INFO = "server_info";
 
     public Integer intPublicID = 0;
 	public String strUserID = "";
@@ -42,6 +43,7 @@ public final class Preferences {
     public String strEmail = "";
     public String strPushRegID = "";
     public String strCommentsTimestamp = "0";
+    public String strServerInfo = "";
     public Set<String> hsetUnreadImages = new HashSet<String>(); //Image IDs that have unread comments
     public HashMap<String, Integer> unreadImagesMap =
             new HashMap<String, Integer>(); //Image IDs that have unread comments
@@ -63,6 +65,7 @@ public final class Preferences {
         strEmail = settings.getString(KEY_EMAIL, "");
         strPushRegID = settings.getString(KEY_PUSH_REGID, "");
         strCommentsTimestamp = settings.getString(KEY_COMMENTS_TIMESTAMP, "0");
+        strServerInfo = settings.getString(KEY_SERVER_INFO, "");
         hsetUnreadImages = settings.getStringSet(KEY_UNREAD_IMAGES, new HashSet<String>());
         Type type = new TypeToken<HashMap<String, Integer>>(){}.getType();
         unreadImagesMap = gson.fromJson(
@@ -85,6 +88,7 @@ public final class Preferences {
         editor.putStringSet(KEY_UNREAD_IMAGES, hsetUnreadImages);
         editor.putString(KEY_UNREAD_IMAGES2, gson.toJson(unreadImagesMap));
         editor.putInt(KEY_REGISTER_STATUS, intRegisterStatus);
+        editor.putString(KEY_SERVER_INFO, strServerInfo);
 		editor.commit();
 	}
 	
