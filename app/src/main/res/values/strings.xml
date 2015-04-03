@@ -15,6 +15,9 @@
     <string name="sms_hint">1234</string>
     <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
+    <string name="eula_notice">By registering in service you agree to license agreement</string>
+    <string name="privacy_policy_notice">Privacy policy</string>
+    <string name="apache_notice">Some components are licensed under Apache 2.0</string>
     <string name="btn_follow_text">Follow</string>
     <string name="btn_unfollow_text">Unfollow</string>
     <string name="btn_share_text">share</string>
@@ -37,12 +40,14 @@
     <string name="alert_send_button">Send</string>
     <string name="alert_ok_button">OK</string>
     <string name="alert_cancel_button">Cancel</string>
+    <string name="alert_delete">Delete</string>
     <string name="dialog_downloading">Downloading</string>
     <string name="dialog_download_complete">Image downloaded</string>
     <string name="dialog_creating_account">Creating account...</string>
     <string name="dialog_uploading_avatar">Uploading avatar...</string>
     <string name="dialog_please_wait">Please wait</string>
     <string name="author_name_self">me</string>
+    <string name="word_by">by </string>
     <string name="alert_new_version_available">New version is available. Would you like to update?</string>
     <string name="alert_update_required">You must update application to proceed. Would you like to update now?</string>
     <string name="alert_sms_title">SMS verification</string>
@@ -50,6 +55,7 @@
     <string name="alert_wrong_sms">SMS code is wrong. Please try again</string>
     <string name="alert_input_name">Please input your name</string>
     <string name="alert_input_phone">Please input phone in international format starting with +</string>
+    <string name="alert_select_image">Select image</string>
     <string name="notification_new_comment">New comment</string>
     <string name="toast_img_not_found">Image not found</string>
     <string name="image">Image</string>
