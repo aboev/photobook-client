@@ -3,4 +3,29 @@
     <color name="grey_font">#ff9e9e9e</color>
     <color name="text_shadow">#7F000000</color>
     <color name="text_shadow_white">#FFFFFF</color>
+
+    <color name="bookmark_color1">#ffffbc6a</color>
+    <color name="bookmark_color2">#9f6bff73</color>
+    <color name="bookmark_color3">#ffff6d41</color>
+    <color name="bookmark_color4">#ff5193ff</color>
+    <color name="bookmark_color5">#ffff85b3</color>
+    <color name="bookmark_color6">#ff30ff3a</color>
+    <color name="bookmark_color7">#fff57cff</color>
+    <color name="bookmark_color8">#ffff336c</color>
+    <color name="bookmark_color9">#fff7b0ff</color>
+    <color name="bookmark_color10">#ffc9ff2e</color>
+
+    <array name="bookmark_colors">
+        <item>@color/bookmark_color1</item>
+        <item>@color/bookmark_color2</item>
+        <item>@color/bookmark_color3</item>
+        <item>@color/bookmark_color4</item>
+        <item>@color/bookmark_color5</item>
+        <item>@color/bookmark_color6</item>
+        <item>@color/bookmark_color7</item>
+        <item>@color/bookmark_color8</item>
+        <item>@color/bookmark_color9</item>
+        <item>@color/bookmark_color10</item>
+    </array>
+
 </resources>
