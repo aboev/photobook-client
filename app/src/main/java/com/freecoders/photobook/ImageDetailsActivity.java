@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -499,9 +500,20 @@ public class ImageDetailsActivity extends ActionBarActivity {
         final int padding = 2;
         final Context context = this;
         final HorizontalScrollView scrollView = new HorizontalScrollView(context);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
         scrollView.setPadding(padding, padding, padding, padding);
         scrollView.setLayoutParams(params);
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(scrollView);
+        popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup));
+        popup.setWidth(width);
+        popup.setHeight(height);
+        popup.setFocusable(true);
+        int[] location = new int[2];
+        mLikeCountTextView.getLocationOnScreen(location);
+        popup.showAtLocation(scrollView, Gravity.NO_GRAVITY, location[0] - (int) 0.8 * width,
+                location[1] - height);
         if (likes == null) return scrollView;
         ServerInterface.getUserProfileRequest(this, likes,
             new Response.Listener<HashMap<String, UserProfile>>() {
