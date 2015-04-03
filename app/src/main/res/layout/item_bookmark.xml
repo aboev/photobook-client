@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:text="Contacts"
         android:textSize="20dp"
+        android:textColor="#ff707070"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:gravity="center"
