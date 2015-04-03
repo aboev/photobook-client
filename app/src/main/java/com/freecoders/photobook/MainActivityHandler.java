@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -86,7 +87,8 @@ public class MainActivityHandler {
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
-            activity.startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+            activity.startActivityForResult(Intent.createChooser(intent,
+                    activity.getResources().getString(R.string.alert_select_image) ),
                     Constants.INTENT_PICK_IMAGE);
         }
     };
@@ -158,6 +160,9 @@ public class MainActivityHandler {
             new Response.Listener<HashMap<String,String>>() {
                 @Override
                 public void onResponse(HashMap<String,String> response) {
+                    Gson gson = new Gson();
+                    String strServerInfo = gson.toJson(response);
+                    if (Photobook.getPreferences().strServerInfo.equals(strServerInfo)) return;
                     PackageInfo pInfo = null;
                     try {
                         pInfo = activity.getPackageManager().getPackageInfo(
@@ -172,19 +177,18 @@ public class MainActivityHandler {
                             valueOf(response.get(Constants.KEY_LATEST_APK_VER));
                         int intMinClientVersion = Integer.
                             valueOf(response.get(Constants.KEY_MIN_CLIENT_VERSION));
-                        String strLatestAPKURL = response.get(Constants.KEY_LATEST_APK_URL);
-                        String strLocalFilename = intLatestAPKVersion + ".apk";
                         if (intMinClientVersion > pInfo.versionCode)
-                            showUpdateDialog(true, strLatestAPKURL, strLocalFilename);
+                            showUpdateDialog(true, response);
                         else if (intLatestAPKVersion > pInfo.versionCode)
-                            showUpdateDialog(false, strLatestAPKURL, strLocalFilename);
+                            showUpdateDialog(false, response);
                     }
                 }
             }, null);
     }
 
-    public void showUpdateDialog (Boolean boolMandatory, final String strURL,
-                                  final String strLocalFilename) {
+    public void showUpdateDialog (Boolean boolMandatory, final HashMap<String, String> serverInfo) {
+        final String strURL = serverInfo.get(Constants.KEY_LATEST_APK_URL);
+        final String strLocalFilename = serverInfo.get(Constants.KEY_LATEST_APK_VER) + ".apk";
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
         if (boolMandatory)
             alert.setMessage(R.string.alert_update_required);
@@ -206,12 +210,18 @@ public class MainActivityHandler {
                                 activity.startActivity(promptInstall);
                             }
                         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    Gson gson = new Gson();
+                    Photobook.getPreferences().strServerInfo = gson.toJson(serverInfo);
+                    Photobook.getPreferences().savePreferences();
                 }
             });
         if (!boolMandatory) {
             alert.setNegativeButton(R.string.alert_cancel_button,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        Gson gson = new Gson();
+                        Photobook.getPreferences().strServerInfo = gson.toJson(serverInfo);
+                        Photobook.getPreferences().savePreferences();
                     }
                 });
         }
