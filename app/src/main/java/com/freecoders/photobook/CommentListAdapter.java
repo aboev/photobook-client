@@ -1,5 +1,7 @@
 package com.freecoders.photobook;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +31,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
     Context context;
     ImageLoader mAvatarLoader;
     public ArrayList<CommentEntryJson> mCommentList;
-
+    private Activity mContext;
 
     //Initialize adapter
     public CommentListAdapter(Context context, int resource, ArrayList<CommentEntryJson> items,
@@ -38,6 +40,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
         this.resource=resource;
         this.mAvatarLoader = avatarLoader;
         this.mCommentList = items;
+        this.mContext = (Activity)context;
     }
 
     static class ViewHolder {
@@ -67,6 +70,20 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
             holder = (ViewHolder) rowView.getTag();
         }
 
+        final String commentAuthorId = comment.author_id;
+
+        holder.imgAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager fm = mContext.getFragmentManager();
+                UserProfileFragment profileDialogFragment =
+                        new UserProfileFragment();
+                profileDialogFragment.setUserId(commentAuthorId);
+                profileDialogFragment.show(fm, "users_profile");
+            }
+        });
+
         holder.imgAvatar.setImageResource(R.drawable.avatar);
         if ((comment.author != null) && (comment.author.name != null))
             holder.authorNameText.setText(comment.author.name);
@@ -81,6 +98,8 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
             mAvatarLoader.get(comment.author.avatar.toString(),
                     new ImageListener(position, holder.imgAvatar));
         }
+
+
 
         return rowView;
     }

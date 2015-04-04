@@ -143,47 +143,61 @@ public class ImageDetailsActivity extends ActionBarActivity {
         mCommentsList.setAdapter(mCommentListAdapter);
         mCommentsList.addHeaderView(view);
 
-        mCommentsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
-            public boolean onItemLongClick(AdapterView<?> arg0, View v,
+
+        mCommentsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View v,
                                            int index, long arg3) {
 
 
                 final int adapterItemPos = index-1;
 
-                final PopupMenu mPopupComments = new PopupMenu(getApplicationContext(), mCommentsList.getChildAt(index));
-                mPopupComments.getMenuInflater().inflate(R.menu.popup_menu_comments, mPopupComments.getMenu());
+                final CharSequence[] itemsOwner = {"Delete"};
+                final CharSequence[] itemsOther = {"Reply"};
 
-                mPopupComments.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ImageDetailsActivity.this);
+                //builder.setTitle("Make your selection");
 
-                        mPopupComments.dismiss();
+                if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString())) {
 
-                        if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
-                            ServerInterface.deleteCommentRequest(Photobook.getImageDetailsActivity(),
-                                    String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id),
-                                    Photobook.getPreferences().strUserID,
-                                    new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String response) {
-                                            processDeleteComment(adapterItemPos);
-                                        }
-                                    }, null);
+                    builder.setItems(itemsOwner, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int item) {
 
-                        //Toast.makeText(getApplicationContext(),"Comment was deleted successfully",Toast.LENGTH_SHORT).show();
-                        return true;
+                            dialog.dismiss();
+                            if (item == 0)
+                                if (Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
+                                    ServerInterface.deleteCommentRequest(Photobook.getImageDetailsActivity(),
+                                            String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id),
+                                            Photobook.getPreferences().strUserID,
+                                            new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String response) {
+                                                    processDeleteComment(adapterItemPos);
+                                                }
+                                            }, null);
+                        }
+                    });
+                }
+                else{
+
+                    builder.setItems(itemsOther, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int item) {
+
+                            dialog.dismiss();
+                            if (item == 0)
+                                createCommentDialog(mCommentListAdapter.mCommentList.get(adapterItemPos).id,
+                                        mCommentListAdapter.mCommentList.get(adapterItemPos).author.name);
                     }
-                });
+                    });
 
+                }
+                AlertDialog mAlertComments = builder.create();
+                mAlertComments.setCanceledOnTouchOutside(true);
+                mAlertComments.show();
 
-                if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
-                    mPopupComments.show();
-                else
-                    Log.d(LOG_TAG,"long click : author ids: /"+Photobook.getPreferences().intPublicID+"/"+mCommentListAdapter.mCommentList.get(adapterItemPos).author_id+"/ ");
-
-
-                Log.d(LOG_TAG,"long click : " +String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id)+"  "+mCommentListAdapter.mCommentList.get(adapterItemPos).text);
-                return true;
+                //Log.d(LOG_TAG,"long click : " +String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id)+"  "+mCommentListAdapter.mCommentList.get(adapterItemPos).text);
+                //return true;
             }
         });
 
@@ -194,6 +208,49 @@ public class ImageDetailsActivity extends ActionBarActivity {
             populateView(true);
         else
             populateView(false);
+    }
+
+
+    private void createCommentDialog(final long replyToId, String replyAuthorName){
+        AlertDialog.Builder alert = new AlertDialog.Builder(
+                Photobook.getImageDetailsActivity());
+        alert.setTitle(R.string.alert_title_comment);
+        alert.setMessage(R.string.alert_message_comment);
+        final EditText input = new EditText(Photobook.getImageDetailsActivity());
+
+        if(replyToId>0)
+            input.setText(replyAuthorName+", ");
+        input.setSelection(input.length());
+
+
+        alert.setView(input);
+        alert.setPositiveButton(R.string.alert_send_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String strComment = input.getText().toString();
+                        ServerInterface.postCommentRequest(
+                                Photobook.getImageDetailsActivity(),
+                                strImageID,
+                                Photobook.getPreferences().strUserID,
+                                strComment, replyToId,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        ServerInterface.getComments(
+                                                Photobook.getImageDetailsActivity(),
+                                                strImageID,
+                                                mCommentListAdapter);
+                                    }
+                                }, null);
+                    }
+                });
+        alert.setNegativeButton(R.string.alert_cancel_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+        alert.show();
     }
 
     public void populateView(Boolean boolImageFromGallery) {
@@ -319,38 +376,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
         mButtonComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(
-                        Photobook.getImageDetailsActivity());
-                alert.setTitle(R.string.alert_title_comment);
-                alert.setMessage(R.string.alert_message_comment);
-                final EditText input = new EditText(Photobook.getImageDetailsActivity());
-                alert.setView(input);
-                alert.setPositiveButton(R.string.alert_send_button,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                String strComment = input.getText().toString();
-                                ServerInterface.postCommentRequest(
-                                        Photobook.getImageDetailsActivity(),
-                                        strImageID,
-                                        Photobook.getPreferences().strUserID,
-                                        strComment, 0,
-                                        new Response.Listener<String>() {
-                                            @Override
-                                            public void onResponse(String response) {
-                                                ServerInterface.getComments(
-                                                        Photobook.getImageDetailsActivity(),
-                                                        strImageID,
-                                                        mCommentListAdapter);
-                                            }
-                                        }, null);
-                            }
-                        });
-                alert.setNegativeButton(R.string.alert_cancel_button,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        });
-                alert.show();
+                createCommentDialog(0,"");
             }
         });
 
@@ -541,16 +567,26 @@ public class ImageDetailsActivity extends ActionBarActivity {
                         image.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                FragmentManager fm = getFragmentManager();
+                                openUserProfileFragment(id);
+                                /*FragmentManager fm = getFragmentManager();
                                 UserProfileFragment profileDialogFragment =
                                         new UserProfileFragment();
                                 profileDialogFragment.setUserId(id);
-                                profileDialogFragment.show(fm, "users_profile");
+                                profileDialogFragment.show(fm, "users_profile");*/
                             }
                         });
                     }
                 }
             }, null);
+    }
+
+    public void openUserProfileFragment(String userId){
+        FragmentManager fm = getFragmentManager();
+        UserProfileFragment profileDialogFragment =
+                new UserProfileFragment();
+        profileDialogFragment.setUserId(userId);
+        profileDialogFragment.show(fm, "users_profile");
+
     }
 
     @Override
