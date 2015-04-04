@@ -27,6 +27,9 @@ import java.util.HashMap;
  * Created by Alex on 2014-11-27.
  */
 public class ServerInterface {
+
+    private ServerErrorHandler errorHandler;
+    private ServerResponseHandler responseHandler;
     
     private static String LOG_TAG = "ServerInterface";
 
@@ -702,6 +705,58 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getServerInfoRequest);
+    }
+
+    public void sentFollowersRequest(String userId) {
+        HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
+        headers.put("id", userId);
+        final Response.ErrorListener errorListener =
+                createErrorListener(Constants.SERVER_PATH_USER + Constants.SERVER_PATH_FOLLOWERS);
+        StringRequest getServerInfoRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL + Constants.SERVER_PATH_USER + Constants.SERVER_PATH_FOLLOWERS,
+                "", headers, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (responseHandler != null) {
+                            Gson gson = new Gson();
+                            Type type = new TypeToken<ServerResponse<HashMap<String, UserProfile>>>(){}.getType();
+                            try {
+                                ServerResponse<HashMap<String, UserProfile>> res = gson.fromJson(response, type);
+                                if ( res != null && res.isSuccess() && res.data != null) {
+                                    responseHandler.onFollowersResponse(res.data);
+                                } else {
+                                    errorListener.onErrorResponse(new VolleyError());
+                                }
+                            } catch (Exception e) {
+                                    errorListener.onErrorResponse(new VolleyError());
+                            }
+                        }
+                    }
+            }, errorListener);
+        addRequesttoQueue(getServerInfoRequest);
+    }
+
+    private void addRequesttoQueue(StringRequest request) {
+        VolleySingleton.getInstance(Photobook.getMainActivity()).addToRequestQueue(request);
+    }
+
+    public void setServerErrorHandler(ServerErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    public void setServerResponseHandler(ServerResponseHandler responseHandler) {
+        this.responseHandler = responseHandler;
+    }
+
+    private Response.ErrorListener createErrorListener(final String request) {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorHandler != null) {
+                    errorHandler.onServerRequestError(request, volleyError);
+                }
+            }
+        };
     }
 
     /**

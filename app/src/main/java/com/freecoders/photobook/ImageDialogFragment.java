@@ -23,6 +23,12 @@ public class ImageDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDialog().setCanceledOnTouchOutside(true);
+    }
+
     private static class ImageMenuListener implements DialogInterface.OnClickListener {
         public static final int UNSHARE_ITEM_INDEX = 0;
 

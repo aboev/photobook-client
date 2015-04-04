@@ -29,6 +29,7 @@ public class Constants {
     public final static String SERVER_PATH_LIKE = "/like";
     public final static String SERVER_PATH_COMMENTS = "/comments";
     public final static String SERVER_PATH_INFO = "/info";
+    public final static String SERVER_PATH_FOLLOWERS = "/followers";
 
     public final static String HEADER_USERID = "userid";
     public final static String HEADER_IMAGEID = "imageid";
