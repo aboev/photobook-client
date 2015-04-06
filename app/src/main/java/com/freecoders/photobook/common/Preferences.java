@@ -17,6 +17,7 @@ import java.util.Set;
 
 public final class Preferences {
 	private SharedPreferences settings;
+    private Context context;
 
     Gson gson = new Gson();
 	
@@ -24,7 +25,7 @@ public final class Preferences {
     private String KEY_USERID_PUBLIC = "publicid";
     private String KEY_USERNAME = "username";
     private String KEY_CONTACTKEY = "contactkey";
-    private String KEY_COUNTRY_CODE = "countrycode";
+    private String KEY_COUNTRY_CODE = "country_code_iso";
     private String KEY_PHONE = "phone";
     private String KEY_EMAIL = "email";
     private String KEY_PUSH_REGID = "pushregid";
@@ -38,7 +39,7 @@ public final class Preferences {
 	public String strUserID = "";
     public String strUserName = "";
     public String strContactKey = "";
-    public Integer intCountryCode = 7;
+    public String strCountryCode = "";
     public String strPhone = "";
     public String strEmail = "";
     public String strPushRegID = "";
@@ -52,6 +53,7 @@ public final class Preferences {
 	
 	public Preferences(Context context) {
 		settings = context.getSharedPreferences(Constants.PREFS_NAME, 0);
+        this.context = context;
 	}
 	
 	public final Boolean loadPreferences(){
@@ -59,8 +61,8 @@ public final class Preferences {
 		strUserID = settings.getString(KEY_USERID, "");
         strUserName = settings.getString(KEY_USERNAME, "");
         strContactKey = settings.getString(KEY_CONTACTKEY, "");
-        intCountryCode = settings.getInt(KEY_COUNTRY_CODE,
-                R.integer.default_country_code);
+        strCountryCode = settings.getString(KEY_COUNTRY_CODE,
+                context.getResources().getString(R.string.default_country_code_iso));
         strPhone = settings.getString(KEY_PHONE, "");
         strEmail = settings.getString(KEY_EMAIL, "");
         strPushRegID = settings.getString(KEY_PUSH_REGID, "");
@@ -79,7 +81,7 @@ public final class Preferences {
 		editor.putString(KEY_USERID, strUserID);
         editor.putString(KEY_USERNAME, strUserName);
         editor.putString(KEY_CONTACTKEY, strContactKey);
-        editor.putInt(KEY_COUNTRY_CODE, intCountryCode);
+        editor.putString(KEY_COUNTRY_CODE, strCountryCode);
         editor.putString(KEY_PHONE, strPhone);
         editor.putString(KEY_EMAIL, strEmail);
         editor.putInt(KEY_USERID_PUBLIC, intPublicID);
