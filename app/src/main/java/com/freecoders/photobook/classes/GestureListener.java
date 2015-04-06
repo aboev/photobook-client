@@ -102,12 +102,12 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         boolPullingUp = !boolDown;
     }
 
-    private void closeBookmarkTab () {
+    public void closeBookmarkTab () {
         setBookmarkHeight(0);
         boolOpen = false;
     }
 
-    private void openBookmarkTab () {
+    public void openBookmarkTab () {
         setBookmarkHeight(Constants.BOOKMARKS_HEIGHT);
         boolOpen = true;
     }
