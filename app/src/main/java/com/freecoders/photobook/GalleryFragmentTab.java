@@ -57,7 +57,7 @@ public class GalleryFragmentTab extends Fragment {
     private ImageUploader mImageLoader = new ImageUploader();
     private GalleryAdapter mAdapter;
     private StaggeredGridView mGridView;
-    private GestureListener gestureListener;
+    public GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
     private View colorSelector;
