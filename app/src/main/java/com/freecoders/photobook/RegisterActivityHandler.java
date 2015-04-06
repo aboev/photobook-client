@@ -190,7 +190,7 @@ public class RegisterActivityHandler {
                                 Photobook.getPreferences().strUserName = strName;
                                 Photobook.getPreferences().intRegisterStatus =
                                         Constants.STATUS_REGISTERED;
-                                Photobook.getPreferences().intCountryCode = PhoneUtils.
+                                Photobook.getPreferences().strCountryCode = PhoneUtils.
                                         getCountryCode(strPhoneNumber);
                                 Photobook.getPreferences().savePreferences();
 
