@@ -90,7 +90,23 @@
 		     	android:padding="10dp"
 		     	android:onClick="doRegister" />
 		</LinearLayout>
-	    
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:autoLink="web"
+            android:gravity="center|bottom"
+            android:layout_marginTop="20dp"
+            android:text="@string/eula_notice"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:autoLink="web"
+            android:gravity="center|bottom"
+            android:layout_marginTop="20dp"
+            android:text="@string/privacy_policy_notice"/>
 	</LinearLayout>
 </ScrollView>
 
