@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -521,28 +523,22 @@ public class ImageDetailsActivity extends ActionBarActivity {
     }
 
     public void getLikesListView(View view){
-        int width = ImageUtils.dpToPx(300);
+        String inflater = Context.LAYOUT_INFLATER_SERVICE;
+        LayoutInflater vi = (LayoutInflater) getSystemService(inflater);
+        View popupView = vi.inflate(R.layout.popup, null);
         final int height = ImageUtils.dpToPx(50);
-        final int padding = 2;
+        final int padding = ImageUtils.dpToPx(2);
+        final LinearLayout ll = (LinearLayout)popupView.findViewById(R.id.popupLinearLayout);
         final Context context = this;
-        final HorizontalScrollView scrollView = new HorizontalScrollView(context);
-        final LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        scrollView.setPadding(padding, padding, padding, padding);
-        scrollView.setLayoutParams(params);
-        scrollView.addView(linearLayout);
-        scrollView.setHorizontalScrollBarEnabled(false);
         final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(scrollView);
-        popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_2));
-        popup.setWidth(width);
+        popup.setContentView(popupView);
+        popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popup.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setFocusable(true);
         int[] location = new int[2];
         mLikeCountTextView.getLocationOnScreen(location);
-        popup.showAtLocation(scrollView, Gravity.NO_GRAVITY, location[0],
+        popup.showAtLocation(mLikeCountTextView, Gravity.NO_GRAVITY, location[0],
                 location[1] - (int) (height * 1.5));
         if (likes == null) return;
         ServerInterface.getUserProfileRequest(this, likes,
@@ -558,7 +554,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
                         image.setLayoutParams(params);
                         image.setPadding(padding, padding, padding, padding);
                         image.setImageResource(R.drawable.avatar);
-                        linearLayout.addView(image);
+                        ll.addView(image);
                         final UserProfile user = (UserProfile) pair.getValue();
                         final String id = (String) pair.getKey();
                         if ((user != null) && (user.avatar != null)
@@ -568,11 +564,6 @@ public class ImageDetailsActivity extends ActionBarActivity {
                             @Override
                             public void onClick(View view) {
                                 openUserProfileFragment(id);
-                                /*FragmentManager fm = getFragmentManager();
-                                UserProfileFragment profileDialogFragment =
-                                        new UserProfileFragment();
-                                profileDialogFragment.setUserId(id);
-                                profileDialogFragment.show(fm, "users_profile");*/
                             }
                         });
                     }
