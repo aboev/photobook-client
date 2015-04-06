@@ -11,7 +11,7 @@
     <string name="name_hint">Alice Gallakher</string>
     <string name="email_hint">agallakher@gmail.com</string>
     <string name="phone_hint">+1(111)223-34-45</string>
-    <integer name="default_country_code">7</integer>
+    <string name="default_country_code_iso">RU</string>
     <string name="sms_hint">1234</string>
     <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
