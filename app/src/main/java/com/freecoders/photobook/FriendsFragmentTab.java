@@ -30,7 +30,7 @@ public class FriendsFragmentTab extends Fragment {
     public ArrayList<FriendEntry> friendsList;
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
-    private GestureListener gestureListener;
+    public GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
     private View colorSelector;
