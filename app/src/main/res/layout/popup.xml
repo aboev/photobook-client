@@ -2,17 +2,17 @@
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:scrollbars="none">
+    android:scrollbars="none"
+    android:background="@drawable/popup_2"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="20dp">
     <LinearLayout
         android:id="@+id/popupLinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="10dp"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp"
-        android:background="@drawable/popup_2">
+        android:orientation="horizontal">
     </LinearLayout>
 </HorizontalScrollView>
