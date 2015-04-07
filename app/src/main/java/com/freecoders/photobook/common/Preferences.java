@@ -34,6 +34,8 @@ public final class Preferences {
     private String KEY_UNREAD_IMAGES2 = "images_unread2";
     private String KEY_REGISTER_STATUS = "status";
     private String KEY_SERVER_INFO = "server_info";
+    private String KEY_LAST_OPENED_TAB = "last_tab";
+    private String KEY_FIRST_START = "first_start";
 
     public Integer intPublicID = 0;
 	public String strUserID = "";
@@ -50,6 +52,8 @@ public final class Preferences {
             new HashMap<String, Integer>(); //Image IDs that have unread comments
     public Integer intRegisterStatus = 0;   // 0 - not registered, 
             // 1 - waiting for sms code, 2 registered
+    public Integer intLastOpenedTab = 0;
+    public Boolean boolFirstStart = true;
 	
 	public Preferences(Context context) {
 		settings = context.getSharedPreferences(Constants.PREFS_NAME, 0);
@@ -73,6 +77,8 @@ public final class Preferences {
         unreadImagesMap = gson.fromJson(
                 settings.getString(KEY_UNREAD_IMAGES2, "{}"), type);
         intRegisterStatus = settings.getInt(KEY_REGISTER_STATUS, 0);
+        intLastOpenedTab = settings.getInt(KEY_LAST_OPENED_TAB, 0);
+        boolFirstStart = settings.getBoolean(KEY_FIRST_START, true);
 		return strUserID.length() != 0;
 	}
 	
@@ -91,6 +97,8 @@ public final class Preferences {
         editor.putString(KEY_UNREAD_IMAGES2, gson.toJson(unreadImagesMap));
         editor.putInt(KEY_REGISTER_STATUS, intRegisterStatus);
         editor.putString(KEY_SERVER_INFO, strServerInfo);
+        editor.putInt(KEY_LAST_OPENED_TAB, intLastOpenedTab);
+        editor.putBoolean(KEY_FIRST_START, boolFirstStart);
 		editor.commit();
 	}
 	
