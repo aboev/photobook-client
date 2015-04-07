@@ -20,6 +20,7 @@ import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.StringRequest;
 import com.freecoders.photobook.network.VolleySingleton;
+import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -38,10 +39,13 @@ import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class RegisterActivityHandler {
+    private static String LOG_TAG = "RegisterActivityHandler";
+    
 	private RegisterActivity activity;
 	
 	public RegisterActivityHandler(RegisterActivity activity){
@@ -69,6 +73,22 @@ public class RegisterActivityHandler {
                 activity.phoneEditText.setText(
                         PhoneUtils.getNormalizedPhoneNumber(strPhone));
         }
+        activity.privacyPolcyTextView.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openPrivacyPolicy();
+                }
+            }
+        );
+        activity.eulaTextView.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openEULA();
+                }
+            }
+        );
     }
 
     public void showSMSCodeDialog(){
@@ -81,21 +101,21 @@ public class RegisterActivityHandler {
         alert.setView(input);
 
         alert.setPositiveButton(R.string.alert_ok_button,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        doRegister(activity.nameEditText.getText().toString(),
-                                activity.emailEditText.getText().toString(),
-                                input.getText().toString(), activity.boolAvatarSelected);
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    doRegister(activity.nameEditText.getText().toString(),
+                            activity.emailEditText.getText().toString(),
+                            input.getText().toString(), activity.boolAvatarSelected);
+                }
+            });
 
         alert.setNegativeButton(R.string.alert_cancel_button,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Photobook.getPreferences().intRegisterStatus =
-                                Constants.STATUS_UNREGISTERED;
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    Photobook.getPreferences().intRegisterStatus =
+                            Constants.STATUS_UNREGISTERED;
+                }
+            });
         alert.show();
     }
 
@@ -105,44 +125,44 @@ public class RegisterActivityHandler {
         final String strUserID = Photobook.getPreferences().strUserID;
         params.put(Constants.HEADER_USERID, strUserID);
         MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
-                avatarImage, params,
-                new Response.Listener<String>() {
+            avatarImage, params,
+            new Response.Listener<String>() {
 
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
-                        try {
-                            JSONObject obj = new JSONObject( response);
-                            String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
-                                    getString(Constants.KEY_URL_SMALL);
-                            UserProfile profile = new UserProfile();
-                            profile.setNullFields();
-                            profile.avatar = strUrl;
-                            ServerInterface.updateProfileRequest(activity, profile,
-                                    strUserID,
-                                    new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String response) {
-                                            File avatar = new File(Photobook.getMainActivity().
-                                                    getFilesDir(), Constants.FILENAME_AVATAR);
-                                            if (avatar.exists())
-                                                Photobook.getMainActivity().mDrawerAvatarImage.
-                                                        setImageURI(Uri.fromFile(avatar));
-                                        }
-                                    }, null);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
-                        }
-                        //Toast.makeText(context, "Avatar downloaded ",
-                        //        Toast.LENGTH_LONG).show();
-                        //((Activity) context).finish();
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    try {
+                        JSONObject obj = new JSONObject( response);
+                        String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
+                                getString(Constants.KEY_URL_SMALL);
+                        UserProfile profile = new UserProfile();
+                        profile.setNullFields();
+                        profile.avatar = strUrl;
+                        ServerInterface.updateProfileRequest(activity, profile,
+                                strUserID,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        File avatar = new File(Photobook.getMainActivity().
+                                                getFilesDir(), Constants.FILENAME_AVATAR);
+                                        if (avatar.exists())
+                                            Photobook.getMainActivity().mDrawerAvatarImage.
+                                                    setImageURI(Uri.fromFile(avatar));
+                                    }
+                                }, null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                     }
-                }, new Response.ErrorListener() {
+                    //Toast.makeText(context, "Avatar downloaded ",
+                    //        Toast.LENGTH_LONG).show();
+                    //((Activity) context).finish();
+                }
+            }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                    Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                    Log.d(LOG_TAG, "Error: " + error.getMessage());
             }
         }
         );
@@ -154,11 +174,12 @@ public class RegisterActivityHandler {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", "*/*");
         headers.put(Constants.KEY_CODE, strCode);
+        final String strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
+                activity.phoneEditText.getText().toString());
+        headers.put(Constants.KEY_NUMBER, strPhoneNumber );
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(Constants.KEY_NAME, activity.nameEditText.getText().toString() );
 		params.put(Constants.KEY_EMAIL, activity.emailEditText.getText().toString() );
-        final String strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
-                activity.phoneEditText.getText().toString());
         params.put(Constants.KEY_PHONE, strPhoneNumber);
         Photobook.getPreferences().strContactKey = strPhoneNumber;
 
@@ -167,60 +188,60 @@ public class RegisterActivityHandler {
 		pDialog.show();
 
         StringRequest registerRequest = new StringRequest(Request.Method.POST,
-                Constants.SERVER_URL+"/user",
-                new Gson().toJson(params), headers,
-                new Response.Listener<String>() {
+            Constants.SERVER_URL+"/user",
+            new Gson().toJson(params), headers,
+            new Response.Listener<String>() {
 
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
-                        pDialog.dismiss();
-                        String strID = "";
-                        Integer intPublicID = 0;
-                        try {
-                            JSONObject resJson = new JSONObject(response);
-                            String strResult = resJson.getString(Constants.RESPONSE_RESULT);
-                            if (strResult.equals(Constants.RESPONSE_RESULT_OK)) {
-                                String strData = resJson.getString(Constants.RESPONSE_DATA);
-                                JSONObject obj = new JSONObject(strData);
-                                strID = obj.getString(Constants.KEY_ID);
-                                intPublicID = obj.getInt(Constants.KEY_PUBLIC_ID);
-                                Photobook.getPreferences().strUserID = strID;
-                                Photobook.getPreferences().intPublicID = intPublicID;
-                                Photobook.getPreferences().strUserName = strName;
-                                Photobook.getPreferences().intRegisterStatus =
-                                        Constants.STATUS_REGISTERED;
-                                Photobook.getPreferences().strCountryCode = PhoneUtils.
-                                        getCountryCode(strPhoneNumber);
-                                Photobook.getPreferences().savePreferences();
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    pDialog.dismiss();
+                    String strID = "";
+                    Integer intPublicID = 0;
+                    try {
+                        JSONObject resJson = new JSONObject(response);
+                        String strResult = resJson.getString(Constants.RESPONSE_RESULT);
+                        if (strResult.equals(Constants.RESPONSE_RESULT_OK)) {
+                            String strData = resJson.getString(Constants.RESPONSE_DATA);
+                            JSONObject obj = new JSONObject(strData);
+                            strID = obj.getString(Constants.KEY_ID);
+                            intPublicID = obj.getInt(Constants.KEY_PUBLIC_ID);
+                            Photobook.getPreferences().strUserID = strID;
+                            Photobook.getPreferences().intPublicID = intPublicID;
+                            Photobook.getPreferences().strUserName = strName;
+                            Photobook.getPreferences().intRegisterStatus =
+                                    Constants.STATUS_REGISTERED;
+                            Photobook.getPreferences().strCountryCode = PhoneUtils.
+                                    getCountryCode(strPhoneNumber);
+                            Photobook.getPreferences().savePreferences();
 
-                                if (boolUploadAvatar) sendAvatar();
+                            if (boolUploadAvatar) sendAvatar();
 
-                                if (Photobook.getFriendsFragmentTab() != null)
-                                    Photobook.getFriendsFragmentTab().refreshContactList();
-                                if (Photobook.getGalleryFragmentTab() != null)
-                                    Photobook.getGalleryFragmentTab().syncGallery();
-                                Photobook.getMainActivity().mHandler.registerPushID();
-                                activity.finish();
-                            } else if (resJson.has(Constants.RESPONSE_CODE) &&
-                                    resJson.getInt(Constants.RESPONSE_CODE) == 121) {
-                                Toast.makeText(activity, R.string.alert_wrong_sms,
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        } catch (JSONException e) {
-                            Log.d(Constants.LOG_TAG, "Json parse error");
-                        }
-                        if ((strID == null) || (strID.isEmpty() == true))
-                            Toast.makeText(activity, "Registration failed",
+                            if (Photobook.getFriendsFragmentTab() != null)
+                                Photobook.getFriendsFragmentTab().refreshContactList();
+                            if (Photobook.getGalleryFragmentTab() != null)
+                                Photobook.getGalleryFragmentTab().syncGallery();
+                            Photobook.getMainActivity().mHandler.registerPushID();
+                            activity.finish();
+                        } else if (resJson.has(Constants.RESPONSE_CODE) &&
+                                resJson.getInt(Constants.RESPONSE_CODE) == 121) {
+                            Toast.makeText(activity, R.string.alert_wrong_sms,
                                     Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        Log.d(LOG_TAG, "Json parse error");
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
-                        pDialog.dismiss();
-                    }
+                    if ((strID == null) || (strID.isEmpty() == true))
+                        Toast.makeText(activity, "Registration failed",
+                                Toast.LENGTH_LONG).show();
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(LOG_TAG, "Error: " + error.getMessage());
+                    pDialog.dismiss();
+                }
+            }
         );
 		VolleySingleton.getInstance(activity).addToRequestQueue(registerRequest);
 	}
@@ -230,12 +251,14 @@ public class RegisterActivityHandler {
         final ProgressDialog pDialog = new ProgressDialog(activity);
 		pDialog.setMessage(activity.getResources().getString(R.string.dialog_creating_account));
         pDialog.show();
+        final String strPhoneNumber = PhoneUtils.getNormalizedPhoneNumber(
+                activity.phoneEditText.getText().toString());
         ServerInterface.getSMSCodeRequest(
-            activity, activity.phoneEditText.getText().toString(),
+            activity, strPhoneNumber,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    Log.d(Constants.LOG_TAG, response);
+                    Log.d(LOG_TAG, response);
                     pDialog.dismiss();
                     try {
                         JSONObject obj = new JSONObject(response);
@@ -253,13 +276,13 @@ public class RegisterActivityHandler {
                             showSMSCodeDialog();
                         }
                     } catch (JSONException e) {
-                        Log.d(Constants.LOG_TAG, "Json parse error");
+                        Log.d(LOG_TAG, "Json parse error");
                     }
                 }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(Constants.LOG_TAG, "Error: " + error.getMessage());
+                Log.d(LOG_TAG, "Error: " + error.getMessage());
                 pDialog.dismiss();
             }
         });
@@ -279,5 +302,17 @@ public class RegisterActivityHandler {
                     Toast.LENGTH_LONG).show();
         }
         return res;
+    }
+
+    private void openEULA() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                activity.getResources().getString(R.string.link_eula)));
+        activity.startActivity(browserIntent);
+    }
+
+    private void openPrivacyPolicy() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                activity.getResources().getString(R.string.link_privacy_policy)));
+        activity.startActivity(browserIntent);
     }
 }
