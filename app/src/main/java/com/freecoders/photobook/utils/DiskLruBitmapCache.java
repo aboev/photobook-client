@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
  * Created by Alex on 2014-11-29.
  */
 public class DiskLruBitmapCache implements ImageLoader.ImageCache {
+    private static String LOG_TAG = "DiskLruBitmapCache";
 
     private com.jakewharton.disklrucache.DiskLruCache mDiskCache;
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
@@ -85,19 +86,19 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
                 mDiskCache.flush();
                 editor.commit();
                 if ( BuildConfig.DEBUG ) {
-                    Log.d( Constants.LOG_TAG, "image put on disk cache " + url +
+                    Log.d( LOG_TAG, "image put on disk cache " + url +
                         " at " + key);
                 }
             } else {
                 editor.abort();
                 if ( BuildConfig.DEBUG ) {
-                    Log.d( Constants.LOG_TAG, "ERROR on: image put on disk cache " + url +
+                    Log.d( LOG_TAG, "ERROR on: image put on disk cache " + url +
                             " at " + key);
                 }
             }
         } catch (IOException e) {
             if ( BuildConfig.DEBUG ) {
-                Log.d( Constants.LOG_TAG, "ERROR on: image put on disk cache " + url +
+                Log.d( LOG_TAG, "ERROR on: image put on disk cache " + url +
                         " at " + key);
             }
             try {
@@ -136,7 +137,7 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
         }
 
         if ( BuildConfig.DEBUG ) {
-            Log.d( Constants.LOG_TAG, bitmap == null ? "" : "image read from disk for "
+            Log.d( LOG_TAG, bitmap == null ? "" : "image read from disk for "
                     + url + " from " + key);
         }
 
@@ -165,7 +166,7 @@ public class DiskLruBitmapCache implements ImageLoader.ImageCache {
 
     public void clearCache() {
         if ( BuildConfig.DEBUG ) {
-            Log.d( Constants.LOG_TAG, "disk cache CLEARED");
+            Log.d( LOG_TAG, "disk cache CLEARED");
         }
         try {
             mDiskCache.delete();
