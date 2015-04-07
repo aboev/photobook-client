@@ -37,6 +37,7 @@ import android.widget.TextView;
 import java.io.File;
 
 public class MainActivity extends FragmentActivity {
+    private static String LOG_TAG = "MainActivity";
 
     ViewPager mViewPager;
 
@@ -163,7 +164,7 @@ public class MainActivity extends FragmentActivity {
             new SplashTimeoutTask().execute();
         }
 
-        Log.d(Constants.LOG_TAG, "Loaded main activity");
+        Log.d(LOG_TAG, "Loaded main activity");
     }
 
     public class SplashTimeoutTask extends AsyncTask<String, Void, Boolean> {
@@ -222,4 +223,3 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
-
