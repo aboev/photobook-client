@@ -91,6 +91,7 @@
 		     	android:onClick="doRegister" />
 		</LinearLayout>
         <TextView
+            android:id="@+id/text_eula"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
@@ -100,6 +101,7 @@
             android:text="@string/eula_notice"/>
 
         <TextView
+            android:id="@+id/text_privacy_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
@@ -109,4 +111,3 @@
             android:text="@string/privacy_policy_notice"/>
 	</LinearLayout>
 </ScrollView>
-
