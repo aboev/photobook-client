@@ -26,6 +26,7 @@ import java.util.HashMap;
  * Created by Alex on 2014-12-10.
  */
 public class FeedLoader {
+    private static String LOG_TAG = "FeedLoader";
     //private ArrayList<FeedEntryJson> mFeedList;
     //private FeedAdapter mAdapter;
     private FeedListView mFeedListView;
@@ -43,7 +44,7 @@ public class FeedLoader {
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put("Accept", "*/*");
-        Log.d(Constants.LOG_TAG, "Load feed request with offset = " + mOffset +
+        Log.d(LOG_TAG, "Load feed request with offset = " + mOffset +
                 " and limit " + mPageSize);
         StringRequest getFeedRequest = new StringRequest(Request.Method.GET,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FEED+
@@ -52,9 +53,9 @@ public class FeedLoader {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.LOG_TAG, response.toString());
+                        Log.d(LOG_TAG, response.toString());
                         try {
-                            Log.d(Constants.LOG_TAG, "Response " + response);
+                            Log.d(LOG_TAG, "Response " + response);
                             Gson gson = new Gson();
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
@@ -75,12 +76,12 @@ public class FeedLoader {
                                 }
                                 mOffset = mFeedListView.mFeedList.size();
                                 isLoading = false;
-                                Log.d(Constants.LOG_TAG, "Loaded  " + feedList.size()
+                                Log.d(LOG_TAG, "Loaded  " + feedList.size()
                                         + " feed items");
                                 //mAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.LOG_TAG, "Exception " + e.getLocalizedMessage());
+                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                             handleFailure();
                         }
                     }
@@ -90,7 +91,7 @@ public class FeedLoader {
             public void onErrorResponse(VolleyError error) {
                  if ((error != null) && (error.networkResponse != null)
                          && (error.networkResponse.data != null))
-                    Log.d(Constants.LOG_TAG, "Error: " +
+                    Log.d(LOG_TAG, "Error: " +
                             new String(error.networkResponse.data));
                     handleFailure();
                 }
