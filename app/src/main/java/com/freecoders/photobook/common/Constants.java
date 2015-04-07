@@ -25,6 +25,7 @@ public class Constants {
     public final static String SERVER_PATH_IMAGE_PRESIGNED_URL = "/image/upload_url";
     public final static String SERVER_PATH_CONTACTS = "/contacts";
     public final static String SERVER_PATH_FRIENDS = "/friends";
+    public final static String SERVER_PATH_CHANNELS = "/channels";
     public final static String SERVER_PATH_FEED = "/feed";
     public final static String SERVER_PATH_LIKE = "/like";
     public final static String SERVER_PATH_COMMENTS = "/comments";
@@ -49,6 +50,7 @@ public class Constants {
     public final static String KEY_NAME = "name";
     public final static String KEY_EMAIL = "email";
     public final static String KEY_PHONE = "phone";
+    public final static String KEY_NUMBER = "number";
     public final static String KEY_CODE = "code";
     public final static String KEY_ID = "id";
     public final static String KEY_PUBLIC_ID = "public_id";
