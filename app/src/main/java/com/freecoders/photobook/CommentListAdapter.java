@@ -25,6 +25,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by Alex on 2015-02-15.
  */
 public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
+    private static String LOG_TAG = "CommentListAdapter";
 
     int resource;
     String response;
@@ -94,7 +95,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
         if ((comment.author != null) && (comment.author.avatar != null)
                 && (comment.author.avatar.isEmpty() == false)
                 && (URLUtil.isValidUrl(comment.author.avatar))) {
-            Log.d(Constants.LOG_TAG, "Requesting avatar for " + comment.author.avatar);
+            Log.d(LOG_TAG, "Requesting avatar for " + comment.author.avatar);
             mAvatarLoader.get(comment.author.avatar.toString(),
                     new ImageListener(position, holder.imgAvatar));
         }
