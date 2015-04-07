@@ -10,6 +10,7 @@ public class UserProfile {
     public String avatar = "";
     public String id = "";
     public String pushid = "";
+    public Integer status;
 
     public void setNullFields(){
         if (name.isEmpty()) name = null;
@@ -20,4 +21,3 @@ public class UserProfile {
         if (pushid.isEmpty()) pushid = null;
     }
 }
-
