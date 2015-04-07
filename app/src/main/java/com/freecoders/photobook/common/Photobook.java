@@ -20,6 +20,8 @@ import java.io.IOException;
  * Created by Alex on 2014-11-30.
  */
 public class Photobook extends Application {
+    private static String LOG_TAG = "Photobook";
+
     private static FriendsDataSource friendsDataSource;
     private static ImagesDataSource imagesDataSource;
     private static FriendsFragmentTab mFriendsTab;
@@ -53,7 +55,7 @@ public class Photobook extends Application {
         } catch (IOException e) {
             mAvatarDiskLruCache = null;
             mImageDiskLruCache = null;
-            Log.d(Constants.LOG_TAG, "Failed to initialize disk cache");
+            Log.d(LOG_TAG, "Failed to initialize disk cache");
         }
     }
 
