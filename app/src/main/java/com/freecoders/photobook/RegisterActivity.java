@@ -34,12 +34,15 @@ import java.io.File;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends ActionBarActivity {
+    private static String LOG_TAG = "RegisterActivity";
 	
 	EditText nameEditText;
 	EditText emailEditText;
     EditText phoneEditText;
     TextView smsTextView;
     EditText smsEditText;
+    TextView eulaTextView;
+    TextView privacyPolcyTextView;
     CircleImageView avatarImage;
 	
 	RegisterActivityHandler handler;
@@ -55,6 +58,8 @@ public class RegisterActivity extends ActionBarActivity {
         phoneEditText = (EditText) findViewById(R.id.phone);
         smsTextView = (TextView) findViewById(R.id.text_sms_code);
         smsEditText = (EditText) findViewById(R.id.sms_code);
+        eulaTextView = (TextView) findViewById(R.id.text_eula);
+        privacyPolcyTextView = (TextView) findViewById(R.id.text_privacy_policy);
 		avatarImage = (CircleImageView) findViewById(R.id.imageViewAvatar);
 		
 		avatarImage.setOnClickListener(new View.OnClickListener() {
@@ -118,9 +123,8 @@ public class RegisterActivity extends ActionBarActivity {
             avatarImage.setImageResource(0);
             avatarImage.setImageURI(Crop.getOutput(data));
             boolAvatarSelected = true;
-            Log.d(Constants.LOG_TAG, "Setting avatar URI to " + Crop.getOutput(data));
+            Log.d(LOG_TAG, "Setting avatar URI to " + Crop.getOutput(data));
         }
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
 }
-
