@@ -13,6 +13,7 @@ import com.freecoders.photobook.common.Constants;
 public class MemoryLruCache
         extends LruCache<String, Bitmap>
         implements ImageLoader.ImageCache {
+    private static String LOG_TAG = "MemoryLruCache";
 
     public MemoryLruCache() {
         this(getDefaultLruCacheSize());
@@ -34,7 +35,7 @@ public class MemoryLruCache
 
     @Override
     public void putBitmap(String url, Bitmap bitmap) {
-        Log.d(Constants.LOG_TAG, "Putting cache value for " + url + ", control pixel " +
+        Log.d(LOG_TAG, "Putting cache value for " + url + ", control pixel " +
                 bitmap.getPixel(10,10));
         put(url, bitmap);
     }
