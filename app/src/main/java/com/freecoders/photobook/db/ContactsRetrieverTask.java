@@ -66,7 +66,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
         }
 
         ServerInterface.postContactsRequest(mFriendsTab.mActivity,
-                contactKeys, Photobook.getPreferences().strUserID,
+                hContactKeys, Photobook.getPreferences().strUserID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -78,18 +78,21 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
                                     new Gson().fromJson(objMap.toString(),
                                             new TypeToken<HashMap<String, UserProfile>>() {
                                             }.getType());
-                            for (int i = 0; i < contactKeys.size(); i++) {
-                                if (retMap.containsKey(contactKeys.get(i))) {
+                            for (int i = 0; i < hContactKeys.size(); i++) {
+                                if (retMap.containsKey(hContactKeys.get(i))) {
                                     FriendEntry friend = Photobook.getFriendsDataSource().
                                             getFriendByContactKey(contactKeys.get(i));
-                                    UserProfile profile = retMap.get(contactKeys.get(i));
+                                    UserProfile profile = retMap.get(hContactKeys.get(i));
                                     if (friend != null) {
 
                                         friend.setName(profile.name);
                                         friend.setAvatar(profile.avatar);
                                         friend.setUserId(profile.id);
                                         if (friend.getStatus() == FriendEntry.INT_STATUS_NULL) {
-                                            friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
+                                            if (profile.status != null)
+                                                friend.setStatus(profile.status + 1);
+                                            else
+                                                friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
                                         }
                                         Photobook.getFriendsDataSource().updateFriend(friend);
                                     }
