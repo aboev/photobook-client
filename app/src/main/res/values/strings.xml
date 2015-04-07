@@ -17,6 +17,8 @@
     <string name="register">Sign up</string>
     <string name="eula_notice">By registering in service you agree to <a href="http://dev.snufan.com/eula.html">license agreement</a></string>
     <string name="privacy_policy_notice"><a href="http://dev.snufan.com/privacy_policy.html">Privacy policy</a></string>
+    <string name="link_eula">http://dev.snufan.com/eula.html</string>
+    <string name="link_privacy_policy">http://dev.snufan.com/privacy_policy.html</string>
     <string name="apache_notice">Some components are licensed under Apache 2.0</string>
     <string name="btn_follow_text">Follow</string>
     <string name="btn_unfollow_text">Unfollow</string>
