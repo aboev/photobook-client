@@ -13,21 +13,29 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.android.volley.Response;
 import com.freecoders.photobook.classes.BookmarkAdapter;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ContactsRetrieverTask;
 import com.freecoders.photobook.db.FriendEntry;
+import com.freecoders.photobook.db.ImageEntry;
+import com.freecoders.photobook.gson.ImageJson;
+import com.freecoders.photobook.gson.UserProfile;
+import com.freecoders.photobook.network.ServerInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressLint("NewApi") 
 public class FriendsFragmentTab extends Fragment {
+    private static String LOG_TAG = "FriendsFragmentTab";
 
     private ListView listView;
     public MainActivity mActivity;
     public ArrayList<FriendEntry> friendsList;
+    public ArrayList<FriendEntry> channelList;
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
     public GestureListener gestureListener;
@@ -51,7 +59,7 @@ public class FriendsFragmentTab extends Fragment {
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         colorSelector = (View) rootView.findViewById(R.id.bookmarkColorSelector1);
         setRetainInstance(true);
-        Log.d(Constants.LOG_TAG, "Initializing FriendsFragmentTab");
+        Log.d(LOG_TAG, "Initializing FriendsFragmentTab");
 
         friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                 new int[]{FriendEntry.INT_STATUS_DEFAULT,
@@ -98,6 +106,7 @@ public class FriendsFragmentTab extends Fragment {
 
         if (boolUpdateList && !Photobook.getPreferences().strUserID.isEmpty()) {
             refreshContactList();
+            refreshChannelList();
             boolUpdateList = false;
         }
 
@@ -112,10 +121,26 @@ public class FriendsFragmentTab extends Fragment {
     }
 
     public void refreshContactList(){
-        Log.d(Constants.LOG_TAG, "Refreshing contact list");
+        Log.d(LOG_TAG, "Refreshing contact list");
         if (Photobook.getPreferences().strUserID.isEmpty()) return;
 
         contactsRetrieverTask = new ContactsRetrieverTask(this, true);
         contactsRetrieverTask.execute();
+    }
+
+    public void refreshChannelList(){
+        ServerInterface.getChannelsRequest(getActivity(),
+            new Response.Listener<ArrayList<UserProfile>>() {
+                @Override
+                public void onResponse(ArrayList<UserProfile> response) {
+                    channelList.clear();
+                    for (int i = 0; i < response.size(); i++) {
+                        FriendEntry channel = new FriendEntry();
+                        channel.setName(response.get(i).name);
+                        channel.setAvatar(response.get(i).avatar);
+                        channel.setUserId(response.get(i).id);
+                        channelList.add(channel);
+                    }
+        }}, null);
     }
 }
