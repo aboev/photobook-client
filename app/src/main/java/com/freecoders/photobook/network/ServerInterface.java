@@ -9,6 +9,7 @@ import com.android.volley.VolleyError;
 import com.freecoders.photobook.CommentListAdapter;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.db.ContactsRetrieverTask;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.ServerResponse;
@@ -19,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -633,7 +635,7 @@ public class ServerInterface {
                                             final Response.Listener<String> responseListener,
                                             final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<String,String>();
-        headers.put("number", strPhoneNumber);
+        headers.put(Constants.KEY_NUMBER, strPhoneNumber);
         headers.put("Accept", "*/*");
         Log.d(LOG_TAG, "Receive sms code request");
         StringRequest getSMSCodeRequest = new StringRequest(Request.Method.GET,
@@ -705,6 +707,52 @@ public class ServerInterface {
         );
         VolleySingleton.getInstance(Photobook.getMainActivity()).
                 addToRequestQueue(getServerInfoRequest);
+    }
+
+    public static final void getChannelsRequest (Context context,
+            final Response.Listener<ArrayList<UserProfile>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        headers.put("Accept", "*/*");
+        Log.d(LOG_TAG, "Get channels request");
+        StringRequest getChannelsRequest = new StringRequest(Request.Method.GET,
+            Constants.SERVER_URL+Constants.SERVER_PATH_CHANNELS,
+            "", headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse
+                            <ArrayList<UserProfile>>>(){}.getType();
+                    try {
+                        ServerResponse<ArrayList<UserProfile>> res =
+                                gson.fromJson(response, type);
+                        if (res != null && res.isSuccess() && res.data != null
+                                && responseListener != null)
+                            responseListener.onResponse(res.data);
+                        else if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    } catch (Exception e) {
+                        if (errorListener != null) errorListener.onErrorResponse(
+                                new VolleyError());
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            if ((error != null) && (error.networkResponse != null)
+                    && (error.networkResponse.data != null))
+                Log.d(LOG_TAG, "Error: " +
+                        new String(error.networkResponse.data));
+            if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getChannelsRequest);
     }
 
     public void sentFollowersRequest(String userId) {
