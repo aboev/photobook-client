@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.etsy.android.grid.StaggeredGridView;
 import com.freecoders.photobook.classes.BookmarkAdapter;
+import com.freecoders.photobook.classes.BookmarkHandler;
 import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
@@ -62,6 +63,7 @@ public class GalleryFragmentTab extends Fragment {
     private LinearLayout linearLayout;
     private View colorSelector;
     private BookmarkAdapter bookmarkAdapter;
+    public BookmarkHandler bookmarkHandler;
     private Boolean boolSyncGallery = true;
 
     @Override
@@ -78,7 +80,9 @@ public class GalleryFragmentTab extends Fragment {
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(OnItemClickListener);
         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
-        gestureListener = new GestureListener(getActivity(), horizontalScrollView, mGridView);
+        bookmarkHandler = new BookmarkHandler(horizontalScrollView,
+                Constants.BOOKMARKS_HEIGHT);
+        gestureListener = new GestureListener(getActivity(), mGridView, bookmarkHandler);
         mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
