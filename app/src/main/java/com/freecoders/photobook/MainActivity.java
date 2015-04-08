@@ -120,9 +120,10 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onPageSelected(int position) {
                         getActionBar().setSelectedNavigationItem(position);
+                        Photobook.getFriendsFragmentTab().bookmarkHandler.stopFling();
+                        Photobook.getGalleryFragmentTab().bookmarkHandler.stopFling();
                     }
                 });
-
 
         String[] mMenuItems = getResources().getStringArray(R.array.menu_items);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
