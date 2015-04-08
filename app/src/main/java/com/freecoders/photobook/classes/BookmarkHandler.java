@@ -10,11 +10,13 @@ import com.freecoders.photobook.common.Constants;
  */
 public class BookmarkHandler {
     private ViewGroup bookmarkView;
+    public Boolean boolOpen;
     private int defaultHeight;
 
     public BookmarkHandler(ViewGroup bookmarkView, int defaultHeight){
         this.bookmarkView = bookmarkView;
         this.defaultHeight = defaultHeight;
+        this.boolOpen = getHeight() > 0;
     }
 
     public int getHeight() {
@@ -30,10 +32,12 @@ public class BookmarkHandler {
 
     public void close(){
         setHeight(0);
+        boolOpen = false;
     }
 
     public void open(){
         setHeight(defaultHeight);
+        boolOpen = true;
     }
 
     public void stopFling() {

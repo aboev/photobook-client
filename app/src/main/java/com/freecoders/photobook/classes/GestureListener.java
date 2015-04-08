@@ -25,7 +25,6 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
     AbsListView mAbsListView;
     BookmarkHandler bookmarkHandler;
 
-    private Boolean boolOpen = false;
     private Boolean boolPullingDown = false;
     private Boolean boolPullingUp = false;
 
@@ -39,7 +38,6 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
         this.mAbsListView = absListView;
         this.mGestureDetector = new GestureDetector(context, this);
         this.bookmarkHandler = bookmarkHandler;
-        this.boolOpen = bookmarkHandler.getHeight() > 0;
     }
 
     @Override
@@ -61,11 +59,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener
             flingLen = 0;
         } else if ((event.getAction() == MotionEvent.ACTION_MOVE) ) {
             float dY = event.getRawY() - startY;
-            if (checkTopPosition() && (dY > 0) && (!boolOpen)) {
+            if (checkTopPosition() && (dY > 0) && (!bookmarkHandler.boolOpen)) {
                 bookmarkHandler.setHeight(Math.min((int) dY / 2, Constants.BOOKMARKS_HEIGHT));
                 updateFlingLen(event.getRawX(), event.getRawY());
                 return true;
-            } else if (checkTopPosition() && (dY < 0) && boolOpen) {
+            } else if (checkTopPosition() && (dY < 0) && bookmarkHandler.boolOpen) {
                 bookmarkHandler.setHeight(Math.max(Constants.BOOKMARKS_HEIGHT
                         + (int) dY / 2, 0));
                 updateFlingLen(event.getRawX(), event.getRawY());
