@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.android.volley.Response;
 import com.freecoders.photobook.classes.BookmarkAdapter;
+import com.freecoders.photobook.classes.BookmarkHandler;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
@@ -43,6 +44,7 @@ public class FriendsFragmentTab extends Fragment {
     private LinearLayout linearLayout;
     private View colorSelector;
     private BookmarkAdapter bookmarkAdapter;
+    public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
 
     public void setMainActivity(MainActivity activity) {
@@ -79,7 +81,9 @@ public class FriendsFragmentTab extends Fragment {
             }
         });
 
-        gestureListener = new GestureListener(getActivity(), horizontalScrollView, listView);
+        bookmarkHandler = new BookmarkHandler(horizontalScrollView,
+                Constants.BOOKMARKS_HEIGHT);
+        gestureListener = new GestureListener(getActivity(), listView, bookmarkHandler);
         listView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
