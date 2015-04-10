@@ -86,7 +86,8 @@ public class GalleryFragmentTab extends Fragment {
         mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
-                getResources().getStringArray(R.array.gallery_bookmark_items));
+                getResources().getStringArray(R.array.gallery_bookmark_items),
+                R.array.gallery_bookmark_icons);
         bookmarkAdapter.setOnItemSelectedListener(
             new BookmarkAdapter.onItemSelectedListener() {
                 @Override
@@ -95,14 +96,6 @@ public class GalleryFragmentTab extends Fragment {
                         mAdapter.clear();
                         mAdapter.addAll(mImageList);
                         mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null, null, new CallbackInterface() {
-                            public void onResponse(Object obj) {
-                                mImageList = (ArrayList<ImageEntry>) obj;
-                                mAdapter.clear();
-                                mAdapter.addAll((ArrayList<ImageEntry>) obj);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     } else if (position == 1) {
@@ -110,16 +103,7 @@ public class GalleryFragmentTab extends Fragment {
                         mAdapter.notifyDataSetChanged();
                         showBuckets();
                     } else if (position == 2) {
-                        mAdapter.clear();
-                        mAdapter.notifyDataSetChanged();
-                        new GalleryLoaderClass(null,
-                                ImageEntry.INT_STATUS_SHARED, new CallbackInterface() {
-                            public void onResponse(Object obj) {
-                                mAdapter.clear();
-                                mAdapter.addAll((ArrayList<ImageEntry>) obj);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        showSharedImages();
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     }
@@ -313,7 +297,7 @@ public class GalleryFragmentTab extends Fragment {
         for (int i = 0; i < buckets.size(); i++) {
             ImageEntry bucketThumb = new ImageEntry();
             bucketThumb.setTitle(buckets.get(i).strBucketName);
-            bucketThumb.setStatus(ImageEntry.INT_STATUS_SHARED);
+            bucketThumb.setStatus(ImageEntry.INT_STATUS_BUCKET);
             bucketThumb.setRatio(1);
             bucketThumb.setThumbUri(buckets.get(i).strTitleImageUrl);
             bucketThumb.setOrigUri(buckets.get(i).strTitleImageUrl);
@@ -324,6 +308,16 @@ public class GalleryFragmentTab extends Fragment {
         mAdapter.addAll(bucketThumbs);
         mAdapter.notifyDataSetChanged();
         mGridView.setOnItemClickListener(OnBucketClickListener);
+    }
+
+    public void showSharedImages () {
+        ArrayList<ImageEntry> sharedImages = new ArrayList<ImageEntry>();
+        for (int i = 0; i < mImageList.size(); i++)
+            if (mImageList.get(i).getStatus() == ImageEntry.INT_STATUS_SHARED)
+                sharedImages.add(mImageList.get(i));
+        mAdapter.clear();
+        mAdapter.addAll(sharedImages);
+        mAdapter.notifyDataSetChanged();
     }
 
     AdapterView.OnItemClickListener OnBucketClickListener
