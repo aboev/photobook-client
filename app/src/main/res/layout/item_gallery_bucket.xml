@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
+    android:padding="2dp"
+    android:background="@drawable/container_dropshadow">
+
+    <TextView
+        android:id="@+id/txtView"
+        android:layout_margin="1dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="4dp"
+        android:textSize="20sp"
+        android:text="Undermines with fruitful and"/>
+
+    <com.etsy.android.grid.util.DynamicHeightImageView
+        android:id="@+id/imgView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>
+
+</LinearLayout>
