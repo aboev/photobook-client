@@ -115,14 +115,13 @@ public class MainActivity extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
 
-        mViewPager.setCurrentItem(Photobook.getPreferences().intLastOpenedTab);
+        //mViewPager.setCurrentItem(Photobook.getPreferences().intLastOpenedTab);
+
         mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
                         getActionBar().setSelectedNavigationItem(position);
-                        Photobook.getFriendsFragmentTab().bookmarkHandler.stopFling();
-                        Photobook.getGalleryFragmentTab().bookmarkHandler.stopFling();
                         Photobook.getPreferences().intLastOpenedTab = position;
                         Photobook.getPreferences().savePreferences();
                     }
