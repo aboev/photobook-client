@@ -84,10 +84,11 @@ public class FriendsFragmentTab extends Fragment {
         bookmarkHandler = new BookmarkHandler(horizontalScrollView,
                 Constants.BOOKMARKS_HEIGHT);
         gestureListener = new GestureListener(getActivity(), listView, bookmarkHandler);
-        listView.setOnTouchListener(gestureListener);
+        //listView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
-                getResources().getStringArray(R.array.contacts_bookmark_items));
+                getResources().getStringArray(R.array.contacts_bookmark_items),
+                R.array.contacts_bookmark_icons);
         bookmarkAdapter.setOnItemSelectedListener(
                 new BookmarkAdapter.onItemSelectedListener() {
                     @Override
