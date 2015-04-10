@@ -79,8 +79,8 @@
         <item>@string/bookmark_contacts</item>
     </string-array>
     <string-array name="contacts_bookmark_icons">
-        <item>@drawable/ic_share</item>
-        <item>@drawable/ic_share</item>
+        <item>@drawable/ic_tab_friends</item>
+        <item>@drawable/ic_tab_contacts</item>
     </string-array>
     <string-array name="gallery_bookmark_items">
         <item>@string/bookmark_gallery</item>
@@ -88,8 +88,8 @@
         <item>@string/bookmark_shares</item>
     </string-array>
     <string-array name="gallery_bookmark_icons">
-        <item>@drawable/ic_share</item>
-        <item>@drawable/ic_share</item>
-        <item>@drawable/ic_share</item>
+        <item>@drawable/ic_tab_gallery</item>
+        <item>@drawable/ic_tab_folders</item>
+        <item>@drawable/ic_tab_shares</item>
     </string-array>
 </resources>
