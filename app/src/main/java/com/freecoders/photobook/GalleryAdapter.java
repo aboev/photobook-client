@@ -22,12 +22,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.utils.ImageUtils;
 import com.freecoders.photobook.utils.MemoryLruCache;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -66,6 +69,8 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
     {
         LinearLayout view;
         ImageEntry imageEntry = getItem(position);
+        if (imageEntry.getStatus() == ImageEntry.INT_STATUS_BUCKET)
+            return getViewForBucket(position, convertView, parent);
         View rowView = convertView;
         ViewHolder holder = null;
 
@@ -96,7 +101,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             holder.imgView.setImageResource(android.R.color.transparent);
             int orientation = ImageUtils.getExifOrientation(imageEntry.getOrigUri());
             new ImageLoadTask(holder, position, orientation,
-                false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                false, null).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             // ViewHolder contains actual image - only need to make image frame visible
             holder.position = position;
@@ -109,6 +114,41 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         return rowView;
     }
 
+    public View getViewForBucket(int position, View convertView, ViewGroup parent)
+    {
+        View rowView = convertView;
+        ViewHolder holder = null;
+        ImageEntry imageEntry = getItem(position);
+
+        if(rowView == null) {
+            String inflater = Context.LAYOUT_INFLATER_SERVICE;
+            LayoutInflater vi = (LayoutInflater)getContext().getSystemService(inflater);
+            rowView = vi.inflate(R.layout.item_gallery_bucket, null);
+            holder = new ViewHolder();
+            holder.textView = (TextView)rowView.findViewById(R.id.txtView);
+            holder.imgView = (DynamicHeightImageView)rowView.findViewById(R.id.imgView);
+            rowView.setTag(holder);
+        } else
+            holder = (ViewHolder) rowView.getTag();
+
+        final TextView txtView = holder.textView;
+        txtView.setVisibility(View.INVISIBLE);
+        txtView.setText(imageEntry.getTitle());
+        holder.position = position;
+        holder.imgView.setImageResource(android.R.color.transparent);
+        int orientation = ImageUtils.getExifOrientation(imageEntry.getOrigUri());
+
+        new ImageLoadTask(holder, position, orientation,
+                    false, new CallbackInterface() {
+            @Override
+            public void onResponse(Object obj) {
+                txtView.setVisibility(View.VISIBLE);
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        return rowView;
+    }
+
     public class ImageLoadTask extends AsyncTask<Integer, Integer, Boolean> {
         private int mPosition;
         private String mImgUri;
@@ -116,13 +156,15 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
         private final ImageEntry mImageEntry;
         private Boolean mBoolPrefetch;
         private int orientation = 0;
+        private CallbackInterface onFinish;
 
         public ImageLoadTask(ViewHolder holder, int position, int orientation,
-                             Boolean boolPrefetch){
+                Boolean boolPrefetch, CallbackInterface onFinish){
             this.mViewHolder = holder;
             this.mPosition = position;
             this.mImageEntry = getItem(position);
             this.orientation = orientation;
+            this.onFinish = onFinish;
             mImgUri = mImageEntry.getThumbUri();
             if (mImageEntry.getThumbUri().isEmpty() == true) {
                 mImgUri = mImageEntry.getOrigUri();
@@ -177,6 +219,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 });
                 populateImageFrame(mViewHolder, mPosition);
             }
+            if (onFinish != null) onFinish.onResponse(null);
             return true;
         }
     }
