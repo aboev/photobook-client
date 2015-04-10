@@ -142,7 +142,12 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                     false, new CallbackInterface() {
             @Override
             public void onResponse(Object obj) {
-                txtView.setVisibility(View.VISIBLE);
+                Photobook.getMainActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtView.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -217,7 +222,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                             mViewHolder.imgView.setImageBitmap(bitmap);
                     }
                 });
-                populateImageFrame(mViewHolder, mPosition);
+                if (onFinish == null) populateImageFrame(mViewHolder, mPosition);
             }
             if (onFinish != null) onFinish.onResponse(null);
             return true;
