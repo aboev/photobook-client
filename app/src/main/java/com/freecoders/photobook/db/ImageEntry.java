@@ -16,6 +16,7 @@ public class ImageEntry {
     public final static int INT_STATUS_DEFAULT = 0;
     public final static int INT_STATUS_SHARING = 1;
     public final static int INT_STATUS_SHARED = 2;
+    public final static int INT_STATUS_BUCKET = 3;
 
     public long getId() {
         return id;
