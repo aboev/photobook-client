@@ -24,16 +24,17 @@
     <HorizontalScrollView
         android:id="@+id/bookmarkScrollView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#FFFFFF"
+        android:layout_height="wrap_content"
+        android:background="#ff4da7ff"
         android:scrollbars="none"
         android:fillViewport="true"
         android:layout_alignParentBottom="true"
         android:padding="0dp">
         <LinearLayout
             android:id="@+id/bookmarkLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:padding="0dp">
         </LinearLayout>
