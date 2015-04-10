@@ -42,9 +42,9 @@ public class BookmarkAdapter {
         LayoutInflater vi = (LayoutInflater)context.getSystemService(inflater);
         View view;
         if (position == selectedPosition)
-            view = vi.inflate(R.layout.item_bookmark_selected, parentView, false);
+            view = vi.inflate(R.layout.item_tab_selected, parentView, false);
         else
-            view = vi.inflate(R.layout.item_bookmark, parentView, false);
+            view = vi.inflate(R.layout.item_tab, parentView, false);
         TextView tv = (TextView)view.findViewById(R.id.txtViewBookmark);
         ImageView iv = (ImageView)view.findViewById(R.id.imgViewIcon);
         tv.setText(items[position]);
