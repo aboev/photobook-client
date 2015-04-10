@@ -1,10 +1,12 @@
 package com.freecoders.photobook.classes;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.freecoders.photobook.R;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 public class BookmarkAdapter {
     private Context context;
     private String[] items;
+    private TypedArray icons;
     private ViewGroup parentView;
     private View colorSelector;
     private onItemSelectedListener listener;
@@ -24,12 +27,13 @@ public class BookmarkAdapter {
     public int selectedPosition = 0;
 
     public BookmarkAdapter(Context context, ViewGroup parentView, View colorSelector,
-                           String[] items) {
+                           String[] items, int iconsResID) {
         this.context = context;
         this.items = items;
         this.parentView = parentView;
         this.colorSelector = colorSelector;
-        this.colors = context.getResources().getIntArray(R.array.bookmark_colors);;
+        this.colors = context.getResources().getIntArray(R.array.bookmark_colors);
+        this.icons = context.getResources().obtainTypedArray(iconsResID);
         redraw();
     }
 
@@ -37,16 +41,15 @@ public class BookmarkAdapter {
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater vi = (LayoutInflater)context.getSystemService(inflater);
         View view;
-        if (position == selectedPosition) {
+        if (position == selectedPosition)
             view = vi.inflate(R.layout.item_bookmark_selected, parentView, false);
-            if (colors.length > 0)
-                colorSelector.setBackgroundColor(colors[position % colors.length]);
-        } else
+        else
             view = vi.inflate(R.layout.item_bookmark, parentView, false);
         TextView tv = (TextView)view.findViewById(R.id.txtViewBookmark);
+        ImageView iv = (ImageView)view.findViewById(R.id.imgViewIcon);
         tv.setText(items[position]);
-        if (colors.length > 0)
-            tv.setBackgroundColor(colors[position % colors.length]);
+        iv.setImageResource(icons.getResourceId(position % icons.length(), -1));
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
