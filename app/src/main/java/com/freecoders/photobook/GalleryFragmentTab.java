@@ -83,7 +83,7 @@ public class GalleryFragmentTab extends Fragment {
         bookmarkHandler = new BookmarkHandler(horizontalScrollView,
                 Constants.BOOKMARKS_HEIGHT);
         gestureListener = new GestureListener(getActivity(), mGridView, bookmarkHandler);
-        mGridView.setOnTouchListener(gestureListener);
+        //mGridView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
                 getResources().getStringArray(R.array.gallery_bookmark_items),
