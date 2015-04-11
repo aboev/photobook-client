@@ -97,6 +97,10 @@ public class FriendsFragmentTab extends Fragment {
                             friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                                     new int[]{FriendEntry.INT_STATUS_DEFAULT,
                                             FriendEntry.INT_STATUS_FRIEND});
+                        else if (position == 2) {
+                            friendsList.clear();
+                            friendsList.addAll(channelList);
+                        }
                         adapter.clear();
                         adapter.addAll(friendsList);
                         adapter.notifyDataSetChanged();
@@ -131,19 +135,22 @@ public class FriendsFragmentTab extends Fragment {
     }
 
     public void refreshChannelList(){
+        if (channelList == null) {
+            channelList = new ArrayList<FriendEntry>();
+        }
         ServerInterface.getChannelsRequest(getActivity(),
-                new Response.Listener<ArrayList<UserProfile>>() {
-                    @Override
-                    public void onResponse(ArrayList<UserProfile> response) {
-                        channelList.clear();
-                        for (int i = 0; i < response.size(); i++) {
-                            FriendEntry channel = new FriendEntry();
-                            channel.setName(response.get(i).name);
-                            channel.setAvatar(response.get(i).avatar);
-                            channel.setUserId(response.get(i).id);
-                            channelList.add(channel);
-                        }
+            new Response.Listener<ArrayList<UserProfile>>() {
+                @Override
+                public void onResponse(ArrayList<UserProfile> response) {
+                    channelList.clear();
+                    for (int i = 0; i < response.size(); i++) {
+                        FriendEntry channel = new FriendEntry();
+                        channel.setName(response.get(i).name);
+                        channel.setAvatar(response.get(i).avatar);
+                        channel.setUserId(response.get(i).id);
+                        channelList.add(channel);
                     }
-                }, null);
+                }
+            }, null);
     }
 }
