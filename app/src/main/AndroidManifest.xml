@@ -41,6 +41,11 @@
             android:label="@string/title_activity_register"
             android:theme="@style/AppThemeNoActionBar">
         </activity>
+      <activity
+              android:name="com.freecoders.photobook.UserProfileActivity"
+              android:label="@string/user_profile"
+              android:theme="@style/AppThemeNoActionBar">
+      </activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity
             android:name=".ImageDetailsActivity"

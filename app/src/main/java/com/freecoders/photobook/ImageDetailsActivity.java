@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
@@ -572,12 +573,9 @@ public class ImageDetailsActivity extends ActionBarActivity {
     }
 
     public void openUserProfileFragment(String userId){
-        FragmentManager fm = getFragmentManager();
-        UserProfileFragment profileDialogFragment =
-                new UserProfileFragment();
-        profileDialogFragment.setUserId(userId);
-        profileDialogFragment.show(fm, "users_profile");
-
+        Intent intent = new Intent(this, UserProfileActivity.class);
+        intent.putExtra("userId", userId);
+        startActivity(intent);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.freecoders.photobook;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.gson.CommentEntryJson;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(int position, final View convertView, ViewGroup parent)
     {
         LinearLayout view;
         CommentEntryJson comment = getItem(position);
@@ -76,12 +76,9 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
         holder.imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                FragmentManager fm = mContext.getFragmentManager();
-                UserProfileFragment profileDialogFragment =
-                        new UserProfileFragment();
-                profileDialogFragment.setUserId(commentAuthorId);
-                profileDialogFragment.show(fm, "users_profile");
+                Intent intent = new Intent(convertView.getContext(), UserProfileActivity.class);
+                intent.putExtra("userId", commentAuthorId);
+                convertView.getContext().startActivity(intent);
             }
         });
 

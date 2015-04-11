@@ -1,13 +1,11 @@
 package com.freecoders.photobook;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,21 +30,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Andrei Alikov andrei.alikov@gmail.com
  */
-public class UserProfileFragment extends DialogFragment {
+public class UserProfileActivity extends ActionBarActivity {
     private final static String LOG_TAG = "UserProfileFragment";
 
     private String userId;
     private TextView userNameView;
     private TextView userPhoneView;
-    private TextView userEmailView;
     private TextView followersView;
     private ImageView userAvatarView;
-    private Button followButton;
+    private TextView followButton;
     private ImageLoader imageLoader;
     private LinearLayout userProfileLayout;
     private boolean isUserFollowed;
@@ -58,34 +57,27 @@ public class UserProfileFragment extends DialogFragment {
         userId = id;
     }
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_profile);
 
-        View view = inflater.inflate(R.layout.user_profile, null);
-        builder.setView(view)
-                .setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
+        Intent intent = getIntent();
 
-                    }
-                });
+        setUserId(intent.getStringExtra("userId"));
 
-        userNameView = (TextView) view.findViewById(R.id.txtUserName);
-        userPhoneView = (TextView) view.findViewById(R.id.txtUserPhone);
-        userEmailView = (TextView) view.findViewById(R.id.txtUserEmail);
-        userAvatarView = (ImageView) view.findViewById(R.id.imageViewAvatar);
-        followersView = (TextView) view.findViewById(R.id.txtFollowers);
+        userNameView = (TextView) findViewById(R.id.txtUserName);
+        userPhoneView = (TextView) findViewById(R.id.txtUserPhone);
+        userAvatarView = (ImageView) findViewById(R.id.imageViewAvatar);
+        followersView = (TextView) findViewById(R.id.txtFollowers);
         followersView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getLikesListView(userProfileLayout, followers);
             }
         });
-        userProfileLayout = (LinearLayout) view.findViewById(R.id.userProfileLayout);
+        userProfileLayout = (LinearLayout) findViewById(R.id.headerLayout);
 
-        followButton = (Button) view.findViewById(R.id.btnFollow);
+        followButton = (TextView) findViewById(R.id.textViewButtonFollow);
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +103,7 @@ public class UserProfileFragment extends DialogFragment {
         serverInterface.setServerResponseHandler(serverHandler);
         serverInterface.sentFollowersRequest(userId);
 
-        ServerInterface.getUserProfileRequest(null, new String[] {userId},
+        ServerInterface.getUserProfileRequest(null, new String[]{userId},
                 new Response.Listener<HashMap<String, UserProfile>>() {
                     @Override
                     public void onResponse(HashMap<String, UserProfile> stringUserProfileHashMap) {
@@ -121,8 +113,6 @@ public class UserProfileFragment extends DialogFragment {
                         }
                     }
                 }, null);
-
-        return builder.create();
     }
 
     private Response.Listener<String> createFollowChangeResponse(final boolean followRequest) {
@@ -151,18 +141,11 @@ public class UserProfileFragment extends DialogFragment {
     private void createImageLoader() {
         DiskLruBitmapCache diskCache = null;
         try {
-            diskCache = new DiskLruBitmapCache(getActivity(), "DiskCache", 2000000, Bitmap.CompressFormat.JPEG, 100);
+            diskCache = new DiskLruBitmapCache(this, "DiskCache", 2000000, Bitmap.CompressFormat.JPEG, 100);
         } catch (IOException e) {
 
         }
-        imageLoader = new ImageLoader(VolleySingleton.getInstance(getActivity()).getRequestQueue(), diskCache);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
+        imageLoader = new ImageLoader(VolleySingleton.getInstance(this).getRequestQueue(), diskCache);
     }
 
     private void setFollowButtonText() {
@@ -172,7 +155,6 @@ public class UserProfileFragment extends DialogFragment {
     private void fillUserProfileInfo(UserProfile profile) {
         userNameView.setText(profile.name);
         userPhoneView.setText(profile.phone);
-        userEmailView.setText(profile.email);
 
         imageLoader.get(profile.avatar, new ImageLoader.ImageListener() {
             @Override
@@ -184,36 +166,31 @@ public class UserProfileFragment extends DialogFragment {
             }
 
             @Override
-            public void onErrorResponse(VolleyError volleyError) {}
+            public void onErrorResponse(VolleyError volleyError) {
+            }
         });
     }
 
-    private void getLikesListView(View view, Map<String, UserProfile> userProfiles){
-        int width = ImageUtils.dpToPx(300);
+    private void getLikesListView(View view, Map<String, UserProfile> userProfiles) {
+        String inflater = Context.LAYOUT_INFLATER_SERVICE;
+        LayoutInflater vi = (LayoutInflater) getSystemService(inflater);
+        View popupView = vi.inflate(R.layout.popup, null);
         final int height = ImageUtils.dpToPx(50);
-        final int padding = 2;
-        final Context context = getActivity();
-        final HorizontalScrollView scrollView = new HorizontalScrollView(context);
-        final LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        scrollView.setPadding(padding, padding, padding, padding);
-        scrollView.setLayoutParams(params);
-        scrollView.addView(linearLayout);
-        scrollView.setHorizontalScrollBarEnabled(false);
+        final int padding = ImageUtils.dpToPx(2);
+        final LinearLayout ll = (LinearLayout)popupView.findViewById(R.id.popupLinearLayout);
+        final Context context = this;
         final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(scrollView);
-        popup.setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_2));
-        popup.setWidth(width);
+        popup.setContentView(popupView);
+        popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popup.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setFocusable(true);
         int[] location = new int[2];
-        followersView.getLocationInWindow(location);
-        popup.showAtLocation(view, Gravity.NO_GRAVITY, location[0],
+        followersView.getLocationOnScreen(location);
+        popup.showAtLocation(followersView, Gravity.NO_GRAVITY, location[0],
                 location[1] - (int) (height * 1.5));
-
-        ServerInterface.getUserProfileRequest(getActivity(), userProfiles.keySet().toArray(new String[]{}),
+        if (userProfiles.size() == 0) return;
+        ServerInterface.getUserProfileRequest(this, userProfiles.keySet().toArray(new String[]{}),
                 new Response.Listener<HashMap<String, UserProfile>>() {
                     @Override
                     public void onResponse(HashMap<String, UserProfile> response) {
@@ -226,7 +203,7 @@ public class UserProfileFragment extends DialogFragment {
                             image.setLayoutParams(params);
                             image.setPadding(padding, padding, padding, padding);
                             image.setImageResource(R.drawable.avatar);
-                            linearLayout.addView(image);
+                            ll.addView(image);
                             final UserProfile user = (UserProfile) pair.getValue();
                             final String id = (String) pair.getKey();
                             if ((user != null) && (user.avatar != null)
@@ -248,11 +225,9 @@ public class UserProfileFragment extends DialogFragment {
                             image.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    FragmentManager fm = getFragmentManager();
-                                    UserProfileFragment profileDialogFragment =
-                                            new UserProfileFragment();
-                                    profileDialogFragment.setUserId(id);
-                                    profileDialogFragment.show(fm, "users_profile");
+                                    Intent intent = new Intent(UserProfileActivity.this, UserProfileActivity.class);
+                                    intent.putExtra("userId", id);
+                                    startActivity(intent);
                                 }
                             });
                         }
@@ -269,7 +244,13 @@ public class UserProfileFragment extends DialogFragment {
 
         @Override
         public void onServerRequestError(String request, VolleyError error) {
-            Log.d(LOG_TAG, "Error for request " + request + ": " + error.networkResponse.data);
+            String message = (error.networkResponse == null ? error.toString() : new String(error.networkResponse.data));
+            Log.d(LOG_TAG, "Error for request " + request + ": " + message);
+        }
+
+        @Override
+        public void onServerRequestError(String request, Exception ex) {
+            Log.d(LOG_TAG, "Error for request " + request + ": " + ex.getLocalizedMessage());
         }
     }
 }

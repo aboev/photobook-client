@@ -7,4 +7,5 @@ import com.android.volley.VolleyError;
  */
 public interface ServerErrorHandler {
     void onServerRequestError(String request, VolleyError error);
+    void onServerRequestError(String request, Exception ex);
 }
