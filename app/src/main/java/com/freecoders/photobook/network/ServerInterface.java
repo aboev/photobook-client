@@ -758,10 +758,11 @@ public class ServerInterface {
     public void sentFollowersRequest(String userId) {
         HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         headers.put("id", userId);
+        final String request = Constants.SERVER_PATH_USER + Constants.SERVER_PATH_FOLLOWERS;
         final Response.ErrorListener errorListener =
-                createErrorListener(Constants.SERVER_PATH_USER + Constants.SERVER_PATH_FOLLOWERS);
+                createErrorListener(request);
         StringRequest getServerInfoRequest = new StringRequest(Request.Method.GET,
-                Constants.SERVER_URL + Constants.SERVER_PATH_USER + Constants.SERVER_PATH_FOLLOWERS,
+                Constants.SERVER_URL + request,
                 "", headers, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -776,7 +777,9 @@ public class ServerInterface {
                                     errorListener.onErrorResponse(new VolleyError());
                                 }
                             } catch (Exception e) {
-                                    errorListener.onErrorResponse(new VolleyError());
+                                if (errorHandler != null) {
+                                    errorHandler.onServerRequestError(request, e);
+                                }
                             }
                         }
                     }

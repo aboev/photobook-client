@@ -2,6 +2,7 @@ package com.freecoders.photobook;
 
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,13 +22,10 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ContactsRetrieverTask;
 import com.freecoders.photobook.db.FriendEntry;
-import com.freecoders.photobook.db.ImageEntry;
-import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @SuppressLint("NewApi") 
 public class FriendsFragmentTab extends Fragment {
@@ -74,10 +72,9 @@ public class FriendsFragmentTab extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentManager fm = getActivity().getFragmentManager();
-                UserProfileFragment profileDialogFragment = new UserProfileFragment();
-                profileDialogFragment.setUserId(friendsList.get(position).getUserId());
-                profileDialogFragment.show(fm, "users_profile");
+                Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
+                intent.putExtra("userId", friendsList.get(position).getUserId());
+                view.getContext().startActivity(intent);
             }
         });
 
@@ -135,17 +132,18 @@ public class FriendsFragmentTab extends Fragment {
 
     public void refreshChannelList(){
         ServerInterface.getChannelsRequest(getActivity(),
-            new Response.Listener<ArrayList<UserProfile>>() {
-                @Override
-                public void onResponse(ArrayList<UserProfile> response) {
-                    channelList.clear();
-                    for (int i = 0; i < response.size(); i++) {
-                        FriendEntry channel = new FriendEntry();
-                        channel.setName(response.get(i).name);
-                        channel.setAvatar(response.get(i).avatar);
-                        channel.setUserId(response.get(i).id);
-                        channelList.add(channel);
+                new Response.Listener<ArrayList<UserProfile>>() {
+                    @Override
+                    public void onResponse(ArrayList<UserProfile> response) {
+                        channelList.clear();
+                        for (int i = 0; i < response.size(); i++) {
+                            FriendEntry channel = new FriendEntry();
+                            channel.setName(response.get(i).name);
+                            channel.setAvatar(response.get(i).avatar);
+                            channel.setUserId(response.get(i).id);
+                            channelList.add(channel);
+                        }
                     }
-        }}, null);
+                }, null);
     }
 }
