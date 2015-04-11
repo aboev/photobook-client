@@ -72,9 +72,9 @@ public class FriendsFragmentTab extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
+                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                 intent.putExtra("userId", friendsList.get(position).getUserId());
-                view.getContext().startActivity(intent);
+                getActivity().startActivity(intent);
             }
         });
 

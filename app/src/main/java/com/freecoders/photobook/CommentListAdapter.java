@@ -76,9 +76,9 @@ public class CommentListAdapter extends ArrayAdapter<CommentEntryJson> {
         holder.imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(convertView.getContext(), UserProfileActivity.class);
+                Intent intent = new Intent(mContext, UserProfileActivity.class);
                 intent.putExtra("userId", commentAuthorId);
-                convertView.getContext().startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
 
