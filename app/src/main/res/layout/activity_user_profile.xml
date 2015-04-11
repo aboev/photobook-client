@@ -13,20 +13,20 @@
         android:background="@drawable/pattern_repeat">
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/imgAvatarDrawer"
+            android:id="@+id/imageViewAvatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
             app:border_width="1dp"
             app:border_color="#FFFFFF"
             android:src="@drawable/avatar"/>
         <TextView
-            android:id="@+id/textUserNameDrawer"
+            android:id="@+id/txtUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:text="Louis Armstrong"/>
         <TextView
-            android:id="@+id/textContactKeyDrawer"
+            android:id="@+id/txtUserPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
@@ -48,7 +48,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="7dp"/>
         <TextView
-            android:id="@+id/textFollowerCount"
+            android:id="@+id/txtFollowers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="23"
