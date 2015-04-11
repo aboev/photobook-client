@@ -65,6 +65,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
             }
         }
 
+        Log.d(LOG_TAG, "Sending post contacts request for " + new Gson().toJson(contactKeys));
         ServerInterface.postContactsRequest(mFriendsTab.mActivity,
                 hContactKeys, Photobook.getPreferences().strUserID,
                 new Response.Listener<String>() {
