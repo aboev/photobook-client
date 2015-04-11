@@ -16,6 +16,7 @@
         android:layout_margin="7dp"/>
 
     <TextView
+        android:id="@+id/textViewButtonFollow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_follow_text"
