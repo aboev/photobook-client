@@ -71,6 +71,7 @@
     <string name="user_email">E-mail:</string>
     <string name="bookmark_friends">Friends</string>
     <string name="bookmark_contacts">Contacts</string>
+    <string name="bookmark_channels">Channels</string>
     <string name="bookmark_gallery">Gallery</string>
     <string name="bookmark_folders">Folders</string>
     <string name="bookmark_shares">My shares</string>
@@ -78,10 +79,12 @@
     <string-array name="contacts_bookmark_items">
         <item>@string/bookmark_friends</item>
         <item>@string/bookmark_contacts</item>
+        <item>@string/bookmark_channels</item>
     </string-array>
     <string-array name="contacts_bookmark_icons">
         <item>@drawable/ic_tab_friends</item>
         <item>@drawable/ic_tab_contacts</item>
+        <item>@drawable/ic_tab_channels</item>
     </string-array>
     <string-array name="gallery_bookmark_items">
         <item>@string/bookmark_gallery</item>
