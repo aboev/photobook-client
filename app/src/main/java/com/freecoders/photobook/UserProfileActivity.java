@@ -19,6 +19,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
+import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.DefaultServerResponseHandler;
 import com.freecoders.photobook.network.ServerErrorHandler;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,6 +50,9 @@ public class UserProfileActivity extends ActionBarActivity {
     private TextView followButton;
     private ImageLoader imageLoader;
     private LinearLayout userProfileLayout;
+    private GridView gridView;
+    private PublicGalleryAdapter galleryAdapter;
+    private ArrayList<ImageJson> imageList = new ArrayList<ImageJson>();
     private boolean isUserFollowed;
     private Map<String, UserProfile> followers;
 
@@ -68,7 +73,7 @@ public class UserProfileActivity extends ActionBarActivity {
         userNameView = (TextView) findViewById(R.id.txtUserName);
         userPhoneView = (TextView) findViewById(R.id.txtUserPhone);
         userAvatarView = (ImageView) findViewById(R.id.imageViewAvatar);
-        followersView = (TextView) findViewById(R.id.txtFollowers);
+        followersView = (TextView) findViewById(R.id.textFollowerCount);
         followersView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +81,9 @@ public class UserProfileActivity extends ActionBarActivity {
             }
         });
         userProfileLayout = (LinearLayout) findViewById(R.id.headerLayout);
+        gridView = (GridView) findViewById(R.id.userGalleryGridView);
+        galleryAdapter = new PublicGalleryAdapter(this, R.layout.item_gallery_public, imageList);
+        gridView.setAdapter(galleryAdapter);
 
         followButton = (TextView) findViewById(R.id.textViewButtonFollow);
         followButton.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +121,23 @@ public class UserProfileActivity extends ActionBarActivity {
                         }
                     }
                 }, null);
+        ServerInterface.getImageDetailsRequestJson(this, null, userId,
+                new Response.Listener<HashMap<String, ImageJson>>() {
+                    @Override
+                    public void onResponse(HashMap<String, ImageJson> stringImageJsonHashMap) {
+                        imageList.clear();
+                        Iterator it = stringImageJsonHashMap.entrySet().iterator();
+                        Log.d(LOG_TAG, "Received " + stringImageJsonHashMap.size() + " items");
+                        while (it.hasNext()) {
+                            Map.Entry pair = (Map.Entry)it.next();
+                            ImageJson image = (ImageJson) pair.getValue();
+                            imageList.add(image);
+                            it.remove();
+                        }
+                        galleryAdapter.notifyDataSetChanged();
+                    }
+                }, null
+                );
     }
 
     private Response.Listener<String> createFollowChangeResponse(final boolean followRequest) {
@@ -189,7 +214,7 @@ public class UserProfileActivity extends ActionBarActivity {
         followersView.getLocationOnScreen(location);
         popup.showAtLocation(followersView, Gravity.NO_GRAVITY, location[0],
                 location[1] - (int) (height * 1.5));
-        if (userProfiles.size() == 0) return;
+        if ((userProfiles == null)||(userProfiles.size() == 0)) return;
         ServerInterface.getUserProfileRequest(this, userProfiles.keySet().toArray(new String[]{}),
                 new Response.Listener<HashMap<String, UserProfile>>() {
                     @Override
