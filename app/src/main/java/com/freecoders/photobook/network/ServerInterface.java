@@ -546,12 +546,14 @@ public class ServerInterface {
     }
 
     public static final void getImageDetailsRequestJson (Context context,
-            String imageId,
+            String imageId, String userId,
             final Response.Listener<HashMap<String, ImageJson>> responseListener,
             final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         if ((imageId != null) && !imageId.isEmpty())
             headers.put(Constants.HEADER_IMAGEID, imageId);
+        if ((userId != null) && !userId.isEmpty())
+            headers.put(Constants.HEADER_ID, userId);
         Log.d(LOG_TAG, "Get image details request");
         StringRequest imageRequest = new StringRequest(Request.Method.GET,
             Constants.SERVER_URL + Constants.SERVER_PATH_IMAGE,
