@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.android.volley.Response;
 import com.freecoders.photobook.classes.BookmarkAdapter;
 import com.freecoders.photobook.classes.BookmarkHandler;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
@@ -34,7 +35,7 @@ public class FriendsFragmentTab extends Fragment {
     private ListView listView;
     public MainActivity mActivity;
     public ArrayList<FriendEntry> friendsList;
-    public ArrayList<FriendEntry> channelList;
+    public ArrayList<FriendEntry> channelList = new ArrayList<FriendEntry>();
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
     public GestureListener gestureListener;
@@ -44,6 +45,7 @@ public class FriendsFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
+    private int currentPosition = 0;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
@@ -90,6 +92,7 @@ public class FriendsFragmentTab extends Fragment {
                 new BookmarkAdapter.onItemSelectedListener() {
                     @Override
                     public void onItemSelected(int position) {
+                        currentPosition = position;
                         if (position == 1)
                             friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
                                     new int[]{FriendEntry.INT_STATUS_NULL});
@@ -149,6 +152,11 @@ public class FriendsFragmentTab extends Fragment {
                         channel.setAvatar(response.get(i).avatar);
                         channel.setUserId(response.get(i).id);
                         channelList.add(channel);
+                    }
+                    if (currentPosition == 2) {
+                        adapter.clear();
+                        adapter.addAll(channelList);
+                        adapter.notifyDataSetChanged();
                     }
                 }
             }, null);
