@@ -343,7 +343,7 @@ public class GalleryFragmentTab extends Fragment {
     public void syncGallery(){
         ServerInterface.getImageDetailsRequestJson(
             Photobook.getMainActivity(),
-            null,
+            null, null,
             new Response.Listener<HashMap<String, ImageJson>>() {
                 @Override
                 public void onResponse(HashMap<String, ImageJson> response) {
