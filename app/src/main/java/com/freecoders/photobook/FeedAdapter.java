@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.etsy.android.grid.util.DynamicHeightImageView;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.FeedEntryJson;
@@ -97,7 +98,7 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
             final int pos = position;
             holder.imgView.setTag(pos);
             mImageLoader.get(feedEntry.image.url_medium,
-                    new ImageListener(pos, holder.imgView));
+                    new ImageListener(pos, holder.imgView, null));
         }
 
         holder.imgViewAvatar.setImageResource(android.R.color.transparent);
@@ -106,7 +107,7 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
             final int pos = position;
             holder.imgViewAvatar.setTag(pos);
             mAvatarLoader.get(feedEntry.author.avatar,
-                    new ImageListener(pos, holder.imgViewAvatar));
+                    new ImageListener(pos, holder.imgViewAvatar, null));
         } else {
             holder.imgViewAvatar.setImageResource(R.drawable.avatar);
         }
@@ -114,13 +115,15 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
         return rowView;
     }
 
-    private class ImageListener implements ImageLoader.ImageListener {
+    public static class ImageListener implements ImageLoader.ImageListener {
         Integer pos = 0;
         ImageView imgView;
+        CallbackInterface onResponse;
 
-        public ImageListener(Integer position, ImageView imgView) {
+        public ImageListener(Integer position, ImageView imgView, CallbackInterface onResponse) {
             this.pos = position;
             this.imgView = imgView;
+            this.onResponse = onResponse;
         }
 
         @Override
@@ -132,6 +135,7 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
             if ((response.getBitmap() != null) && ((Integer) imgView.getTag() == pos)) {
                 imgView.setImageResource(0);
                 imgView.setImageBitmap(response.getBitmap());
+                if (onResponse != null) onResponse.onResponse(null);
             }
         }
     }
