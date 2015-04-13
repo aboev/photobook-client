@@ -122,7 +122,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
 
     public void testGetImageDetailsRequest() throws Exception {
         boolRequestFinished = false;
-        ServerInterface.getImageDetailsRequestJson(getActivity(), null,
+        ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
             new Response.Listener<HashMap<String, ImageJson>>() {
                 @Override
                 public void onResponse(HashMap<String, ImageJson> response) {
@@ -154,7 +154,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    ServerInterface.getImageDetailsRequestJson(getActivity(), null,
+                    ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
                         new Response.Listener<HashMap<String, ImageJson>>() {
                             @Override
                             public void onResponse(HashMap<String, ImageJson> response) {
@@ -189,7 +189,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    ServerInterface.getImageDetailsRequestJson(getActivity(), null,
+                    ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
                         new Response.Listener<HashMap<String, ImageJson>>() {
                             @Override
                             public void onResponse(HashMap<String, ImageJson> response) {
