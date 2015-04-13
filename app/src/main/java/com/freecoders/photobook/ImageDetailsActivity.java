@@ -327,7 +327,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
             mButtonLikeTextView.setText(R.string.btn_like);
 
             ServerInterface.getImageDetailsRequestJson(Photobook.getImageDetailsActivity(),
-                mGalleryImage.getServerId(),
+                mGalleryImage.getServerId(), null,
                 new Response.Listener<HashMap<String, ImageJson>>() {
                     @Override
                     public void onResponse(HashMap<String, ImageJson> response) {
