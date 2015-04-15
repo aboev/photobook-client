@@ -36,6 +36,7 @@ public class Constants {
     public final static String HEADER_IMAGEID = "imageid";
     public final static String HEADER_COMMENTID = "commentid";
     public final static String HEADER_MODTIME = "from";
+    public final static String HEADER_ID = "id";
 
     public final static String RESPONSE_RESULT = "result";
     public final static String RESPONSE_RESULT_OK = "OK";
