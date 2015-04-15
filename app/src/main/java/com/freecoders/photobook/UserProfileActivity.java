@@ -19,6 +19,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.FriendEntry;
+import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.DefaultServerResponseHandler;
@@ -40,7 +41,7 @@ import java.util.Map;
  * @author Andrei Alikov andrei.alikov@gmail.com
  */
 public class UserProfileActivity extends ActionBarActivity {
-    private final static String LOG_TAG = "UserProfileFragment";
+    private final static String LOG_TAG = "UserProfileActivity";
 
     private String userId;
     private TextView userNameView;
@@ -55,6 +56,7 @@ public class UserProfileActivity extends ActionBarActivity {
     private ArrayList<ImageJson> imageList = new ArrayList<ImageJson>();
     private boolean isUserFollowed;
     private Map<String, UserProfile> followers;
+    private UserProfile userProfile;
 
     private ServerInterface serverInterface;
 
@@ -77,13 +79,30 @@ public class UserProfileActivity extends ActionBarActivity {
         followersView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getLikesListView(userProfileLayout, followers);
+                getFolowersListView(userProfileLayout, followers);
             }
         });
         userProfileLayout = (LinearLayout) findViewById(R.id.headerLayout);
         gridView = (GridView) findViewById(R.id.userGalleryGridView);
-        galleryAdapter = new PublicGalleryAdapter(this, R.layout.item_gallery_public, imageList);
+        galleryAdapter = new PublicGalleryAdapter(this,
+            R.layout.item_gallery_public, imageList);
         gridView.setAdapter(galleryAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ImageJson image = galleryAdapter.getItem(i);
+                if ((userProfile != null) && (image != null)) {
+                    FeedEntryJson feedItem = new FeedEntryJson();
+                    feedItem.author = userProfile;
+                    feedItem.image = image;
+                    Intent mIntent = new Intent(Photobook.getMainActivity(),
+                            ImageDetailsActivity.class);
+                    Photobook.setImageDetails(feedItem);
+                    startActivity(mIntent);
+                }
+            }
+        });
 
         followButton = (TextView) findViewById(R.id.textViewButtonFollow);
         followButton.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +121,8 @@ public class UserProfileActivity extends ActionBarActivity {
         createImageLoader();
 
         FriendEntry friendEntry = Photobook.getFriendsDataSource().getFriendByUserId(userId);
-        isUserFollowed = friendEntry != null && friendEntry.getStatus() == FriendEntry.INT_STATUS_FRIEND;
+        isUserFollowed = friendEntry != null
+                && friendEntry.getStatus() == FriendEntry.INT_STATUS_FRIEND;
         setFollowButtonText();
 
         serverInterface = new ServerInterface();
@@ -112,32 +132,34 @@ public class UserProfileActivity extends ActionBarActivity {
         serverInterface.sentFollowersRequest(userId);
 
         ServerInterface.getUserProfileRequest(null, new String[]{userId},
-                new Response.Listener<HashMap<String, UserProfile>>() {
-                    @Override
-                    public void onResponse(HashMap<String, UserProfile> stringUserProfileHashMap) {
-                        UserProfile profile = stringUserProfileHashMap.get(userId);
-                        if (profile != null) {
-                            fillUserProfileInfo(profile);
-                        }
+            new Response.Listener<HashMap<String, UserProfile>>() {
+                @Override
+                public void onResponse(HashMap<String, UserProfile> stringUserProfileHashMap) {
+                    UserProfile profile = stringUserProfileHashMap.get(userId);
+                    if (profile != null) {
+                        fillUserProfileInfo(profile);
+                        userProfile = profile;
                     }
-                }, null);
+                }
+            }, null);
+
         ServerInterface.getImageDetailsRequestJson(this, null, userId,
-                new Response.Listener<HashMap<String, ImageJson>>() {
-                    @Override
-                    public void onResponse(HashMap<String, ImageJson> stringImageJsonHashMap) {
-                        imageList.clear();
-                        Iterator it = stringImageJsonHashMap.entrySet().iterator();
-                        Log.d(LOG_TAG, "Received " + stringImageJsonHashMap.size() + " items");
-                        while (it.hasNext()) {
-                            Map.Entry pair = (Map.Entry)it.next();
-                            ImageJson image = (ImageJson) pair.getValue();
-                            imageList.add(image);
-                            it.remove();
-                        }
-                        galleryAdapter.notifyDataSetChanged();
+            new Response.Listener<HashMap<String, ImageJson>>() {
+                @Override
+                public void onResponse(HashMap<String, ImageJson> stringImageJsonHashMap) {
+                    imageList.clear();
+                    Iterator it = stringImageJsonHashMap.entrySet().iterator();
+                    Log.d(LOG_TAG, "Received " + stringImageJsonHashMap.size() + " items");
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        ImageJson image = (ImageJson) pair.getValue();
+                        imageList.add(image);
+                        it.remove();
                     }
-                }, null
-                );
+                    galleryAdapter.notifyDataSetChanged();
+                }
+            }, null
+            );
     }
 
     private Response.Listener<String> createFollowChangeResponse(final boolean followRequest) {
@@ -148,9 +170,10 @@ public class UserProfileActivity extends ActionBarActivity {
                     JSONObject resJson = new JSONObject(response);
                     String strRes = resJson.getString(Constants.RESPONSE_RESULT);
                     if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
-                        FriendEntry friendEntry = Photobook.getFriendsDataSource().getFriendByUserId(userId);
-                        friendEntry.setStatus(
-                                followRequest ? FriendEntry.INT_STATUS_FRIEND : FriendEntry.INT_STATUS_DEFAULT);
+                        FriendEntry friendEntry = Photobook.getFriendsDataSource().
+                            getFriendByUserId(userId);
+                        friendEntry.setStatus(followRequest ? FriendEntry.INT_STATUS_FRIEND :
+                            FriendEntry.INT_STATUS_DEFAULT);
                         Photobook.getFriendsDataSource().updateFriend(friendEntry);
                         isUserFollowed = followRequest;
                         setFollowButtonText();
@@ -166,11 +189,13 @@ public class UserProfileActivity extends ActionBarActivity {
     private void createImageLoader() {
         DiskLruBitmapCache diskCache = null;
         try {
-            diskCache = new DiskLruBitmapCache(this, "DiskCache", 2000000, Bitmap.CompressFormat.JPEG, 100);
+            diskCache = new DiskLruBitmapCache(this, "DiskCache", 2000000,
+                    Bitmap.CompressFormat.JPEG, 100);
         } catch (IOException e) {
 
         }
-        imageLoader = new ImageLoader(VolleySingleton.getInstance(this).getRequestQueue(), diskCache);
+        imageLoader = new ImageLoader(VolleySingleton.getInstance(this).getRequestQueue(),
+                diskCache);
     }
 
     private void setFollowButtonText() {
@@ -196,7 +221,7 @@ public class UserProfileActivity extends ActionBarActivity {
         });
     }
 
-    private void getLikesListView(View view, Map<String, UserProfile> userProfiles) {
+    private void getFolowersListView(View view, Map<String, UserProfile> userProfiles) {
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater vi = (LayoutInflater) getSystemService(inflater);
         View popupView = vi.inflate(R.layout.popup, null);
@@ -216,51 +241,54 @@ public class UserProfileActivity extends ActionBarActivity {
                 location[1] - (int) (height * 1.5));
         if ((userProfiles == null)||(userProfiles.size() == 0)) return;
         ServerInterface.getUserProfileRequest(this, userProfiles.keySet().toArray(new String[]{}),
-                new Response.Listener<HashMap<String, UserProfile>>() {
-                    @Override
-                    public void onResponse(HashMap<String, UserProfile> response) {
-                        Iterator it = response.entrySet().iterator();
-                        Log.d(LOG_TAG, "Response size " + response.size());
-                        while (it.hasNext()) {
-                            Map.Entry pair = (Map.Entry)it.next();
-                            final ImageView image = new ImageView(context);
-                            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(height, height);
-                            image.setLayoutParams(params);
-                            image.setPadding(padding, padding, padding, padding);
-                            image.setImageResource(R.drawable.avatar);
-                            ll.addView(image);
-                            final UserProfile user = (UserProfile) pair.getValue();
-                            final String id = (String) pair.getKey();
-                            if ((user != null) && (user.avatar != null)
-                                    && (URLUtil.isValidUrl(user.avatar)))
-                                imageLoader.get(user.avatar, new ImageLoader.ImageListener() {
-                                    @Override
-                                    public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                                        if (imageContainer.getBitmap() != null) {
-                                            image.setImageResource(0);
-                                            image.setImageBitmap(imageContainer.getBitmap());
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onErrorResponse(VolleyError volleyError) {
-
-                                    }
-                                });
-                            image.setOnClickListener(new View.OnClickListener() {
+            new Response.Listener<HashMap<String, UserProfile>>() {
+                @Override
+                public void onResponse(HashMap<String, UserProfile> response) {
+                    Iterator it = response.entrySet().iterator();
+                    Log.d(LOG_TAG, "Response size " + response.size());
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        final ImageView image = new ImageView(context);
+                        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(height, height);
+                        image.setLayoutParams(params);
+                        image.setPadding(padding, padding, padding, padding);
+                        image.setImageResource(R.drawable.avatar);
+                        ll.addView(image);
+                        final UserProfile user = (UserProfile) pair.getValue();
+                        final String id = (String) pair.getKey();
+                        if ((user != null) && (user.avatar != null)
+                                && (URLUtil.isValidUrl(user.avatar)))
+                            imageLoader.get(user.avatar, new ImageLoader.ImageListener() {
                                 @Override
-                                public void onClick(View view) {
-                                    Intent intent = new Intent(UserProfileActivity.this, UserProfileActivity.class);
-                                    intent.putExtra("userId", id);
-                                    startActivity(intent);
+                                public void onResponse(ImageLoader.ImageContainer
+                                        imageContainer, boolean b) {
+                                    if (imageContainer.getBitmap() != null) {
+                                        image.setImageResource(0);
+                                        image.setImageBitmap(imageContainer.getBitmap());
+                                    }
+                                }
+
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+
                                 }
                             });
-                        }
+                        image.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(UserProfileActivity.this,
+                                    UserProfileActivity.class);
+                                intent.putExtra("userId", id);
+                                startActivity(intent);
+                            }
+                        });
                     }
-                }, null);
+                }
+            }, null);
     }
 
-    private class ProfileServerResponseHandler extends DefaultServerResponseHandler implements ServerErrorHandler {
+    private class ProfileServerResponseHandler extends DefaultServerResponseHandler
+            implements ServerErrorHandler {
         @Override
         public void onFollowersResponse(Map<String, UserProfile> users) {
             followersView.setText(String.valueOf(users.size()));
@@ -269,7 +297,8 @@ public class UserProfileActivity extends ActionBarActivity {
 
         @Override
         public void onServerRequestError(String request, VolleyError error) {
-            String message = (error.networkResponse == null ? error.toString() : new String(error.networkResponse.data));
+            String message = (error.networkResponse == null ? error.toString() :
+                    new String(error.networkResponse.data));
             Log.d(LOG_TAG, "Error for request " + request + ": " + message);
         }
 
