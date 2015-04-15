@@ -58,5 +58,11 @@
             android:padding="10dp"
             android:divider="#FFFFFF"
             android:dividerHeight="1dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_gravity="bottom"
+            android:text="@string/about"/>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
