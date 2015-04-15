@@ -2,6 +2,7 @@ package com.freecoders.photobook;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -12,9 +13,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
+import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
@@ -218,7 +221,17 @@ public class RegisterActivityHandler {
                             if (boolUploadAvatar) sendAvatar();
 
                             if (Photobook.getFriendsFragmentTab() != null)
-                                Photobook.getFriendsFragmentTab().refreshContactList();
+                                Photobook.getFriendsFragmentTab().refreshContactList(
+                                    new CallbackInterface() {
+                                        @Override
+                                        public void onResponse(Object obj) {
+                                            Photobook.getFriendsFragmentTab().contactList.clear();
+                                            Photobook.getFriendsFragmentTab().contactList.
+                                                    addAll((ArrayList<FriendEntry>) obj);
+                                            Photobook.getFriendsFragmentTab().
+                                                    adapter.notifyDataSetChanged();
+                                        }
+                                    });
                             if (Photobook.getGalleryFragmentTab() != null)
                                 Photobook.getGalleryFragmentTab().syncGallery();
                             Photobook.getMainActivity().mHandler.registerPushID();
