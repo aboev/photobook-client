@@ -45,9 +45,10 @@ public class FriendsFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
-    private int BOOKMARK_ID_CONTACTS = 0;
-    private int BOOKMARK_ID_FRIENDS = 1;
+    private int BOOKMARK_ID_FRIENDS = 0;
+    private int BOOKMARK_ID_CONTACTS = 1;
     private int BOOKMARK_ID_CHANNELS = 2;
+    private int curPosition = 0;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
@@ -72,9 +73,11 @@ public class FriendsFragmentTab extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if ((curPosition == BOOKMARK_ID_FRIENDS) || (curPosition == BOOKMARK_ID_CHANNELS)){
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                 intent.putExtra("userId", contactList.get(position).getUserId());
                 getActivity().startActivity(intent);
+            }
             }
         });
 
@@ -96,6 +99,7 @@ public class FriendsFragmentTab extends Fragment {
                 @Override
                 public void onItemSelected(int position) {
                     ArrayList<FriendEntry> list = null;
+                    curPosition = position;
                     if (position == BOOKMARK_ID_CONTACTS)
                         list =  Photobook.getFriendsDataSource().getFriendsByStatus(
                             new int[]{FriendEntry.INT_STATUS_NULL});
@@ -117,17 +121,21 @@ public class FriendsFragmentTab extends Fragment {
             refreshContactList(new CallbackInterface() {
                 @Override
                 public void onResponse(Object obj) {
-                    contactList.clear();
-                    contactList.addAll((ArrayList<FriendEntry>) obj);
-                    adapter.notifyDataSetChanged();
+                    if (curPosition == BOOKMARK_ID_FRIENDS) {
+                        contactList.clear();
+                        contactList.addAll((ArrayList<FriendEntry>) obj);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             });
             refreshChannelList(new CallbackInterface() {
                 @Override
                 public void onResponse(Object obj) {
-                    contactList.clear();
-                    contactList.addAll((ArrayList<FriendEntry>) obj);
-                    adapter.notifyDataSetChanged();
+                    if (curPosition == BOOKMARK_ID_CHANNELS) {
+                        contactList.clear();
+                        contactList.addAll((ArrayList<FriendEntry>) obj);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             });
             boolUpdateList = false;
