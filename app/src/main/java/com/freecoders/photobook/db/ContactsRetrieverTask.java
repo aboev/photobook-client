@@ -10,6 +10,7 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.freecoders.photobook.FriendsFragmentTab;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
@@ -33,18 +34,16 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
         ArrayList<ContactsRetrieverTask.ContactEntry>> {
     private static String LOG_TAG = "ContactsRetrieverTask";
 
-    private FriendsFragmentTab mFriendsTab;
-    private Boolean boolPopulateTab;
+    private CallbackInterface callbackInterface;
 
-    public ContactsRetrieverTask(FriendsFragmentTab friendsTab, Boolean boolPopulateTab)
+    public ContactsRetrieverTask(CallbackInterface callbackInterface)
     {
-        this.mFriendsTab = friendsTab;
-        this.boolPopulateTab = boolPopulateTab;
+        this.callbackInterface = callbackInterface;
     }
 
     @Override
     protected ArrayList<ContactEntry> doInBackground(String... params) {
-        return getContacts(mFriendsTab.mActivity);
+        return getContacts();
     }
 
     @Override
@@ -66,62 +65,41 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
         }
 
         Log.d(LOG_TAG, "Sending post contacts request for " + new Gson().toJson(contactKeys));
-        ServerInterface.postContactsRequest(mFriendsTab.mActivity,
-                hContactKeys, Photobook.getPreferences().strUserID,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(LOG_TAG, "Response from server " + response.toString());
-                        try {
-                            JSONObject obj = new JSONObject(response);
-                            JSONObject objMap = obj.getJSONObject("data");
-                            Map<String, UserProfile> retMap =
-                                    new Gson().fromJson(objMap.toString(),
-                                            new TypeToken<HashMap<String, UserProfile>>() {
-                                            }.getType());
-                            for (int i = 0; i < hContactKeys.size(); i++) {
-                                if (retMap.containsKey(hContactKeys.get(i))) {
-                                    FriendEntry friend = Photobook.getFriendsDataSource().
-                                            getFriendByContactKey(contactKeys.get(i));
-                                    UserProfile profile = retMap.get(hContactKeys.get(i));
-                                    if (friend != null) {
-
-                                        friend.setName(profile.name);
-                                        friend.setAvatar(profile.avatar);
-                                        friend.setUserId(profile.id);
-                                        if (friend.getStatus() == FriendEntry.INT_STATUS_NULL) {
-                                            if (profile.status != null)
-                                                friend.setStatus(profile.status + 1);
-                                            else
-                                                friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
-                                        }
-                                        Photobook.getFriendsDataSource().updateFriend(friend);
-                                    }
+        ServerInterface.postContactsRequest(Photobook.getFriendsFragmentTab().mActivity,
+            hContactKeys, Photobook.getPreferences().strUserID,
+            new Response.Listener<Map<String, UserProfile>>() {
+                @Override
+                public void onResponse(Map<String, UserProfile> response) {
+                    for (int i = 0; i < hContactKeys.size(); i++) {
+                        if (response.containsKey(hContactKeys.get(i))) {
+                            FriendEntry friend = Photobook.getFriendsDataSource().
+                                    getFriendByContactKey(contactKeys.get(i));
+                            UserProfile profile = response.get(hContactKeys.get(i));
+                            if (friend != null) {
+                                friend.setName(profile.name);
+                                friend.setAvatar(profile.avatar);
+                                friend.setUserId(profile.id);
+                                if (friend.getStatus() == FriendEntry.INT_STATUS_NULL) {
+                                    if (profile.status != null)
+                                        friend.setStatus(profile.status + 1);
+                                    else
+                                        friend.setStatus(FriendEntry.INT_STATUS_DEFAULT);
                                 }
+                                Photobook.getFriendsDataSource().updateFriend(friend);
                             }
-                            if (boolPopulateTab) {
-                                mFriendsTab.friendsList.clear();
-                                mFriendsTab.friendsList.addAll(
-                                        Photobook.getFriendsDataSource().getFriendsByStatus(
-                                                new int[]{
-                                                FriendEntry.INT_STATUS_DEFAULT,
-                                                FriendEntry.INT_STATUS_FRIEND}
-                                         ));
-                                mFriendsTab.adapter.notifyDataSetChanged();
-                                Log.d(LOG_TAG,
-                                        "Notifying data set changed list length"
-                                        + mFriendsTab.friendsList.size());
-                            }
-                        } catch (Exception e) {
-                            Log.d(LOG_TAG, "Exception" + e.getLocalizedMessage());
                         }
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(LOG_TAG, "Error: " + error.getMessage());
-                    }
-                });
+                    ArrayList<FriendEntry> friendsList = Photobook.getFriendsDataSource().
+                        getFriendsByStatus(new int[]{FriendEntry.INT_STATUS_DEFAULT,
+                        FriendEntry.INT_STATUS_FRIEND});
+                    callbackInterface.onResponse(friendsList);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(LOG_TAG, "Error: " + error.getMessage());
+                }
+            });
     }
 
     @Override
@@ -130,9 +108,9 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
     @Override
     protected void onProgressUpdate(Void... values) {}
 
-    public ArrayList<ContactEntry> getContacts(Context context) {
+    public ArrayList<ContactEntry> getContacts() {
         ArrayList<ContactEntry> res = new ArrayList<ContactEntry>();
-        ContentResolver cr = context.getContentResolver();
+        ContentResolver cr =  Photobook.getFriendsFragmentTab().mActivity.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cur.getCount() > 0) {
             while (cur.moveToNext()) {
