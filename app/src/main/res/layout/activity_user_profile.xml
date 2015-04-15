@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
         android:gravity="center"
         android:background="@drawable/pattern_repeat">
         <de.hdodenhof.circleimageview.CircleImageView
@@ -69,7 +68,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/followersLayout"
-        android:layout_above="@+id/footerDetails"/>
+        android:layout_above="@+id/footerDetails"
+        android:numColumns="3"/>
     <LinearLayout
         android:id="@+id/footerDetails"
         android:layout_width="match_parent"
