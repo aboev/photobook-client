@@ -24,6 +24,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Alex on 2014-11-27.
@@ -37,33 +38,47 @@ public class ServerInterface {
 
     public static final void postContactsRequest(Context context,
         ArrayList<String> contacts, String userId,
-        final Response.Listener<String> responseListener,
+        final Response.Listener<Map<String, UserProfile>> responseListener,
         final Response.ErrorListener errorListener) {
         Gson gson = new Gson();
         HashMap<String, String> headers = createHeaders(userId);
         Log.d(LOG_TAG, "Sending post contacts request for " + gson.toJson(contacts));
         StringRequest request = new StringRequest(Request.Method.POST,
-                Constants.SERVER_URL+Constants.SERVER_PATH_CONTACTS,
-                gson.toJson(contacts), headers,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        responseListener.onResponse(response);
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        errorListener.onErrorResponse(error);
-
+            Constants.SERVER_URL+Constants.SERVER_PATH_CONTACTS,
+            gson.toJson(contacts), headers,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, "Response: " + response);
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ServerResponse<Map<String, UserProfile>>>(){}
+                            .getType();
+                    try {
+                        ServerResponse<Map<String, UserProfile>> res =
+                                gson.fromJson(response, type);
+                        if ( res != null && res.isSuccess()
+                                && res.data != null
+                                && responseListener != null) {
+                            responseListener.onResponse(res.data);
+                        } else if (errorListener != null)
+                            errorListener.onErrorResponse(new VolleyError());
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, "Exception: " + e.getLocalizedMessage());
+                        if (errorListener != null) errorListener.onErrorResponse(
+                                new VolleyError());
                     }
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (errorListener != null) errorListener.onErrorResponse(error);
+                }
+            }
         );
-
         VolleySingleton.getInstance(context).addToRequestQueue(request);
-
     }
+
+
 
     public static final void updateProfileRequest(Context context,
                                                  UserProfile profile, String userId,
