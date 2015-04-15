@@ -15,6 +15,7 @@
     <string name="sms_hint">1234</string>
     <string name="sms_title">sms code</string>
     <string name="register">Sign up</string>
+    <string name="about">About</string>
     <string name="eula_notice">By registering in service you agree to <a href="http://dev.snufan.com/eula.html">license agreement</a></string>
     <string name="privacy_policy_notice"><a href="http://dev.snufan.com/privacy_policy.html">Privacy policy</a></string>
     <string name="link_eula">http://dev.snufan.com/eula.html</string>
