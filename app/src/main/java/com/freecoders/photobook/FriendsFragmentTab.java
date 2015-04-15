@@ -34,7 +34,7 @@ public class FriendsFragmentTab extends Fragment {
 
     private ListView listView;
     public MainActivity mActivity;
-    public ArrayList<FriendEntry> friendsList;
+    public ArrayList<FriendEntry> contactList = new ArrayList<FriendEntry>();
     public ArrayList<FriendEntry> channelList = new ArrayList<FriendEntry>();
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
@@ -45,7 +45,9 @@ public class FriendsFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
-    private int currentPosition = 0;
+    private int BOOKMARK_ID_CONTACTS = 0;
+    private int BOOKMARK_ID_FRIENDS = 1;
+    private int BOOKMARK_ID_CHANNELS = 2;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
@@ -63,22 +65,23 @@ public class FriendsFragmentTab extends Fragment {
         setRetainInstance(true);
         Log.d(LOG_TAG, "Initializing FriendsFragmentTab");
 
-        friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
-                new int[]{FriendEntry.INT_STATUS_DEFAULT,
-                        FriendEntry.INT_STATUS_FRIEND});
-
         adapter = new FriendsListAdapter(getActivity(),
-                R.layout.row_friend_list, friendsList);
+                R.layout.row_friend_list, contactList);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                intent.putExtra("userId", friendsList.get(position).getUserId());
+                intent.putExtra("userId", contactList.get(position).getUserId());
                 getActivity().startActivity(intent);
             }
         });
+
+        ArrayList<FriendEntry> list =  Photobook.getFriendsDataSource().getFriendsByStatus(
+            new int[]{FriendEntry.INT_STATUS_DEFAULT, FriendEntry.INT_STATUS_FRIEND});
+        contactList.clear();
+        contactList.addAll(list);
 
         bookmarkHandler = new BookmarkHandler(horizontalScrollView,
                 Constants.BOOKMARKS_HEIGHT);
@@ -86,36 +89,47 @@ public class FriendsFragmentTab extends Fragment {
         //listView.setOnTouchListener(gestureListener);
 
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
-                getResources().getStringArray(R.array.contacts_bookmark_items),
-                R.array.contacts_bookmark_icons);
+            getResources().getStringArray(R.array.contacts_bookmark_items),
+            R.array.contacts_bookmark_icons);
         bookmarkAdapter.setOnItemSelectedListener(
-                new BookmarkAdapter.onItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(int position) {
-                        currentPosition = position;
-                        if (position == 1)
-                            friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
-                                    new int[]{FriendEntry.INT_STATUS_NULL});
-                        else if (position == 0)
-                            friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(
-                                    new int[]{FriendEntry.INT_STATUS_DEFAULT,
-                                            FriendEntry.INT_STATUS_FRIEND});
-                        else if (position == 2) {
-                            friendsList.clear();
-                            friendsList.addAll(channelList);
-                        }
-                        adapter.clear();
-                        adapter.addAll(friendsList);
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
+            new BookmarkAdapter.onItemSelectedListener() {
+                @Override
+                public void onItemSelected(int position) {
+                    ArrayList<FriendEntry> list = null;
+                    if (position == BOOKMARK_ID_CONTACTS)
+                        list =  Photobook.getFriendsDataSource().getFriendsByStatus(
+                            new int[]{FriendEntry.INT_STATUS_NULL});
+                    else if (position == BOOKMARK_ID_FRIENDS)
+                        list =  Photobook.getFriendsDataSource().getFriendsByStatus(
+                            new int[]{FriendEntry.INT_STATUS_DEFAULT,
+                                FriendEntry.INT_STATUS_FRIEND});
+                    else if (position == BOOKMARK_ID_CHANNELS)
+                        list = channelList;
+                    contactList.clear();
+                    if (list != null) contactList.addAll(list);
+                    adapter.notifyDataSetChanged();
+                }
+            });
 
         Photobook.setFriendsFragmentTab(this);
 
         if (boolUpdateList && !Photobook.getPreferences().strUserID.isEmpty()) {
-            refreshContactList();
-            refreshChannelList();
+            refreshContactList(new CallbackInterface() {
+                @Override
+                public void onResponse(Object obj) {
+                    contactList.clear();
+                    contactList.addAll((ArrayList<FriendEntry>) obj);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            refreshChannelList(new CallbackInterface() {
+                @Override
+                public void onResponse(Object obj) {
+                    contactList.clear();
+                    contactList.addAll((ArrayList<FriendEntry>) obj);
+                    adapter.notifyDataSetChanged();
+                }
+            });
             boolUpdateList = false;
         }
 
@@ -123,21 +137,20 @@ public class FriendsFragmentTab extends Fragment {
     }
 
     public void applyFilter(int[] status){
-        friendsList =  Photobook.getFriendsDataSource().getFriendsByStatus(status);
+        contactList =  Photobook.getFriendsDataSource().getFriendsByStatus(status);
         adapter.clear();
-        adapter.addAll(friendsList);
+        adapter.addAll(contactList);
         adapter.notifyDataSetChanged();
     }
 
-    public void refreshContactList(){
+    public void refreshContactList(CallbackInterface callbackInterface){
         Log.d(LOG_TAG, "Refreshing contact list");
         if (Photobook.getPreferences().strUserID.isEmpty()) return;
-
-        contactsRetrieverTask = new ContactsRetrieverTask(this, true);
+        contactsRetrieverTask = new ContactsRetrieverTask(callbackInterface);
         contactsRetrieverTask.execute();
     }
 
-    public void refreshChannelList(){
+    public void refreshChannelList(final CallbackInterface callbackInterface){
         if (channelList == null) {
             channelList = new ArrayList<FriendEntry>();
         }
@@ -153,11 +166,8 @@ public class FriendsFragmentTab extends Fragment {
                         channel.setUserId(response.get(i).id);
                         channelList.add(channel);
                     }
-                    if (currentPosition == 2) {
-                        adapter.clear();
-                        adapter.addAll(channelList);
-                        adapter.notifyDataSetChanged();
-                    }
+                    if (callbackInterface != null)
+                        callbackInterface.onResponse(channelList);
                 }
             }, null);
     }
