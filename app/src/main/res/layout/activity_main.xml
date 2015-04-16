@@ -9,7 +9,7 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/linearDrawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
@@ -17,6 +17,7 @@
         android:orientation="vertical"
         android:background="#FFFFFF">
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/linearDrawer2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -57,12 +58,15 @@
             android:choiceMode="singleChoice"
             android:padding="10dp"
             android:divider="#FFFFFF"
-            android:dividerHeight="1dp"/>
+            android:dividerHeight="1dp"
+            android:layout_below="@+id/linearDrawer2"
+            android:layout_above="@+id/aboutTextView"/>
         <TextView
+            android:id="@+id/aboutTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:layout_gravity="bottom"
+            android:layout_alignParentBottom="true"
             android:text="@string/about"/>
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>
