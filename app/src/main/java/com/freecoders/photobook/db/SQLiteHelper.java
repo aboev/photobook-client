@@ -20,6 +20,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_ID = "UserId";
     public static final String COLUMN_AVATAR = "Avatar";
     public static final String COLUMN_STATUS = "Status";
+    public static final String COLUMN_TYPE = "Type";
 
     public static final String COLUMN_MEDIASTORE_ID = "mediaStoreId";
     public static final String COLUMN_ORIG_URI = "origUri";
@@ -29,7 +30,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BUCKET_ID = "bucketId";
 
     private static final String DATABASE_NAME = "photobook.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     // Database creation sql statement
     private static final String DATABASE_CREATE_FRIENDS_TABLE = "create table "
@@ -39,7 +40,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + COLUMN_CONTACT_KEY + " varchar(500), "
             + COLUMN_USER_ID + " varchar(100), "
             + COLUMN_AVATAR + " varchar(3000), "
-            + COLUMN_STATUS + " int);";
+            + COLUMN_STATUS + " int, "
+            + COLUMN_TYPE + " int);";
 
     private static final String DATABASE_CREATE_IMAGES_TABLE = "create table "
             + TABLE_IMAGES + "("
