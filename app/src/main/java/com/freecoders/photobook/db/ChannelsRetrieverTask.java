@@ -42,6 +42,12 @@ public class ChannelsRetrieverTask extends AsyncTask<String, Void, String> {
                                         response.get(i).name, "", response.get(i).id,
                                         response.get(i).avatar, FriendEntry.INT_STATUS_DEFAULT);
                                 boolNewItems = true;
+                            } else {
+                                FriendEntry channel = Photobook.getFriendsDataSource().
+                                        getChannelByChannelId(response.get(i).id);
+                                channel.setAvatar(response.get(i).avatar);
+                                channel.setName(response.get(i).name);
+                                Photobook.getFriendsDataSource().updateFriend(channel);
                             }
                         }
                         if (boolNewItems && callbackInterface != null)
