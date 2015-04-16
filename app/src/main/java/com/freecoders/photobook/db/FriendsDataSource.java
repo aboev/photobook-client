@@ -116,12 +116,32 @@ public class FriendsDataSource {
         return friend;
     }
 
+    private FriendEntry getContactByColumnValue(String column, String value) {
+        String selection = column + " = ?";
+
+        Cursor cursor = database.query(dbHelper.TABLE_FRIENDS,
+                null, selection, new String[]{value} , null, null, null);
+
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+
+        FriendEntry friend  = cursorToFriendEntry(cursor);
+        cursor.close();
+        return friend;
+    }
+
     public FriendEntry getFriendByUserId(String userId) {
         return getFriendByColumnValue(dbHelper.COLUMN_USER_ID, userId);
     }
 
     public FriendEntry getChannelByChannelId(String channelId) {
         return getChannelByColumnValue(dbHelper.COLUMN_USER_ID, channelId);
+    }
+
+    public FriendEntry getContactByUserId(String userId) {
+        return getContactByColumnValue(dbHelper.COLUMN_USER_ID, userId);
     }
 
     public FriendEntry getFriendByContactKey(String contactKey) {
