@@ -3,7 +3,9 @@ package com.freecoders.photobook;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.db.ChannelsRetrieverTask;
 import com.freecoders.photobook.db.ContactsRetrieverTask;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
@@ -35,9 +38,9 @@ public class FriendsFragmentTab extends Fragment {
     private ListView listView;
     public MainActivity mActivity;
     public ArrayList<FriendEntry> contactList = new ArrayList<FriendEntry>();
-    public ArrayList<FriendEntry> channelList = new ArrayList<FriendEntry>();
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
+    private ChannelsRetrieverTask channelsRetrieverTask;
     public GestureListener gestureListener;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
@@ -45,9 +48,10 @@ public class FriendsFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
-    private int BOOKMARK_ID_CONTACTS = 0;
-    private int BOOKMARK_ID_FRIENDS = 1;
+    private int BOOKMARK_ID_FRIENDS = 0;
+    private int BOOKMARK_ID_CONTACTS = 1;
     private int BOOKMARK_ID_CHANNELS = 2;
+    private int curPosition = 0;
 
     public void setMainActivity(MainActivity activity) {
         this.mActivity = activity;
@@ -72,9 +76,11 @@ public class FriendsFragmentTab extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if ((curPosition == BOOKMARK_ID_FRIENDS) || (curPosition == BOOKMARK_ID_CHANNELS)){
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                 intent.putExtra("userId", contactList.get(position).getUserId());
                 getActivity().startActivity(intent);
+            }
             }
         });
 
@@ -96,6 +102,7 @@ public class FriendsFragmentTab extends Fragment {
                 @Override
                 public void onItemSelected(int position) {
                     ArrayList<FriendEntry> list = null;
+                    curPosition = position;
                     if (position == BOOKMARK_ID_CONTACTS)
                         list =  Photobook.getFriendsDataSource().getFriendsByStatus(
                             new int[]{FriendEntry.INT_STATUS_NULL});
@@ -104,7 +111,7 @@ public class FriendsFragmentTab extends Fragment {
                             new int[]{FriendEntry.INT_STATUS_DEFAULT,
                                 FriendEntry.INT_STATUS_FRIEND});
                     else if (position == BOOKMARK_ID_CHANNELS)
-                        list = channelList;
+                        list = Photobook.getFriendsDataSource().getAllChannels();
                     contactList.clear();
                     if (list != null) contactList.addAll(list);
                     adapter.notifyDataSetChanged();
@@ -117,17 +124,21 @@ public class FriendsFragmentTab extends Fragment {
             refreshContactList(new CallbackInterface() {
                 @Override
                 public void onResponse(Object obj) {
-                    contactList.clear();
-                    contactList.addAll((ArrayList<FriendEntry>) obj);
-                    adapter.notifyDataSetChanged();
+                    if (curPosition == BOOKMARK_ID_FRIENDS) {
+                        contactList.clear();
+                        contactList.addAll((ArrayList<FriendEntry>) obj);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             });
             refreshChannelList(new CallbackInterface() {
                 @Override
                 public void onResponse(Object obj) {
-                    contactList.clear();
-                    contactList.addAll((ArrayList<FriendEntry>) obj);
-                    adapter.notifyDataSetChanged();
+                    if (curPosition == BOOKMARK_ID_CHANNELS) {
+                        contactList.clear();
+                        contactList.addAll((ArrayList<FriendEntry>) obj);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             });
             boolUpdateList = false;
@@ -147,28 +158,13 @@ public class FriendsFragmentTab extends Fragment {
         Log.d(LOG_TAG, "Refreshing contact list");
         if (Photobook.getPreferences().strUserID.isEmpty()) return;
         contactsRetrieverTask = new ContactsRetrieverTask(callbackInterface);
-        contactsRetrieverTask.execute();
+        contactsRetrieverTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void refreshChannelList(final CallbackInterface callbackInterface){
-        if (channelList == null) {
-            channelList = new ArrayList<FriendEntry>();
-        }
-        ServerInterface.getChannelsRequest(getActivity(),
-            new Response.Listener<ArrayList<UserProfile>>() {
-                @Override
-                public void onResponse(ArrayList<UserProfile> response) {
-                    channelList.clear();
-                    for (int i = 0; i < response.size(); i++) {
-                        FriendEntry channel = new FriendEntry();
-                        channel.setName(response.get(i).name);
-                        channel.setAvatar(response.get(i).avatar);
-                        channel.setUserId(response.get(i).id);
-                        channelList.add(channel);
-                    }
-                    if (callbackInterface != null)
-                        callbackInterface.onResponse(channelList);
-                }
-            }, null);
+    public void refreshChannelList(CallbackInterface callbackInterface){
+        Log.d(LOG_TAG, "Refreshing channels list");
+        if (Photobook.getPreferences().strUserID.isEmpty()) return;
+        channelsRetrieverTask = new ChannelsRetrieverTask(callbackInterface);
+        channelsRetrieverTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }
