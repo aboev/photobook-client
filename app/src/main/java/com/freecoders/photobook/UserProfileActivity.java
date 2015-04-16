@@ -171,7 +171,7 @@ public class UserProfileActivity extends ActionBarActivity {
                     String strRes = resJson.getString(Constants.RESPONSE_RESULT);
                     if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                         FriendEntry friendEntry = Photobook.getFriendsDataSource().
-                            getFriendByUserId(userId);
+                            getContactByUserId(userId);
                         friendEntry.setStatus(followRequest ? FriendEntry.INT_STATUS_FRIEND :
                             FriendEntry.INT_STATUS_DEFAULT);
                         Photobook.getFriendsDataSource().updateFriend(friendEntry);
