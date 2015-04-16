@@ -51,7 +51,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         } catch (Exception e) {
             imageLoader = new ImageLoader(VolleySingleton.getInstance(context).getRequestQueue(),
                     memoryCache);
-            Log.d(Constants.LOG_TAG, "Failed to initialize disk cache");
+            Log.d(LOG_TAG, "Failed to initialize disk cache");
         }
         this.mFriendList = items;
     }
@@ -88,7 +88,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
 
         if ((profile.getAvatar().isEmpty() == false)
                 && (URLUtil.isValidUrl(profile.getAvatar()))) {
-            Log.d(Constants.LOG_TAG, "Requesting avatar for " + profile.getName() +
+            Log.d(LOG_TAG, "Requesting avatar for " + profile.getName() +
                             " " + profile.getAvatar());
             imageLoader.get(profile.getAvatar().toString(),
                     new ImageListener(position, holder.imgAvatar));
