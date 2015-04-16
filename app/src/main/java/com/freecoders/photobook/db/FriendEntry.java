@@ -10,9 +10,13 @@ public class FriendEntry {
     private String UserId;
     private String Avatar;
     private int Status;
+    private int Type = INT_TYPE_PERSON;
     public final static int INT_STATUS_NULL = 0;
     public final static int INT_STATUS_DEFAULT = 1;
     public final static int INT_STATUS_FRIEND = 2;
+
+    public final static int INT_TYPE_PERSON = 0;
+    public final static int INT_TYPE_CHANNEL = 1;
 
     public long getId() {
         return id;
@@ -60,6 +64,14 @@ public class FriendEntry {
 
     public void setStatus(int Status) {
         this.Status = Status;
+    }
+
+    public int getType() {
+        return Type;
+    }
+
+    public void setType(int Type) {
+        this.Type = Type;
     }
 
 }
