@@ -120,7 +120,7 @@ public class UserProfileActivity extends ActionBarActivity {
 
         createImageLoader();
 
-        FriendEntry friendEntry = Photobook.getFriendsDataSource().getFriendByUserId(userId);
+        FriendEntry friendEntry = Photobook.getFriendsDataSource().getContactByUserId(userId);
         isUserFollowed = friendEntry != null
                 && friendEntry.getStatus() == FriendEntry.INT_STATUS_FRIEND;
         setFollowButtonText();
