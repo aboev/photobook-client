@@ -57,6 +57,7 @@ public class UserProfileActivity extends ActionBarActivity {
     private boolean isUserFollowed;
     private Map<String, UserProfile> followers;
     private UserProfile userProfile;
+    private LinearLayout followersLayout;
 
     private ServerInterface serverInterface;
 
@@ -76,14 +77,15 @@ public class UserProfileActivity extends ActionBarActivity {
         userPhoneView = (TextView) findViewById(R.id.txtUserPhone);
         userAvatarView = (ImageView) findViewById(R.id.imageViewAvatar);
         followersView = (TextView) findViewById(R.id.textFollowerCount);
-        followersView.setOnClickListener(new View.OnClickListener() {
+        userProfileLayout = (LinearLayout) findViewById(R.id.headerLayout);
+        gridView = (GridView) findViewById(R.id.userGalleryGridView);
+        followersLayout = (LinearLayout) findViewById(R.id.followersLayout);
+        followersLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getFolowersListView(userProfileLayout, followers);
             }
         });
-        userProfileLayout = (LinearLayout) findViewById(R.id.headerLayout);
-        gridView = (GridView) findViewById(R.id.userGalleryGridView);
         galleryAdapter = new PublicGalleryAdapter(this,
             R.layout.item_gallery_public, imageList);
         gridView.setAdapter(galleryAdapter);
