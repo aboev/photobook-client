@@ -62,23 +62,25 @@ public class ImageUploader {
     private static String LOG_TAG = "ImageUploader";
     
     private int mPosition;
-    private ArrayList<ImageEntry> mImgList;
+    //private ArrayList<ImageEntry> mImgList;
+    private ImageEntry imageEnt;
     private GalleryAdapter mAdapter;
     private String strLocalURI;
 
-    public void uploadImage(ArrayList<ImageEntry> imgList, int position,
+    public void uploadImage(ImageEntry imageToUpload,
                          GalleryAdapter adapter) {
-        this.mPosition = position;
+        //this.mPosition = position;
         this.mAdapter = adapter;
-        this.mImgList = imgList;
-        imgList.get(position).setStatus(ImageEntry.INT_STATUS_SHARING);
-        Photobook.getImagesDataSource().updateImage(imgList.get(position));
+        //this.mImgList = imgList;
+        this.imageEnt = imageToUpload;
+        imageToUpload.setStatus(ImageEntry.INT_STATUS_SHARING);
+        Photobook.getImagesDataSource().updateImage(imageToUpload);
         adapter.notifyDataSetChanged();
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         MultiPartRequest uploadRequest = new MultiPartRequest(
                 Constants.SERVER_URL+Constants.SERVER_PATH_IMAGE,
-                imgList.get(position).getOrigUri(),
+                imageToUpload.getOrigUri(),
                 headers,
                 new Response.Listener<String>() {
 
@@ -89,9 +91,9 @@ public class ImageUploader {
                             JSONObject obj = new JSONObject( response);
                             String strId = obj.getJSONObject(Constants.RESPONSE_DATA).
                                     getString(Constants.KEY_ID);
-                            mImgList.get(mPosition).setServerId(strId);
-                            Photobook.getImagesDataSource().updateImage(mImgList.get(mPosition));
-                            putMetaData(strId, mImgList.get(mPosition).getTitle());
+                            imageEnt.setServerId(strId);
+                            Photobook.getImagesDataSource().updateImage(imageEnt);
+                            putMetaData(strId, imageEnt.getTitle());
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
@@ -135,12 +137,12 @@ public class ImageUploader {
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
                             if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
-                                mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
+                                imageEnt.setStatus(ImageEntry.INT_STATUS_SHARED);
                                 Photobook.getImagesDataSource().
-                                        updateImage(mImgList.get(mPosition));
+                                        updateImage(imageEnt);
 
                                 Log.d(LOG_TAG, "Saving new ImageEntry with " +
-                                        mImgList.get(mPosition).getMediaStoreID());
+                                        imageEnt.getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
@@ -162,9 +164,9 @@ public class ImageUploader {
     }
 
     public void handleFailure(){
-        mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_DEFAULT);
+        imageEnt.setStatus(ImageEntry.INT_STATUS_DEFAULT);
         Photobook.getImagesDataSource().
-                updateImage(mImgList.get(mPosition));
+                updateImage(imageEnt);
         Photobook.getMainActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -173,15 +175,18 @@ public class ImageUploader {
         });
     }
 
-    public void uploadImageS3(ArrayList<ImageEntry> imgList, int position,
+    public void uploadImageS3(//ArrayList<ImageEntry> imgList, int position,
+                              ImageEntry imageToUpload,
                             String strLocalURI,
                             GalleryAdapter adapter) {
-        this.mPosition = position;
+        //this.mPosition = position;
         this.mAdapter = adapter;
-        this.mImgList = imgList;
+        //this.mImgList = imgList;
+        imageEnt = imageToUpload;
         this.strLocalURI = strLocalURI;
-        imgList.get(position).setStatus(ImageEntry.INT_STATUS_SHARING);
-        Photobook.getImagesDataSource().updateImage(imgList.get(position));
+        //imgList.get(position).setStatus(ImageEntry.INT_STATUS_SHARING);
+        imageToUpload.setStatus(ImageEntry.INT_STATUS_SHARING);
+        Photobook.getImagesDataSource().updateImage(imageToUpload);
         adapter.notifyDataSetChanged();
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put("Accept", "*/*");
@@ -243,9 +248,9 @@ public class ImageUploader {
             Boolean res = false;
             try {
                 int orientation = ImageUtils.
-                        getExifOrientation(mImgList.get(mPosition).getOrigUri());
+                        getExifOrientation(imageEnt.getOrigUri());
                 Bitmap b = ImageUtils.
-                        decodeSampledBitmap(mImgList.get(mPosition).getOrigUri(), 1536, 1152);
+                        decodeSampledBitmap(imageEnt.getOrigUri(), 1536, 1152);
                 Bitmap bitmap;
                 if ((orientation == 90) || (orientation == 270)) {
                     Matrix matrix = new Matrix();
@@ -290,7 +295,7 @@ public class ImageUploader {
         Gson gson = new Gson();
         HashMap<String, String> reqBody = new HashMap<String, String>();
         reqBody.put(Constants.KEY_LOCAL_URI, strLocalURI);
-        reqBody.put(Constants.KEY_TITLE, mImgList.get(mPosition).getTitle());
+        reqBody.put(Constants.KEY_TITLE, imageEnt.getTitle());
         HashMap<String, String> headers = new HashMap<String,String>();
         headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
         headers.put(Constants.HEADER_IMAGEID, strImageID);
@@ -306,13 +311,13 @@ public class ImageUploader {
                             JSONObject resJson = new JSONObject(response);
                             String strRes = resJson.getString(Constants.RESPONSE_RESULT);
                             if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
-                                mImgList.get(mPosition).setServerId(strImageID);
-                                mImgList.get(mPosition).setStatus(ImageEntry.INT_STATUS_SHARED);
+                                imageEnt.setServerId(strImageID);
+                                imageEnt.setStatus(ImageEntry.INT_STATUS_SHARED);
                                 Photobook.getImagesDataSource().
-                                        updateImage(mImgList.get(mPosition));
+                                        updateImage(imageEnt);
 
                                 Log.d(LOG_TAG, "Saving new ImageEntry with " +
-                                        mImgList.get(mPosition).getMediaStoreID());
+                                        imageEnt.getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
