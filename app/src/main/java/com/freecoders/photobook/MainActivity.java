@@ -1,14 +1,14 @@
 package com.freecoders.photobook;
 
+import android.app.*;
+import android.view.*;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.utils.FileUtils;
 import com.soundcloud.android.crop.Crop;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -22,12 +22,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.app.FragmentTransaction;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     ImageView mDrawerAvatarImage;
     TextView mDrawerUserName;
     TextView mDrawerContactKey;
+    private TextView aboutTextView;
 
     ActionBar.Tab friendsTab, galleryTab, feedTab;
 
@@ -137,6 +132,20 @@ public class MainActivity extends FragmentActivity {
         mDrawerAvatarImage = (ImageView) findViewById(R.id.imgAvatarDrawer);
         mDrawerUserName = (TextView) findViewById(R.id.textUserNameDrawer);
         mDrawerContactKey = (TextView) findViewById(R.id.textContactKeyDrawer);
+
+        aboutTextView = (TextView) findViewById(R.id.aboutTextView);
+        aboutTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog aboutDialog = new AlertDialog.Builder(MainActivity.this).create();
+                aboutDialog.setTitle(R.string.about);
+                aboutDialog.setMessage(getString(R.string.aboutText));
+                aboutDialog.show();
+
+                TextView messageText = (TextView)aboutDialog.findViewById(android.R.id.message);
+                messageText.setGravity(Gravity.CENTER);
+            }
+        });
 
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.item_drawer_list, mMenuItems));
