@@ -1,5 +1,6 @@
 package com.freecoders.photobook;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -68,7 +69,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ImageDetailsActivity extends ActionBarActivity {
+public class ImageDetailsActivity extends Activity {
     private static String LOG_TAG = "ImageDetailsActivity";
 
     CircleImageView mAvatarImageView;
@@ -581,7 +582,7 @@ public class ImageDetailsActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_image_details, menu);
+        //getMenuInflater().inflate(R.menu.menu_image_details, menu);
         return true;
     }
 
