@@ -65,6 +65,7 @@ public class GalleryFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolSyncGallery = true;
+    private int curPosition = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,6 +90,7 @@ public class GalleryFragmentTab extends Fragment {
                 getResources().getStringArray(R.array.gallery_bookmark_items),
                 R.array.gallery_bookmark_icons);
         bookmarkAdapter.setOnItemSelectedListener(
+
             new BookmarkAdapter.onItemSelectedListener() {
                 @Override
                 public void onItemSelected(int position) {
@@ -107,6 +109,7 @@ public class GalleryFragmentTab extends Fragment {
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     }
+                    curPosition=0;
                 }
             });
 
@@ -212,7 +215,7 @@ public class GalleryFragmentTab extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-            ImageEntry image = mAdapter.getItem(position);
+            final ImageEntry image = mAdapter.getItem(position);
             final int pos = position;
             if (image.getStatus() == ImageEntry.INT_STATUS_DEFAULT) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
@@ -241,11 +244,12 @@ public class GalleryFragmentTab extends Fragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mImageList.get(pos).setTitle(editText.getText().toString());
-                        String strOrigUri = mImageList.get(pos).getOrigUri();
-                        String strThumbUri = mImageList.get(pos).getThumbUri();
-                        String strDestOrigName = mImageList.get(pos).getMediaStoreID();
-                        String strDestThumbName = mImageList.get(pos).getMediaStoreID() +
+                        ImageEntry imageToShare = image;//mImageList.get(pos)
+                        imageToShare.setTitle(editText.getText().toString());
+                        String strOrigUri = imageToShare.getOrigUri();
+                        String strThumbUri = imageToShare.getThumbUri();
+                        String strDestOrigName = imageToShare.getMediaStoreID();
+                        String strDestThumbName = imageToShare.getMediaStoreID() +
                                 "_thumb";
                         if (strOrigUri.contains(".")) {
                             String filenameArray[] = strOrigUri.split("\\.");
@@ -260,18 +264,18 @@ public class GalleryFragmentTab extends Fragment {
                         destOrigFile.getParentFile().mkdirs();
                         destThumbFile.getParentFile().mkdirs();
                         if (FileUtils.copyFileFromUri(new File(strOrigUri), destOrigFile)) {
-                            mImageList.get(pos).setOrigUri(destOrigFile.toString());
+                            imageToShare.setOrigUri(destOrigFile.toString());
                             Log.d(LOG_TAG, "Saved local image to " +
                                     destOrigFile.toString());
                         }
                         if (FileUtils.copyFileFromUri(new File(strThumbUri), destThumbFile)) {
-                            mImageList.get(pos).setThumbUri(destThumbFile.toString());
+                            imageToShare.setThumbUri(destThumbFile.toString());
                             Log.d(LOG_TAG, "Saved local thumbnail to " +
                                     destThumbFile.toString());
                         }
-                        Photobook.getImagesDataSource().saveImage(mImageList.get(pos));
+                        Photobook.getImagesDataSource().saveImage(imageToShare);
                         //mImageLoader.uploadImage(mImageList, pos, mAdapter);
-                        mImageLoader.uploadImageS3(mImageList, pos, strOrigUri.toLowerCase() ,
+                        mImageLoader.uploadImageS3(imageToShare, strOrigUri.toLowerCase() ,
                                 mAdapter);
                         alertDialog.dismiss();
                     }
@@ -337,6 +341,7 @@ public class GalleryFragmentTab extends Fragment {
             }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mGridView.setOnItemClickListener(OnItemClickListener);
             mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+            curPosition=1;
         }
     };
 
@@ -390,4 +395,19 @@ public class GalleryFragmentTab extends Fragment {
     public void refreshAdapter() {
         mAdapter.notifyDataSetChanged();
     }
+
+    public boolean getBackToFolders(){
+        if(curPosition==1) {
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
+            showBuckets();
+            curPosition=0;
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+
 }
