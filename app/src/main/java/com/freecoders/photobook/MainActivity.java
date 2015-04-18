@@ -91,6 +91,7 @@ public class MainActivity extends FragmentActivity {
 			public void onTabSelected(Tab tab, FragmentTransaction ft) {
                 if (mViewPager != null)
 				    mViewPager.setCurrentItem(tab.getPosition());
+
 			}
 
 			@Override
@@ -224,5 +225,18 @@ public class MainActivity extends FragmentActivity {
             mHandler.updateAvatar();
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(LOG_TAG, "Pressed back on "+mViewPager.getCurrentItem());
+        if(mViewPager.getCurrentItem()==1) {
+            if(!Photobook.getGalleryFragmentTab().getBackToFolders())
+                super.onBackPressed();
+            // do something
+        } else {
+
+            super.onBackPressed();
+        }
     }
 }
