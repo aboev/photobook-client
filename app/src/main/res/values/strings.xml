@@ -77,6 +77,7 @@
     <string name="bookmark_folders">Folders</string>
     <string name="bookmark_shares">My shares</string>
     <string name="followers">Followers: </string>
+    <string name="aboutText">Greatest photo sharing application ever!\nDevelopers:\nAlexey Boev\nAndrei Alikov\nMaxim Maximov</string>
     <string-array name="contacts_bookmark_items">
         <item>@string/bookmark_friends</item>
         <item>@string/bookmark_contacts</item>
