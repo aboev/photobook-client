@@ -65,6 +65,10 @@ public class GalleryFragmentTab extends Fragment {
     private BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolSyncGallery = true;
+    private int BOOKMARK_ID_GALLERY = 0;
+    private int BOOKMARK_ID_FOLDERS = 1;
+    private int BOOKMARK_ID_FOLDERS_SELECTED = -1;
+    private int BOOKMARK_ID_SHARES = 2;
     private int curPosition = 0;
 
     @Override
@@ -94,22 +98,22 @@ public class GalleryFragmentTab extends Fragment {
             new BookmarkAdapter.onItemSelectedListener() {
                 @Override
                 public void onItemSelected(int position) {
-                    if (position == 0) {
+                    if (position == BOOKMARK_ID_GALLERY) {
                         mAdapter.clear();
                         mAdapter.addAll(mImageList);
                         mAdapter.notifyDataSetChanged();
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
-                    } else if (position == 1) {
+                    } else if (position == BOOKMARK_ID_FOLDERS) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
                         showBuckets();
-                    } else if (position == 2) {
+                    } else if (position == BOOKMARK_ID_SHARES) {
                         showSharedImages();
                         mGridView.setOnItemClickListener(OnItemClickListener);
                         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
                     }
-                    curPosition=0;
+                    curPosition = position;
                 }
             });
 
@@ -341,7 +345,7 @@ public class GalleryFragmentTab extends Fragment {
             }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mGridView.setOnItemClickListener(OnItemClickListener);
             mGridView.setOnItemLongClickListener(new ImageLongClickListener());
-            curPosition=1;
+            curPosition = BOOKMARK_ID_FOLDERS_SELECTED;
         }
     };
 
@@ -396,15 +400,14 @@ public class GalleryFragmentTab extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    public boolean getBackToFolders(){
-        if(curPosition==1) {
+    public boolean onBackPressed (){
+        if (curPosition == BOOKMARK_ID_FOLDERS_SELECTED) {
             mAdapter.clear();
             mAdapter.notifyDataSetChanged();
             showBuckets();
-            curPosition=0;
+            curPosition = BOOKMARK_ID_FOLDERS;
             return true;
-        }
-        else
+        } else
             return false;
     }
 
