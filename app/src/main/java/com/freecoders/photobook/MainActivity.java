@@ -50,6 +50,9 @@ public class MainActivity extends FragmentActivity {
     ActionBar.Tab friendsTab, galleryTab, feedTab;
 
     protected Dialog mSplashDialog;
+    private int FRAGMENT_ID_CONTACTS = 0;
+    private int FRAGMENT_ID_GALLERY = 1;
+    private int FRAGMENT_ID_FEED = 2;
 
 	@SuppressLint("NewApi") 
     @Override
@@ -239,13 +242,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         Log.d(LOG_TAG, "Pressed back on "+mViewPager.getCurrentItem());
-        if(mViewPager.getCurrentItem()==1) {
-            if(!Photobook.getGalleryFragmentTab().getBackToFolders())
+        if(mViewPager.getCurrentItem()!=FRAGMENT_ID_GALLERY ||
+            !Photobook.getGalleryFragmentTab().onBackPressed())
                 super.onBackPressed();
-            // do something
-        } else {
-
-            super.onBackPressed();
-        }
     }
 }
