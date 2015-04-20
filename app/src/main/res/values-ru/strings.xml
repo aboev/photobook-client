@@ -3,4 +3,12 @@
     <string name="app_name">Photobook</string>
     <string name="about">О программе</string>
     <string name="action_settings">Настройки</string>
+    <string name="alert_cancel_button">Отмена</string>
+    <string name="alert_delete" translatable="false">Удалить</string>
+    <string name="alert_input_name" translatable="false">Укажите имя </string>
+    <string name="alert_input_phone" translatable="false">Укажите номер телефона начиная с +</string>
+    <string name="alert_message_comment" translatable="false">Что вы думаете?</string>
+    <string name="alert_new_version_available" translatable="false">Доступна новая версия. Обновить?</string>
+    <string name="alert_select_image" translatable="false">Выберите изображение</string>
+    <string name="alert_send_button">Отправить</string>
 </resources>
