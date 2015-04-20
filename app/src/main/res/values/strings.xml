@@ -77,7 +77,13 @@
     <string name="bookmark_folders">Folders</string>
     <string name="bookmark_shares">My shares</string>
     <string name="followers">Followers: </string>
-    <string name="aboutText">Greatest photo sharing application ever!\nDevelopers:\nAlexey Boev\nAndrei Alikov\nMaxim Maximov</string>
+    <string name="aboutText">
+        Photobook (c) 2015\n
+        Alexey Boev\n
+        Andrei Alikov\n
+        Maxim Maximov\n
+        Some components are licensed under Apache 2.0\n
+        More details at www.github.com/aboev/photobook-client</string>
     <string-array name="contacts_bookmark_items">
         <item>@string/bookmark_friends</item>
         <item>@string/bookmark_contacts</item>
