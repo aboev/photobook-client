@@ -45,7 +45,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
         ImageLoader.ImageCache memoryCache = new MemoryLruCache();
         try {
             DiskLruBitmapCache diskCache = new DiskLruBitmapCache(context, "DiskCache",
-                2000000, Bitmap.CompressFormat.JPEG, 100);
+                5000000, Bitmap.CompressFormat.JPEG, 80);
             imageLoader = new ImageLoader(VolleySingleton.getInstance(context).getRequestQueue(),
                     diskCache);
         } catch (Exception e) {
