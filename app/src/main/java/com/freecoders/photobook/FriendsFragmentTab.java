@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.freecoders.photobook.classes.BookmarkAdapter;
 import com.freecoders.photobook.classes.BookmarkHandler;
 import com.freecoders.photobook.classes.CallbackInterface;
@@ -30,6 +31,7 @@ import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @SuppressLint("NewApi") 
 public class FriendsFragmentTab extends Fragment {
@@ -166,5 +168,38 @@ public class FriendsFragmentTab extends Fragment {
         if (Photobook.getPreferences().strUserID.isEmpty()) return;
         channelsRetrieverTask = new ChannelsRetrieverTask(callbackInterface);
         channelsRetrieverTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void syncChannels(final CallbackInterface callbackInterface) {
+        ServerInterface.getFriendsRequest(mActivity,
+            new Response.Listener<ArrayList<String>>() {
+                @Override
+                public void onResponse(ArrayList<String> userIds) {
+                    for (int i = 0; i < userIds.size(); i++) {
+                        FriendEntry channel = Photobook.getFriendsDataSource().
+                                getChannelByChannelId(userIds.get(i));
+                        if ((channel != null) &&
+                                (channel.getStatus() == FriendEntry.INT_STATUS_DEFAULT)) {
+                            channel.setStatus(FriendEntry.INT_STATUS_FRIEND);
+                            Photobook.getFriendsDataSource().updateFriend(channel);
+                        }
+                    }
+                    if (callbackInterface != null) callbackInterface.onResponse(userIds);
+                }
+            }, null);
+    }
+
+    public void syncChannels() {
+        syncChannels(new CallbackInterface() {
+            @Override
+            public void onResponse(Object obj) {
+                if (curPosition == BOOKMARK_ID_CHANNELS) {
+                    ArrayList<FriendEntry> list = Photobook.getFriendsDataSource().getAllChannels();
+                    contactList.clear();
+                    contactList.addAll(list);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 }
