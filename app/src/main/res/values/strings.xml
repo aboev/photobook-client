@@ -84,7 +84,8 @@
         Andrei Alikov\n
         Maxim Maximov\n
         Some components are licensed under Apache 2.0\n
-        More details at www.github.com/aboev/photobook-client</string>
+        More details at www.github.com/aboev/photobook-client
+        Channel images from Pixabay www.pixabay.com</string>
     <string-array name="contacts_bookmark_items">
         <item>@string/bookmark_friends</item>
         <item>@string/bookmark_contacts</item>
