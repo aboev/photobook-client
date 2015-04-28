@@ -19,13 +19,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.soundcloud.android.crop.Crop;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -34,11 +30,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -48,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivityHandler {
     private static String LOG_TAG = "MainActivityHandler";
@@ -291,20 +283,33 @@ public class MainActivityHandler {
                 JSONObject dataJson = new JSONObject(strData);
                 Gson gson = new Gson();
                 if (dataJson.has(Constants.KEY_IMAGEID)) {
-                    String strImageId = dataJson.getString(Constants.KEY_IMAGEID);
-                    ImageEntry imageEntry =
-                            Photobook.getImagesDataSource().getImageByServerID(strImageId);
-                    Photobook.setGalleryImageDetails(imageEntry);
-                    if (imageEntry == null) {
-                        Toast.makeText(activity, R.string.toast_img_not_found,
-                                Toast.LENGTH_LONG).show();
-                        return;
-                    }
                     Intent mIntent = new Intent(Photobook.getMainActivity(),
                             ImageDetailsActivity.class);
-                    Bundle b = new Bundle();
-                    b.putBoolean(Photobook.intentExtraImageDetailsSource, true);
-                    mIntent.putExtras(b);
+                    String strImageId = dataJson.getString(Constants.KEY_IMAGEID);
+                    ImageEntry imageEntry = Photobook.getImagesDataSource().
+                            getImageByServerID(strImageId);
+
+                    if (imageEntry != null) {
+                        Photobook.setGalleryImageDetails(imageEntry);
+                        Bundle b = new Bundle();
+                        b.putBoolean(Photobook.extraImageSource, true);
+                        mIntent.putExtras(b);
+                    } else {
+                        try {
+                            String strImage = dataJson.getString(Constants.KEY_IMAGE);
+                            String strAuthor = dataJson.getString(Constants.KEY_AUTHOR);
+                            ImageJson image = gson.fromJson(strImage, ImageJson.class);
+                            UserProfile author = gson.fromJson(strAuthor, UserProfile.class);
+                            FeedEntryJson imageData = new FeedEntryJson();
+                            imageData.author = author;
+                            imageData.image = image;
+                            Photobook.setImageDetails(imageData);
+                        } catch (Exception e) {
+                            Toast.makeText(activity, R.string.toast_img_not_found,
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
                     activity.mViewPager.setCurrentItem(1);
                     Photobook.getMainActivity().startActivity(mIntent);
                 }
