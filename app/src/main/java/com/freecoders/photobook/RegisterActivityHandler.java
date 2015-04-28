@@ -235,6 +235,7 @@ public class RegisterActivityHandler {
                             if (Photobook.getGalleryFragmentTab() != null)
                                 Photobook.getGalleryFragmentTab().syncGallery();
                             Photobook.getMainActivity().mHandler.registerPushID();
+                            Photobook.getMainActivity().mHandler.showChannelsDialog();
                             activity.finish();
                         } else if (resJson.has(Constants.RESPONSE_CODE) &&
                                 resJson.getInt(Constants.RESPONSE_CODE) == 121) {

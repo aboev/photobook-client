@@ -339,4 +339,78 @@ public class MainActivityHandler {
         }
     }
 
+    public void showChannelsDialog() {
+        ServerInterface.getChannelsRequest(activity,
+                new Response.Listener<ArrayList<UserProfile>>() {
+                    @Override
+                    public void onResponse(ArrayList<UserProfile> response) {
+                        final String[] channels = new String[response.size()];
+                        final String[] channelIds = new String[response.size()];
+                        for (int i = 0; i < response.size(); i++) {
+                            if (Photobook.getFriendsDataSource().
+                                    getChannelByChannelId(response.get(i).id)==null) {
+                                Photobook.getFriendsDataSource().createChannel(
+                                        response.get(i).name, "", response.get(i).id,
+                                        response.get(i).avatar, FriendEntry.INT_STATUS_DEFAULT);
+                            } else {
+                                FriendEntry channel = Photobook.getFriendsDataSource().
+                                        getChannelByChannelId(response.get(i).id);
+                                channel.setAvatar(response.get(i).avatar);
+                                channel.setName(response.get(i).name);
+                                Photobook.getFriendsDataSource().updateFriend(channel);
+                            }
+                            channels[i] = response.get(i).name;
+                            channelIds[i] = response.get(i).id;
+                        }
+                        final ArrayList<String> selectedChannels = new ArrayList<String>();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                        builder.setTitle(R.string.dialog_select_channels);
+                        builder.setMultiChoiceItems(channels, null,
+                            new DialogInterface.OnMultiChoiceClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int indexSelected,
+                                                    boolean isChecked) {
+                                    if (isChecked)
+                                        selectedChannels.add(channelIds[indexSelected]);
+                                    else if (selectedChannels.contains(indexSelected))
+                                        selectedChannels.remove(Integer.valueOf(
+                                                channelIds[indexSelected]));
+                                }
+                            })
+                            .setPositiveButton(R.string.alert_ok_button,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        ServerInterface.addFriendRequest(activity,
+                                            selectedChannels, new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String s) {
+                                                    for (int i = 0; i < selectedChannels.size(); i++) {
+                                                        FriendEntry channel = Photobook.
+                                                                getFriendsDataSource().
+                                                                getChannelByChannelId(selectedChannels.
+                                                                        get(i));
+                                                        if (channel != null) {
+                                                            channel.setStatus(FriendEntry.
+                                                                    INT_STATUS_FRIEND);
+                                                            Photobook.getFriendsDataSource().
+                                                                    updateFriend(channel);
+                                                        }
+                                                    }
+                                                    Photobook.getFriendsFragmentTab().syncChannels();
+                                                }}, null);
+                                    }
+                                })
+                            .setNegativeButton(R.string.alert_cancel_button,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Photobook.getFriendsFragmentTab().syncChannels();
+                                        }
+                                    });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                }, null);
+    }
 }
