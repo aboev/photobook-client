@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,7 +31,6 @@ import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.classes.GestureListener;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.db.ImagesDataSource;
 import com.freecoders.photobook.gson.ImageJson;
@@ -40,13 +38,8 @@ import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.ImageUtils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -290,7 +283,7 @@ public class GalleryFragmentTab extends Fragment {
             } else if (image.getStatus() == ImageEntry.INT_STATUS_SHARED) {
                 Intent mIntent = new Intent(Photobook.getMainActivity(), ImageDetailsActivity.class);
                 Bundle b = new Bundle();
-                b.putBoolean(Photobook.intentExtraImageDetailsSource, true);
+                b.putBoolean(Photobook.extraImageSource, true);
                 mIntent.putExtras(b);
                 Photobook.setGalleryImageDetails(image);
                 startActivity(mIntent);
