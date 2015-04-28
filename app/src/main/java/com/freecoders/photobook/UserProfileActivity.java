@@ -133,6 +133,7 @@ public class UserProfileActivity extends ActionBarActivity {
         serverInterface.setServerResponseHandler(serverHandler);
         serverInterface.sentFollowersRequest(userId);
 
+        fillUserProfileInfo(new UserProfile());
         ServerInterface.getUserProfileRequest(null, new String[]{userId},
             new Response.Listener<HashMap<String, UserProfile>>() {
                 @Override
