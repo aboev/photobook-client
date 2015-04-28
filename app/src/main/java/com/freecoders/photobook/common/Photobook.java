@@ -35,7 +35,8 @@ public class Photobook extends Application {
     private static FeedEntryJson mImageDetails;
     private static ImageEntry mGalleryImageDetails;
 
-    public static String intentExtraImageDetailsSource = "gallery_image";
+    public static String extraImageSource = "gallery_image";
+    public static String extraImageID = "imageID";
 
     @Override
     public void onCreate() {
