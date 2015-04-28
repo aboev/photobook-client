@@ -208,7 +208,7 @@ public class ImageDetailsActivity extends Activity {
         Photobook.setImageDetailsActivity(this);
 
         Bundle b = getIntent().getExtras();
-        if ((b != null) && (b.containsKey(Photobook.intentExtraImageDetailsSource)))
+        if ((b != null) && (b.containsKey(Photobook.extraImageSource)))
             populateView(true);
         else
             populateView(false);
