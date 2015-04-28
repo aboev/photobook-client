@@ -109,8 +109,50 @@ public class ServerInterface {
 
     }
 
+    public static final void addFriendRequest(Context context,
+            final ArrayList<String> friendIds,
+            final Response.Listener<String> responseListener,
+            final Response.ErrorListener errorListener) {
+        String userId = Photobook.getPreferences().strUserID;
+        if (userId.isEmpty()) return;
+        HashMap<String, String> headers = createHeaders(userId);
+        Log.d(LOG_TAG, "Add friend request");
+        Gson gson = new Gson();
+        StringRequest request = new StringRequest(Request.Method.PUT,
+                Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS,
+                gson.toJson(friendIds), headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(LOG_TAG, "Response: " + response);
+                        Gson gson = new Gson();
+                        Type type = new TypeToken<ServerResponse<ArrayList<String>>>(){}.getType();
+                        try {
+                            ServerResponse<ArrayList<String>> res = gson.fromJson(response, type);
+                            if ( res != null && res.isSuccess()
+                                    && res.data != null
+                                    && responseListener != null) {
+                                responseListener.onResponse("");
+                            } else if (errorListener != null)
+                                errorListener.onErrorResponse(new VolleyError());
+                        } catch (Exception e) {
+                            Log.d(LOG_TAG, "Exception: " + e.getLocalizedMessage());
+                            if (errorListener != null) errorListener.onErrorResponse(
+                                    new VolleyError());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
     public static final void addFriendRequest(Response.Listener<String> responseListener, Context context,
-                                                final String[] friendIds) {
+                                              final String[] friendIds) {
         String userId = Photobook.getPreferences().strUserID;
         if (userId.isEmpty()) return;
         HashMap<String, String> headers = createHeaders(userId);
@@ -119,11 +161,11 @@ public class ServerInterface {
         StringRequest request = new StringRequest(Request.Method.PUT,
                 Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS ,
                 gson.toJson(friendIds), headers, responseListener, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
-                    }
-                }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(LOG_TAG, "Error: " + error.getLocalizedMessage());
+            }
+        }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
@@ -153,6 +195,52 @@ public class ServerInterface {
                 }
         );
         VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static final void getFriendsRequest(Context context,
+            final Response.Listener<ArrayList<String>> responseListener,
+            final Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<String,String>();
+        headers.put(Constants.HEADER_USERID, Photobook.getPreferences().strUserID);
+        headers.put("Accept", "*/*");
+        Log.d(LOG_TAG, "Get friends request");
+        StringRequest getChannelsRequest = new StringRequest(Request.Method.GET,
+                Constants.SERVER_URL+Constants.SERVER_PATH_FRIENDS,
+                "", headers,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(LOG_TAG, response.toString());
+                        Gson gson = new Gson();
+                        Type type = new TypeToken<ServerResponse
+                                <ArrayList<String>>>(){}.getType();
+                        try {
+                            ServerResponse<ArrayList<String>> res =
+                                    gson.fromJson(response, type);
+                            if (res != null && res.isSuccess() && res.data != null
+                                    && responseListener != null)
+                                responseListener.onResponse(res.data);
+                            else if (errorListener != null)
+                                errorListener.onErrorResponse(new VolleyError());
+                        } catch (Exception e) {
+                            if (errorListener != null) errorListener.onErrorResponse(
+                                    new VolleyError());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if ((error != null) && (error.networkResponse != null)
+                        && (error.networkResponse.data != null))
+                    Log.d(LOG_TAG, "Error: " +
+                            new String(error.networkResponse.data));
+                if (errorListener != null) errorListener.onErrorResponse(error);
+            }
+        }
+        );
+        VolleySingleton.getInstance(Photobook.getMainActivity()).
+                addToRequestQueue(getChannelsRequest);
     }
 
     public static final void likeRequest(Context context,
