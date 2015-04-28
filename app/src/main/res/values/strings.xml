@@ -36,7 +36,7 @@
         <item>Profile</item>
     </string-array>
     <string name="btn_like">Like</string>
-    <string name="btn_unlike" translatable="false">Unlike</string>
+    <string name="btn_unlike">Unlike</string>
     <string name="btn_comment">Comment</string>
     <string name="btn_download">Download</string>
     <string name="alert_title_comment">New comment</string>

@@ -42,5 +42,6 @@
     <string name="register">Регистрация</string>
     <string name="word_by">от</string>
     <string name="btn_like">Лайк</string>
-    <string name="btn_unfollow_text">Убр. лайк</string>
+    <string name="btn_unfollow_text">unfollow</string>
+    <string name="btn_unlike">Убр. лайк</string>
 </resources>
