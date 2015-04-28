@@ -52,7 +52,8 @@
 		    	android:layout_height="wrap_content"
 		    	android:hint="@string/email_hint"
 		    	android:layout_marginTop="20dp"
-		    	android:inputType="textEmailAddress"/>
+		    	android:inputType="textEmailAddress"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/phone"
