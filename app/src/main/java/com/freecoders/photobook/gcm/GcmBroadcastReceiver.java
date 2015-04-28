@@ -18,7 +18,9 @@ import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.R;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.gson.ImageJson;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
  */
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     private static String LOG_TAG = "GcmBroadcastReceiver";
+    private Gson gson = new Gson();
     
     public static final int NOTIFICATION_ID = 1;
 
@@ -37,13 +40,14 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
         String messageType = gcm.getMessageType(intent);
         if (!extras.isEmpty()) {
+            Log.d(LOG_TAG, "Received push message type " + messageType);
             if (GoogleCloudMessaging.
                     MESSAGE_TYPE_DELETED.equals(messageType)) {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Log.d(LOG_TAG, "Received push message " + extras.toString());
                 if (extras.containsKey("event") && extras.containsKey("msg")) {
-                   Integer intEventType = extras.getInt("event");
+                   Integer intEventType = Integer.valueOf(extras.getString("event"));
                    String strData = extras.getString("msg");
                    showNotification(context, intEventType, strData);
                 }
@@ -53,20 +57,34 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     }
 
     public void showNotification(Context context, Integer intEventType, String strData) {
-        String strMessage = "";
+        String strNotificationMessage = "";
         try {
             Log.d(LOG_TAG, "Parsing " + strData);
             JSONObject resJson = new JSONObject(strData);
             String strAuthor = resJson.getString("author").replaceAll("\\\"", "\"");
             JSONObject author = new JSONObject(strAuthor);
             Log.d(LOG_TAG, "Author =  " + strAuthor);
-            String strText = resJson.getString(Constants.KEY_TEXT);
-            strMessage = strText;
-            if (author.has(Constants.KEY_NAME))
-                strMessage = author.getString(Constants.KEY_NAME) + ": " + strMessage;
+            if (intEventType == Constants.EVENT_NEW_COMMENT) {
+                String strText = resJson.getString(Constants.KEY_TEXT);
+                strNotificationMessage = strText;
+                if (author.has(Constants.KEY_NAME))
+                    strNotificationMessage = author.getString(Constants.KEY_NAME) + ": " + strNotificationMessage;
+            } else if (intEventType == Constants.EVENT_NEW_IMAGE) {
+                String strImage = resJson.getString("image").replaceAll("\\\"", "\"");
+                ImageJson image = (ImageJson) gson.fromJson(strImage, ImageJson.class);
+                strNotificationMessage = image.title;
+            }
         } catch (JSONException e) {
             Log.d(LOG_TAG, "JSON parsing error");
         }
+
+        String strNotificationTitle = "";
+        if (intEventType == Constants.EVENT_NEW_COMMENT)
+            strNotificationTitle = context.getResources().
+                    getString(R.string.notification_new_comment);
+        else if (intEventType == Constants.EVENT_NEW_IMAGE)
+            strNotificationTitle = context.getResources().
+                    getString(R.string.notification_new_image);
 
         NotificationManager mNotificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -83,11 +101,10 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle(context.getResources().
-                                getString(R.string.notification_new_comment))
+                        .setContentTitle(strNotificationTitle)
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(strMessage))
-                        .setContentText(strMessage)
+                                .bigText(strNotificationMessage))
+                        .setContentText(strNotificationMessage)
                         .setAutoCancel(true)
                         .setVibrate(new long[] { 200, 500, 200 })
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
