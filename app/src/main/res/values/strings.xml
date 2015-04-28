@@ -22,7 +22,7 @@
     <string name="link_privacy_policy" translatable="false">http://dev.snufan.com/privacy_policy.html</string>
     <string name="apache_notice" translatable="false">Some components are licensed under Apache 2.0</string>
     <string name="btn_follow_text" translatable="false">Follow</string>
-    <string name="btn_unfollow_text" translatable="false">Unfollow</string>
+    <string name="btn_unfollow_text">Unfollow</string>
     <string name="btn_share_text">share</string>
     <string name="edit_title_hint" translatable="false">Fabulous morning</string>
     <string name="edit_loading">Loading feed</string>
@@ -35,7 +35,7 @@
     <string-array name="menu_items">
         <item>Profile</item>
     </string-array>
-    <string name="btn_like" translatable="false">Like</string>
+    <string name="btn_like">Like</string>
     <string name="btn_unlike" translatable="false">Unlike</string>
     <string name="btn_comment">Comment</string>
     <string name="btn_download">Download</string>
@@ -52,7 +52,7 @@
     <string name="dialog_please_wait">Please wait</string>
     <string name="dialog_select_channels">Choose your favorite channels</string>
     <string name="author_name_self">me</string>
-    <string name="word_by" translatable="false">by </string>
+    <string name="word_by">by </string>
     <string name="alert_new_version_available">New version is available. Would you like to update?</string>
     <string name="alert_update_required">You must update application to proceed. Would you like to update now?</string>
     <string name="alert_sms_title">SMS verification</string>

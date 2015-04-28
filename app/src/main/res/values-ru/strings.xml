@@ -40,4 +40,7 @@
     <string name="notification_new_comment">Новый комментарий</string>
     <string name="phone_hint">+79060430169</string>
     <string name="register">Регистрация</string>
+    <string name="word_by">от</string>
+    <string name="btn_like">Лайк</string>
+    <string name="btn_unfollow_text">Убр. лайк</string>
 </resources>
