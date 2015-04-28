@@ -62,7 +62,8 @@
     <string name="alert_input_phone">Please input phone in international format starting with +</string>
     <string name="alert_select_image">Select image</string>
     <string name="notification_new_comment">New comment</string>
-    <string name="toast_img_not_found" translatable="false">Image not found</string>
+    <string name="notification_new_image">New image</string>
+    <string name="toast_img_not_found" translatable="false">Image not found or already deleted</string>
     <string name="image" translatable="false">Image</string>
     <string-array name="image_menu">
         <item>Unshare</item>

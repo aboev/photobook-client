@@ -44,4 +44,5 @@
     <string name="btn_like">Лайк</string>
     <string name="btn_unfollow_text">unfollow</string>
     <string name="btn_unlike">Убр. лайк</string>
+    <string name="notification_new_image">Новое фото</string>
 </resources>
