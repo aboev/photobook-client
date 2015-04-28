@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Photobook</string>
+    <string name="app_name">Фотобук</string>
     <string name="about">О программе</string>
     <string name="action_settings">Настройки</string>
     <string name="alert_cancel_button">Отмена</string>
@@ -11,4 +11,33 @@
     <string name="alert_new_version_available" translatable="false">Доступна новая версия. Обновить?</string>
     <string name="alert_select_image" translatable="false">Выберите изображение</string>
     <string name="alert_send_button">Отправить</string>
+    <string name="alert_sms_message">Введите 4-значный код верификации из СМС</string>
+    <string name="alert_sms_title">СМС верификация</string>
+    <string name="alert_title_comment">Добавить комментарий</string>
+    <string name="alert_update_required">Необходимо обновить приложение. Обновить сейчас?</string>
+    <string name="alert_wrong_sms">Неверный смс-код верификации. Попробуйте снова</string>
+    <string name="author_name_self">меня</string>
+    <string name="bookmark_channels">Каналы</string>
+    <string name="bookmark_contacts">Контакты</string>
+    <string name="bookmark_folders">Папки</string>
+    <string name="bookmark_friends">Друзья</string>
+    <string name="bookmark_gallery">Галлерея</string>
+    <string name="bookmark_shares">Загруженные</string>
+    <string name="btn_comment">Коммент.</string>
+    <string name="btn_download">Скачать</string>
+    <string name="btn_share_text">Загрузить</string>
+    <string name="dialog_creating_account">Регистрация</string>
+    <string name="dialog_download_complete">Изображение загружено</string>
+    <string name="dialog_downloading">Загрузка</string>
+    <string name="dialog_please_wait">Пожалуйста подождите</string>
+    <string name="dialog_select_channels">Выберите любимые каналы</string>
+    <string name="dialog_uploading_avatar">Загрузка аватара</string>
+    <string name="drawer_close">Спрятать</string>
+    <string name="drawer_open">Профиль</string>
+    <string name="edit_loading">Загрузка новостей</string>
+    <string name="edit_uploading_image">Загрузка изображения</string>
+    <string name="eula_notice">Регистрация в сервисе подразумевает согласие с </string>
+    <string name="notification_new_comment">Новый комментарий</string>
+    <string name="phone_hint">+79060430169</string>
+    <string name="register">Регистрация</string>
 </resources>
