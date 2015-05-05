@@ -221,17 +221,7 @@ public class RegisterActivityHandler {
                             if (boolUploadAvatar) sendAvatar();
 
                             if (Photobook.getFriendsFragmentTab() != null)
-                                Photobook.getFriendsFragmentTab().refreshContactList(
-                                    new CallbackInterface() {
-                                        @Override
-                                        public void onResponse(Object obj) {
-                                            Photobook.getFriendsFragmentTab().contactList.clear();
-                                            Photobook.getFriendsFragmentTab().contactList.
-                                                    addAll((ArrayList<FriendEntry>) obj);
-                                            Photobook.getFriendsFragmentTab().
-                                                    adapter.notifyDataSetChanged();
-                                        }
-                                    });
+                                Photobook.getFriendsFragmentTab().reloadContactList(null);
                             if (Photobook.getGalleryFragmentTab() != null)
                                 Photobook.getGalleryFragmentTab().syncGallery();
                             Photobook.getMainActivity().mHandler.registerPushID();
