@@ -65,6 +65,26 @@ public class GalleryFragmentTab extends Fragment {
     private int curPosition = 0;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
+                new ArrayList<ImageEntry>());
+        reloadGallery(new CallbackInterface() {
+            @Override
+            public void onResponse(Object obj) {
+                syncGallery();
+            }
+        });
+        if (boolSyncGallery && !Photobook.getPreferences().strUserID.isEmpty()) {
+            //syncGallery();
+            syncComments();
+            boolSyncGallery = false;
+        }
+        Photobook.setGalleryFragmentTab(this);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
@@ -73,8 +93,6 @@ public class GalleryFragmentTab extends Fragment {
                 rootView.findViewById(R.id.bookmarkScrollView);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.bookmarkLinearLayout);
         colorSelector = (View) rootView.findViewById(R.id.bookmarkColorSelector2);
-        mAdapter = new GalleryAdapter(getActivity(), R.layout.item_gallery,
-                new ArrayList<ImageEntry>());
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(OnItemClickListener);
         mGridView.setOnItemLongClickListener(new ImageLongClickListener());
@@ -82,57 +100,17 @@ public class GalleryFragmentTab extends Fragment {
                 Constants.BOOKMARKS_HEIGHT);
         gestureListener = new GestureListener(getActivity(), mGridView, bookmarkHandler);
         //mGridView.setOnTouchListener(gestureListener);
-
         bookmarkAdapter = new BookmarkAdapter(getActivity(), linearLayout, colorSelector,
                 getResources().getStringArray(R.array.gallery_bookmark_items),
                 R.array.gallery_bookmark_icons);
         bookmarkAdapter.setOnItemSelectedListener(
-
             new BookmarkAdapter.onItemSelectedListener() {
                 @Override
                 public void onItemSelected(int position) {
-                    if (position == BOOKMARK_ID_GALLERY) {
-                        mAdapter.clear();
-                        mAdapter.addAll(mImageList);
-                        mAdapter.notifyDataSetChanged();
-                        mGridView.setOnItemClickListener(OnItemClickListener);
-                        mGridView.setOnItemLongClickListener(new ImageLongClickListener());
-                    } else if (position == BOOKMARK_ID_FOLDERS) {
-                        mAdapter.clear();
-                        mAdapter.notifyDataSetChanged();
-                        showBuckets();
-                    } else if (position == BOOKMARK_ID_SHARES) {
-                        showSharedImages();
-                        mGridView.setOnItemClickListener(OnItemClickListener);
-                        mGridView.setOnItemLongClickListener(new ImageLongClickListener());
-                    }
                     curPosition = position;
+                    refreshGallery();
                 }
             });
-
-        new GalleryLoaderClass(null, null, new CallbackInterface() {
-            public void onResponse(Object obj) {
-                mImageList.clear();
-                mImageList.addAll((ArrayList<ImageEntry>) obj);
-                mAdapter.clear();
-                mAdapter.addAll((ArrayList<ImageEntry>) obj);
-                mAdapter.notifyDataSetChanged();
-                if (Photobook.getPreferences().strUserID != null &&
-                        !Photobook.getPreferences().strUserID.isEmpty()) {
-                    syncGallery();
-                }
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        setRetainInstance(true);
-
-        Photobook.setGalleryFragmentTab(this);
-
-        if (boolSyncGallery && !Photobook.getPreferences().strUserID.isEmpty()) {
-            //syncGallery();
-            syncComments();
-            boolSyncGallery = false;
-        }
         return rootView;
     }
 
@@ -274,6 +252,7 @@ public class GalleryFragmentTab extends Fragment {
                         //mImageLoader.uploadImage(mImageList, pos, mAdapter);
                         mImageLoader.uploadImageS3(imageToShare, strOrigUri.toLowerCase() ,
                                 mAdapter);
+                        reloadGallery(null);
                         alertDialog.dismiss();
                     }
                 });
@@ -391,6 +370,35 @@ public class GalleryFragmentTab extends Fragment {
 
     public void refreshAdapter() {
         mAdapter.notifyDataSetChanged();
+    }
+
+    public void reloadGallery(final CallbackInterface onResponse) {
+        new GalleryLoaderClass(null, null, new CallbackInterface() {
+            public void onResponse(Object obj) {
+                mImageList.clear();
+                mImageList.addAll((ArrayList<ImageEntry>) obj);
+                refreshGallery();
+                if (onResponse != null) onResponse.onResponse(obj);
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void refreshGallery() {
+        if (curPosition == BOOKMARK_ID_GALLERY) {
+            mAdapter.clear();
+            mAdapter.addAll(mImageList);
+            mAdapter.notifyDataSetChanged();
+            mGridView.setOnItemClickListener(OnItemClickListener);
+            mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+        } else if (curPosition == BOOKMARK_ID_FOLDERS) {
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
+            showBuckets();
+        } else if (curPosition == BOOKMARK_ID_SHARES) {
+            showSharedImages();
+            mGridView.setOnItemClickListener(OnItemClickListener);
+            mGridView.setOnItemLongClickListener(new ImageLongClickListener());
+        }
     }
 
     public boolean onBackPressed (){
