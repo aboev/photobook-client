@@ -17,7 +17,7 @@
     <string name="register">Sign up</string>
     <string name="about">About</string>
     <string name="eula_notice">By registering in service you agree to <a href="http://dev.snufan.com/eula.html">license agreement</a></string>
-    <string name="privacy_policy_notice" translatable="false"><a href="http://dev.snufan.com/privacy_policy.html">Privacy policy</a></string>
+    <string name="privacy_policy_notice"><a href="http://dev.snufan.com/privacy_policy.html">Privacy policy</a></string>
     <string name="link_eula" translatable="false">http://dev.snufan.com/eula.html</string>
     <string name="link_privacy_policy" translatable="false">http://dev.snufan.com/privacy_policy.html</string>
     <string name="apache_notice" translatable="false">Some components are licensed under Apache 2.0</string>
@@ -32,7 +32,7 @@
     <string name="drawer_open">My profile</string>
     <string name="user_profile" translatable="false">User Profile</string>
     <string name="drawer_close">Hide</string>
-    <string-array name="menu_items">
+    <string-array name="menu_items" translatable="false">
         <item>Profile</item>
     </string-array>
     <string name="btn_like">Like</string>
@@ -65,7 +65,7 @@
     <string name="notification_new_image">New image</string>
     <string name="toast_img_not_found" translatable="false">Image not found or already deleted</string>
     <string name="image" translatable="false">Image</string>
-    <string-array name="image_menu">
+    <string-array name="image_menu" translatable="false">
         <item>Unshare</item>
     </string-array>
     <string name="user_avatar" translatable="false">User avatar</string>
@@ -85,14 +85,14 @@
         Andrei Alikov\n
         Maxim Maximov\n
         Some components are licensed under Apache 2.0\n
-        More details at www.github.com/aboev/photobook-client
+        More details at www.github.com/aboev/photobook-client\n
         Channel images from Pixabay www.pixabay.com</string>
     <string-array name="contacts_bookmark_items">
         <item>@string/bookmark_friends</item>
         <item>@string/bookmark_contacts</item>
         <item>@string/bookmark_channels</item>
     </string-array>
-    <string-array name="contacts_bookmark_icons">
+    <string-array name="contacts_bookmark_icons" translatable="false">
         <item>@drawable/ic_tab_friends</item>
         <item>@drawable/ic_tab_contacts</item>
         <item>@drawable/ic_tab_channels</item>
@@ -102,7 +102,7 @@
         <item>@string/bookmark_folders</item>
         <item>@string/bookmark_shares</item>
     </string-array>
-    <string-array name="gallery_bookmark_icons">
+    <string-array name="gallery_bookmark_icons" translatable="false">
         <item>@drawable/ic_tab_gallery</item>
         <item>@drawable/ic_tab_folders</item>
         <item>@drawable/ic_tab_shares</item>
