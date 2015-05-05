@@ -38,19 +38,26 @@ public class FeedFragmentTab extends Fragment {
 
     private FeedAdapter mAdapter;
     private FeedLoader mFeedLoader;
+    private ArrayList<FeedEntryJson> feedEntryList = new ArrayList<FeedEntryJson>();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new FeedAdapter(getActivity(), R.layout.item_feed, feedEntryList);
+        Photobook.setFeedFragmentTab(this);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_feed, container, false);
         FeedListView listView = (FeedListView) rootView.findViewById(R.id.feedList);
-        ArrayList<FeedEntryJson> feedEntryList = new ArrayList<FeedEntryJson>();
-        mAdapter = new FeedAdapter(getActivity(), R.layout.item_feed, feedEntryList);
+
         mFeedLoader = new FeedLoader(listView);
         listView.setFeedComponents(mFeedLoader, mAdapter, feedEntryList);
         listView.setOnItemClickListener(OnItemClickListener);
         //mFeedLoader.loadFeed();
-        setRetainInstance(true);
         return rootView;
     }
 
