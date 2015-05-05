@@ -65,7 +65,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
         }
 
         Log.d(LOG_TAG, "Sending post contacts request for " + new Gson().toJson(contactKeys));
-        ServerInterface.postContactsRequest(Photobook.getFriendsFragmentTab().mActivity,
+        ServerInterface.postContactsRequest(Photobook.getMainActivity(),
             hContactKeys, Photobook.getPreferences().strUserID,
             new Response.Listener<Map<String, UserProfile>>() {
                 @Override
@@ -110,7 +110,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
 
     public ArrayList<ContactEntry> getContacts() {
         ArrayList<ContactEntry> res = new ArrayList<ContactEntry>();
-        ContentResolver cr =  Photobook.getFriendsFragmentTab().mActivity.getContentResolver();
+        ContentResolver cr =  Photobook.getMainActivity().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cur.getCount() > 0) {
             while (cur.moveToNext()) {
