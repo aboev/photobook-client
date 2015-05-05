@@ -315,7 +315,7 @@ public class ImageUploader {
                                 imageEnt.setStatus(ImageEntry.INT_STATUS_SHARED);
                                 Photobook.getImagesDataSource().
                                         updateImage(imageEnt);
-
+                                Photobook.getGalleryFragmentTab().reloadGallery(null);
                                 Log.d(LOG_TAG, "Saving new ImageEntry with " +
                                         imageEnt.getMediaStoreID());
                                 mAdapter.notifyDataSetChanged();
