@@ -108,7 +108,6 @@
             android:textSize="12sp"
             android:autoLink="web"
             android:gravity="center|bottom"
-            android:layout_marginTop="20dp"
             android:text="@string/privacy_policy_notice"/>
 	</LinearLayout>
 </ScrollView>
