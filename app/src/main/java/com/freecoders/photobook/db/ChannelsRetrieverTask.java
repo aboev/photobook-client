@@ -30,7 +30,7 @@ public class ChannelsRetrieverTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        ServerInterface.getChannelsRequest(Photobook.getFriendsFragmentTab().mActivity,
+        ServerInterface.getChannelsRequest(Photobook.getMainActivity(),
                 new Response.Listener<ArrayList<UserProfile>>() {
                     @Override
                     public void onResponse(ArrayList<UserProfile> response) {
