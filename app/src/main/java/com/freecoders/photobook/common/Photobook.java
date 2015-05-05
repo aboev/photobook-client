@@ -4,17 +4,22 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.freecoders.photobook.FeedFragmentTab;
 import com.freecoders.photobook.FriendsFragmentTab;
+import com.freecoders.photobook.GalleryAdapter;
 import com.freecoders.photobook.GalleryFragmentTab;
 import com.freecoders.photobook.ImageDetailsActivity;
 import com.freecoders.photobook.MainActivity;
+import com.freecoders.photobook.MainActivityPagerAdapter;
 import com.freecoders.photobook.db.FriendsDataSource;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.db.ImagesDataSource;
 import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
+import com.freecoders.photobook.utils.MemoryLruCache;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Alex on 2014-11-30.
@@ -26,6 +31,7 @@ public class Photobook extends Application {
     private static ImagesDataSource imagesDataSource;
     private static FriendsFragmentTab mFriendsTab;
     private static GalleryFragmentTab mGalleryTab;
+    private static FeedFragmentTab mFeedTab;
     private static MainActivity mActivity;
     private static ImageDetailsActivity mImageDetailsActivity;
     private static Preferences mPreferences;
@@ -90,6 +96,14 @@ public class Photobook extends Application {
         return mFriendsTab;
     }
 
+    public final static void setFeedFragmentTab(FeedFragmentTab tab){
+        mFeedTab = tab;
+    }
+
+    public final static FeedFragmentTab getFeedFragmentTab(){
+        return mFeedTab;
+    }
+
     public final static void setGalleryFragmentTab(GalleryFragmentTab tab){
         mGalleryTab = tab;
     }
@@ -123,6 +137,5 @@ public class Photobook extends Application {
 
     public static ImageEntry getGalleryImageDetails()
     {return mGalleryImageDetails;}
-
 
 }
