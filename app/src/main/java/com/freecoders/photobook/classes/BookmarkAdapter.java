@@ -53,10 +53,7 @@ public class BookmarkAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedPosition = position;
-                redraw();
-                if (listener != null)
-                    listener.onItemSelected(position);
+                setSelectedPosition(position);
             }
         });
         return view;
@@ -81,5 +78,12 @@ public class BookmarkAdapter {
 
     public String[] getItems() {
         return items;
+    }
+
+    public void setSelectedPosition(int position) {
+        selectedPosition = position;
+        redraw();
+        if (listener != null)
+            listener.onItemSelected(position);
     }
 }
