@@ -109,8 +109,7 @@ public class MainActivity extends FragmentActivity {
         actionBar.addTab(galleryTab);
         actionBar.addTab(feedTab);
 
-        mPagerAdapter = new MainActivityPagerAdapter(
-                getSupportFragmentManager(), this);
+        mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
 
@@ -203,7 +202,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
