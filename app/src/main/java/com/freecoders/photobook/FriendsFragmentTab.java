@@ -40,7 +40,6 @@ public class FriendsFragmentTab extends Fragment {
     private static String LOG_TAG = "FriendsFragmentTab";
 
     private ListView listView;
-    public MainActivity mActivity2;
     public ArrayList<FriendEntry> contactList = new ArrayList<FriendEntry>();
     public FriendsListAdapter adapter;
     private ContactsRetrieverTask contactsRetrieverTask;
@@ -56,6 +55,7 @@ public class FriendsFragmentTab extends Fragment {
     private int BOOKMARK_ID_CONTACTS = 1;
     private int BOOKMARK_ID_CHANNELS = 2;
     private int curPosition = 0;
+    private int defaultPosition = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,7 @@ public class FriendsFragmentTab extends Fragment {
                     refreshContactList();
                 }
             });
-
+        bookmarkAdapter.setSelectedPosition(defaultPosition);
         return rootView;
     }
 
