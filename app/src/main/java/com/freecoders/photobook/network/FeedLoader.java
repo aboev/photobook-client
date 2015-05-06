@@ -34,9 +34,7 @@ public class FeedLoader {
     private Integer mOffset = 0;
     private Boolean isLoading = false;
 
-    public FeedLoader(FeedListView feedListView) {
-        //this.mAdapter = adapter;
-        //this.mFeedList = feedList;
+    public void setFeedListView(FeedListView feedListView) {
         this.mFeedListView = feedListView;
     }
 
