@@ -243,8 +243,7 @@ public class MainActivity extends FragmentActivity {
         Log.d(LOG_TAG, "Pressed back on "+mViewPager.getCurrentItem());
         if(mViewPager.getCurrentItem()!=FRAGMENT_ID_GALLERY ||
             !Photobook.getGalleryFragmentTab().onBackPressed()) {
-            finish();
-            System.exit(0);
+            super.onBackPressed();
         }
     }
 }
