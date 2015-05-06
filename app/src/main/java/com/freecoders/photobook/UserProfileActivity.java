@@ -178,6 +178,7 @@ public class UserProfileActivity extends ActionBarActivity {
                         friendEntry.setStatus(followRequest ? FriendEntry.INT_STATUS_FRIEND :
                             FriendEntry.INT_STATUS_DEFAULT);
                         Photobook.getFriendsDataSource().updateFriend(friendEntry);
+                        Photobook.getFriendsFragmentTab().refreshContactList();
                         isUserFollowed = followRequest;
                         setFollowButtonText();
                     }
