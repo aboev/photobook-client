@@ -23,6 +23,7 @@
     <string name="bookmark_friends">Друзья</string>
     <string name="bookmark_gallery">Галерея</string>
     <string name="bookmark_shares">Загруженные</string>
+    <string name="text_followers"> подписч.</string>
     <string name="btn_comment">Коммент.</string>
     <string name="btn_download">Скачать</string>
     <string name="btn_share_text">Загрузить</string>
@@ -35,6 +36,7 @@
     <string name="drawer_close">Спрятать</string>
     <string name="drawer_open">Профиль</string>
     <string name="edit_loading">Загрузка новостей</string>
+    <string name="edit_loading_gallery">Загрузка галлереи</string>
     <string name="edit_uploading_image">Загрузка изображения</string>
     <string name="eula_notice">Регистрация в сервисе подразумевает согласие с <a href="http://dev.snufan.com/eula.html">лицензионным соглашением</a></string>
     <string name="privacy_policy_notice"><a href="http://dev.snufan.com/privacy_policy.html">Политика конфиденциальности</a></string>
@@ -43,7 +45,8 @@
     <string name="register">Регистрация</string>
     <string name="word_by">от</string>
     <string name="btn_like">Лайк</string>
-    <string name="btn_unfollow_text">unfollow</string>
+    <string name="btn_follow_text">Подписаться</string>
+    <string name="btn_unfollow_text">Отписаться</string>
     <string name="btn_unlike">Убр. лайк</string>
     <string name="notification_new_image">Новое фото</string>
 </resources>

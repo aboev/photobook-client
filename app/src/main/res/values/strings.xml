@@ -21,11 +21,12 @@
     <string name="link_eula" translatable="false">http://dev.snufan.com/eula.html</string>
     <string name="link_privacy_policy" translatable="false">http://dev.snufan.com/privacy_policy.html</string>
     <string name="apache_notice" translatable="false">Some components are licensed under Apache 2.0</string>
-    <string name="btn_follow_text" translatable="false">Follow</string>
+    <string name="btn_follow_text">Follow</string>
     <string name="btn_unfollow_text">Unfollow</string>
     <string name="btn_share_text">share</string>
     <string name="edit_title_hint" translatable="false">Fabulous morning</string>
     <string name="edit_loading">Loading feed</string>
+    <string name="edit_loading_gallery">Loading gallery</string>
     <string name="edit_uploading_image">Uploading image</string>
     <string name="title_activity_splash" translatable="false">SplashActivity</string>
     <string name="title_activity_image_details" translatable="false">ImageDetailsActivity</string>
@@ -78,6 +79,7 @@
     <string name="bookmark_gallery">Gallery</string>
     <string name="bookmark_folders">Folders</string>
     <string name="bookmark_shares">My shares</string>
+    <string name="text_followers"> followers</string>
     <string name="followers" translatable="false">Followers: </string>
     <string name="aboutText" translatable="false">
         Photobook (c) 2015\n
