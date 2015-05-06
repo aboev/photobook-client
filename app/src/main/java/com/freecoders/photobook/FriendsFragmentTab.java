@@ -118,7 +118,7 @@ public class FriendsFragmentTab extends Fragment {
                     refreshContactList();
                 }
             });
-        bookmarkAdapter.setSelectedPosition(defaultPosition);
+        bookmarkAdapter.setSelectedPosition(curPosition);
         return rootView;
     }
 
