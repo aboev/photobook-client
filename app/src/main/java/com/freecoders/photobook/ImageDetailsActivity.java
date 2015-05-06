@@ -279,6 +279,7 @@ public class ImageDetailsActivity extends Activity {
             if ((mImage != null) && (mImage.url_medium != null)
                     && (!mImage.url_medium.isEmpty())
                     && (URLUtil.isValidUrl(mImage.url_medium))) {
+                mImageView.setImageResource(android.R.color.transparent);
                 mImageView.setTag(0);
                 mImageLoader.get(mImage.url_medium, new ImageListener(mImageView));
             }
