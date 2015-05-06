@@ -37,6 +37,11 @@ public class BookmarkAdapter {
         redraw();
     }
 
+    public void setParentView(ViewGroup parentView) {
+        this.parentView = parentView;
+        redraw();
+    }
+
     private View getView(final int position) {
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater vi = (LayoutInflater)context.getSystemService(inflater);
