@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -59,7 +60,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
     static class ViewHolder {
         TextView nameText;
         CircleImageView imgAvatar;
-        Button followButton;
+        LinearLayout addFriendButton;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
             holder = new ViewHolder();
             holder.nameText = (TextView)rowView.findViewById(R.id.txtName);
             holder.imgAvatar = (CircleImageView)rowView.findViewById(R.id.imgAvatar);
-            holder.followButton = (Button)rowView.findViewById(R.id.btnFollow);
+            holder.addFriendButton = (LinearLayout)rowView.findViewById(R.id.buttonAddFriend);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
@@ -94,9 +95,9 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                     new ImageListener(position, holder.imgAvatar));
         }
 
-        holder.followButton.setVisibility(View.VISIBLE);
+        holder.addFriendButton.setVisibility(View.VISIBLE);
         if (profile.getStatus() == FriendEntry.INT_STATUS_FRIEND) {
-            holder.followButton.setText(R.string.btn_unfollow_text);
+            holder.addFriendButton.setVisibility(View.GONE);
             final String strUserId = profile.getUserId();
             View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
@@ -105,12 +106,12 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                                 Photobook.getMainActivity(), new String[]{strUserId});
                     }
             };
-            holder.followButton.setOnClickListener(onClickListener);
+            holder.addFriendButton.setOnClickListener(onClickListener);
         } else {
             if (profile.getStatus() == FriendEntry.INT_STATUS_DEFAULT)
-                holder.followButton.setText(R.string.btn_follow_text);
+                holder.addFriendButton.setVisibility(View.VISIBLE);
             else if (profile.getStatus() == FriendEntry.INT_STATUS_NULL)
-                holder.followButton.setVisibility(View.GONE);
+                holder.addFriendButton.setVisibility(View.GONE);
             if (!profile.getUserId().isEmpty()) {
                 final int pos = position;
                 final String strUserId = profile.getUserId();
@@ -122,7 +123,7 @@ public class FriendsListAdapter extends ArrayAdapter<FriendEntry> {
                                 Photobook.getMainActivity(), new String[]{strUserId});
                     }
                 };
-                holder.followButton.setOnClickListener(onClickListener);
+                holder.addFriendButton.setOnClickListener(onClickListener);
             }
         }
 

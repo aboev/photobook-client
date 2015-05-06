@@ -21,20 +21,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/imgAvatar"
-        android:layout_toLeftOf="@+id/btnFollow"
+        android:layout_toLeftOf="@+id/buttonAddFriend"
         android:textSize="23sp"
         android:gravity="left"
         android:layout_margin="5dp"
         android:text="" />
 
-    <Button
-        android:id="@+id/btnFollow"
-        android:layout_width="wrap_content"
+    <include layout="@layout/button_add_friend"
+        android:id="@+id/buttonAddFriend"
+        android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentRight="true"
         android:padding="0dp"
         android:layout_margin="5dp"
-        android:textSize="15sp"
-        android:text="@string/btn_follow_text"/>
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
