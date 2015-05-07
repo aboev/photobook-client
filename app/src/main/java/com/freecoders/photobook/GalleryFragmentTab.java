@@ -183,6 +183,7 @@ public class GalleryFragmentTab extends Fragment {
         public void onResponse(String s) {
             image.setStatus(ImageEntry.INT_STATUS_DEFAULT);
             Photobook.getImagesDataSource().updateImage(image);
+            refreshGallery();
             if (mAdapter != null) mAdapter.notifyDataSetChanged();
         }
     }
@@ -251,6 +252,7 @@ public class GalleryFragmentTab extends Fragment {
                             Log.d(LOG_TAG, "Saved local thumbnail to " +
                                     destThumbFile.toString());
                         }
+                        imageToShare.setStatus(ImageEntry.INT_STATUS_SHARING);
                         Photobook.getImagesDataSource().saveImage(imageToShare);
                         //mImageLoader.uploadImage(mImageList, pos, mAdapter);
                         mImageLoader.uploadImageS3(imageToShare, strOrigUri.toLowerCase() ,
@@ -296,7 +298,8 @@ public class GalleryFragmentTab extends Fragment {
     public void showSharedImages () {
         ArrayList<ImageEntry> sharedImages = new ArrayList<ImageEntry>();
         for (int i = 0; i < mImageList.size(); i++)
-            if (mImageList.get(i).getStatus() == ImageEntry.INT_STATUS_SHARED)
+            if ((mImageList.get(i).getStatus() == ImageEntry.INT_STATUS_SHARED) ||
+                    (mImageList.get(i).getStatus() == ImageEntry.INT_STATUS_SHARING))
                 sharedImages.add(mImageList.get(i));
         mAdapter.clear();
         mAdapter.addAll(sharedImages);
