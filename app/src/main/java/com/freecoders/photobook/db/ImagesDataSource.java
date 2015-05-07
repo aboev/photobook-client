@@ -6,11 +6,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
+import com.freecoders.photobook.common.Photobook;
+import com.freecoders.photobook.utils.ImageUtils;
 
 import java.util.ArrayList;
 
@@ -108,6 +115,24 @@ public class ImagesDataSource {
         database.delete(dbHelper.TABLE_IMAGES,"_id = ?",new String[] {String.valueOf(imageEntry.getId())});
     }
 
+    public ImageEntry getImageByID(String strID) {
+        String selection = dbHelper.COLUMN_ID + " = ?";
+        String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
+        Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
+                null, selection,new String[]{strID} ,
+                null, null, orderBy);
+
+        if (cursor == null) {
+            return null;
+        } else if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+        ImageEntry image = cursorToImageEntry(cursor);
+        cursor.close();
+        return image;
+    }
+
     public ImageEntry getImageByServerID(String strServerID) {
         String selection = dbHelper.COLUMN_SERVER_ID + " = ?";
         String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
@@ -180,28 +205,49 @@ public class ImagesDataSource {
                     MediaStore.Images.Media.DATA));
             String strBucketId = cursorImg.getString(cursorImg.getColumnIndex(
                     MediaStore.Images.ImageColumns.BUCKET_ID));
-            String strThumbUri = "";
-            Cursor cursorThumb = cr.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Images.Thumbnails.DATA},
-                    MediaStore.Images.Thumbnails.IMAGE_ID + "= ?",
-                    new String[]{strMediaStoreID}, null);
-            if( cursorThumb != null && cursorThumb.getCount() > 0 ) {
-                cursorThumb.moveToFirst();
-                strThumbUri = cursorThumb.getString(
-                        cursorThumb.getColumnIndex( MediaStore.Images.Thumbnails.DATA ));
-            }
             ImageEntry imageEntry = new ImageEntry();
             imageEntry.setMediaStoreID(strMediaStoreID);
             imageEntry.setOrigUri(strOrigUri);
             imageEntry.setBucketId(strBucketId);
-            imageEntry.setThumbUri(strThumbUri);
+            imageEntry.setThumbUri(null);
             res.add(imageEntry);
-            cursorThumb.close();
-            //Log.d(LOG_TAG, "Loaded image _ID = " + strMediaStoreID + ", " +
-            //        "origUri = " + strOrigUri + ", thumbUri = " + strThumbUri);
         }
         cursorImg.close();
+        new ThumbLoaderTask(res).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return res;
+    }
+
+    public String getThumbURI(String strMediaStoreID) {
+        ContentResolver cr = mContext.getContentResolver();
+        String strThumbUri = "";
+        Cursor cursorThumb = cr.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Thumbnails.DATA},
+                MediaStore.Images.Thumbnails.IMAGE_ID + "= ?",
+                new String[]{strMediaStoreID}, null);
+        if( cursorThumb != null && cursorThumb.getCount() > 0 ) {
+            cursorThumb.moveToFirst();
+            strThumbUri = cursorThumb.getString(
+                    cursorThumb.getColumnIndex( MediaStore.Images.Thumbnails.DATA ));
+        }
+        cursorThumb.close();
+        return strThumbUri;
+    }
+
+    public class ThumbLoaderTask extends AsyncTask<Integer, Integer, Boolean> {
+        private ArrayList<ImageEntry> imageList;
+
+        public ThumbLoaderTask(ArrayList<ImageEntry> imageList) {
+            this.imageList = imageList;
+        }
+
+        protected Boolean doInBackground(Integer... position) {
+            if (imageList != null)
+                for (int i = 0; i < imageList.size(); i++) {
+                    String strThumbURI = getThumbURI(imageList.get(i).getMediaStoreID());
+                    imageList.get(i).setThumbUri(strThumbURI);
+                }
+            return true;
+        }
     }
 
     public ArrayList<ImageEntry> getImageList(String strBucketID, Integer status) {
@@ -213,8 +259,8 @@ public class ImagesDataSource {
                     compareTo(resList.get(pos).getMediaStoreID()) < 0)) {
                 pos++;
             }
-            if ((pos < resList.size()) && (localList.get(i).getMediaStoreID().
-                    equals(resList.get(pos).getMediaStoreID()) == false)) {
+            if ((pos < resList.size()) && !localList.get(i).getMediaStoreID().
+                    equals(resList.get(pos).getMediaStoreID())) {
                 resList.add(pos, localList.get(i));
             } else if (pos == resList.size()){
                 resList.add(localList.get(i));
