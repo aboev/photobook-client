@@ -220,8 +220,12 @@ public class RegisterActivityHandler {
 
                             if (boolUploadAvatar) sendAvatar();
 
-                            if (Photobook.getFriendsFragmentTab() != null)
+                            if (Photobook.getFriendsFragmentTab() != null) {
+                                Photobook.getFriendsFragmentTab().bookmarkAdapter.
+                                        setSelectedPosition(Photobook.getFriendsFragmentTab().
+                                        BOOKMARK_ID_CHANNELS);
                                 Photobook.getFriendsFragmentTab().reloadContactList(null);
+                            }
                             if (Photobook.getGalleryFragmentTab() != null)
                                 Photobook.getGalleryFragmentTab().syncGallery();
                             Photobook.getMainActivity().mHandler.registerPushID();

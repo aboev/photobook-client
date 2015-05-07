@@ -48,12 +48,12 @@ public class FriendsFragmentTab extends Fragment {
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout linearLayout;
     private View colorSelector;
-    private BookmarkAdapter bookmarkAdapter;
+    public BookmarkAdapter bookmarkAdapter;
     public BookmarkHandler bookmarkHandler;
     private Boolean boolUpdateList = true;
-    private int BOOKMARK_ID_FRIENDS = 0;
-    private int BOOKMARK_ID_CONTACTS = 1;
-    private int BOOKMARK_ID_CHANNELS = 2;
+    public int BOOKMARK_ID_FRIENDS = 0;
+    public int BOOKMARK_ID_CONTACTS = 1;
+    public int BOOKMARK_ID_CHANNELS = 2;
     private int curPosition = 0;
     private int defaultPosition = 0;
 
