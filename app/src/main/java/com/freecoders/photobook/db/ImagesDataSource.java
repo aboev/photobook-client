@@ -6,18 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
-
-import com.freecoders.photobook.classes.CallbackInterface;
-import com.freecoders.photobook.common.Constants;
-import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.utils.ImageUtils;
 
 import java.util.ArrayList;
 
@@ -153,12 +145,16 @@ public class ImagesDataSource {
 
     //Implement requesting all shared images
     public ArrayList<ImageEntry> getSharedImages(String strBucketId, Integer status) {
-        if (status == null) status = ImageEntry.INT_STATUS_SHARED;
-        String[] selectionArgs = new String[]{String.valueOf(status)};
-        String selection = dbHelper.COLUMN_STATUS + " = ?";
+        String selection;
+        if (status == null)
+            selection = dbHelper.COLUMN_STATUS + " IN ('" + ImageEntry.INT_STATUS_SHARED + "','" +
+                    ImageEntry.INT_STATUS_SHARING + "')";
+        else
+            selection = dbHelper.COLUMN_STATUS + " = " + status;
+        String[] selectionArgs = null;
         if (strBucketId != null) {
             selection = selection + " and " + dbHelper.COLUMN_BUCKET_ID + " = ?";
-            selectionArgs = new String[]{String.valueOf(status), strBucketId};
+            selectionArgs = new String[]{strBucketId};
         }
         String orderBy = dbHelper.COLUMN_MEDIASTORE_ID + " DESC";
         Cursor cursor = database.query(dbHelper.TABLE_IMAGES,
