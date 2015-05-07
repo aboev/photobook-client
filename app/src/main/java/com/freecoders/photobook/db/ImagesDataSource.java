@@ -209,7 +209,6 @@ public class ImagesDataSource {
             imageEntry.setMediaStoreID(strMediaStoreID);
             imageEntry.setOrigUri(strOrigUri);
             imageEntry.setBucketId(strBucketId);
-            imageEntry.setThumbUri(null);
             res.add(imageEntry);
         }
         cursorImg.close();
