@@ -108,8 +108,16 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
             populateImageFrame(holder, position);
         }
 
-        //if ((position + 10) < getCount() )
-        //    new ImageLoadTask(holder, position + 10, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if ((position + 5) < getCount() ) {
+            int orientation = ImageUtils.getExifOrientation(getItem(position + 5).getOrigUri());
+            new ImageLoadTask(holder, position + 5, orientation, true, null).
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        if ((position - 5) >= 0 ) {
+            int orientation = ImageUtils.getExifOrientation(getItem(position - 5).getOrigUri());
+            new ImageLoadTask(holder, position - 5, orientation, true, null).
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
 
         return rowView;
     }
