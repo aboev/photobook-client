@@ -650,7 +650,7 @@ public class ServerInterface {
 
     public static final void getImageDetailsRequestJson (Context context,
             String imageId, String userId,
-            final Response.Listener<HashMap<String, ImageJson>> responseListener,
+            final Response.Listener<ArrayList<ImageJson>> responseListener,
             final Response.ErrorListener errorListener) {
         HashMap<String, String> headers = createHeaders(Photobook.getPreferences().strUserID);
         if ((imageId != null) && !imageId.isEmpty())
@@ -667,20 +667,20 @@ public class ServerInterface {
                     Log.d(LOG_TAG, response.toString());
                     Gson gson = new Gson();
                     Type type = new TypeToken<ServerResponse
-                        <HashMap<String, ImageJson>>>(){}.getType();
+                        <ArrayList<ImageJson>>>(){}.getType();
                     try {
-                        ServerResponse<HashMap<String, ImageJson>> res =
+                        ServerResponse<ArrayList<ImageJson>> res =
                                 gson.fromJson(response, type);
                         if ( res != null && res.isSuccess() && res.data != null
                                 && responseListener != null)
                             responseListener.onResponse(res.data);
                         else if (responseListener != null)
                             responseListener.onResponse(
-                                    new HashMap<String, ImageJson>());
+                                    new ArrayList<ImageJson>());
                     } catch (Exception e) {
                         if (responseListener != null)
                             responseListener.onResponse(
-                                    new HashMap<String, ImageJson>());
+                                    new ArrayList<ImageJson>());
                     }
                 }
             }, new Response.ErrorListener() {

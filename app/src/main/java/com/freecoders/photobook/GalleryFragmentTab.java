@@ -328,15 +328,15 @@ public class GalleryFragmentTab extends Fragment {
         ServerInterface.getImageDetailsRequestJson(
             Photobook.getMainActivity(),
             null, null,
-            new Response.Listener<HashMap<String, ImageJson>>() {
+            new Response.Listener<ArrayList<ImageJson>>() {
                 @Override
-                public void onResponse(HashMap<String, ImageJson> response) {
+                public void onResponse(ArrayList<ImageJson> response) {
                     HashMap<String, ImageJson> uriMap =
                             new HashMap<String, ImageJson>();
-                    for (ImageJson image : response.values())
-                        if ((image.local_uri != null) &&
-                                !image.local_uri.isEmpty())
-                            uriMap.put(image.local_uri.toLowerCase(), image);
+                    for (int i = 0; i < response.size(); i++)
+                        if ((response.get(i).local_uri != null) &&
+                                !response.get(i).local_uri.isEmpty())
+                            uriMap.put(response.get(i).local_uri.toLowerCase(), response.get(i));
                     for (int i = 0; i < mImageList.size(); i++)
                         if (uriMap.containsKey(mImageList.get(i).
                                 getOrigUri().toLowerCase()) &&

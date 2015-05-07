@@ -60,7 +60,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     Gson gson = new Gson();
 
     public final static Boolean boolUnitTest = true;
-    public final static Boolean boolUseProxy = true;
+    public final static Boolean boolUseProxy = false;
 
     public ServerInterfaceTest(){
         super(MainActivity.class);
@@ -78,6 +78,7 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     protected void tearDown() throws Exception {
         super.tearDown();
         Photobook.getPreferences().strUserID = strOriginalUserID;
+        Photobook.getPreferences().savePreferences();
     }
 
     public void setRequestFinishedFlag(){
@@ -123,14 +124,12 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     public void testGetImageDetailsRequest() throws Exception {
         boolRequestFinished = false;
         ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-            new Response.Listener<HashMap<String, ImageJson>>() {
+            new Response.Listener<ArrayList<ImageJson>>() {
                 @Override
-                public void onResponse(HashMap<String, ImageJson> response) {
+                public void onResponse(ArrayList<ImageJson> response) {
                     assertNotNull(response);
                     assertNotSame(0, response.size());
-                    Iterator it = response.entrySet().iterator();
-                    Map.Entry pair = (Map.Entry)it.next();
-                    ImageJson image = (ImageJson) pair.getValue();
+                    ImageJson image = response.get(0);
                     assertNotNull(image.title);
                     assertNotSame("", image.title);
                     new DownloadImageTask().execute(image);
@@ -155,13 +154,21 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
                 @Override
                 public void onResponse(String response) {
                     ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-                        new Response.Listener<HashMap<String, ImageJson>>() {
+                        new Response.Listener<ArrayList<ImageJson>>() {
                             @Override
-                            public void onResponse(HashMap<String, ImageJson> response) {
+                            public void onResponse(ArrayList<ImageJson> response) {
                                 assertNotNull(response);
-                                assertTrue(response.containsKey(strImageID));
+                                Boolean boolContainsKey = false;
+                                String[] likes = null;
+                                for (int i = 0; i < response.size(); i++)
+                                    if (response.get(i).image_id.equals(strImageID)) {
+                                        boolContainsKey = true;
+                                        likes = response.get(i).likes;
+                                        break;
+                                    }
+                                assertTrue(boolContainsKey);
                                 Boolean boolContainsSelfID = false;
-                                for (String id : response.get(strImageID).likes)
+                                for (String id : likes)
                                     if (id.equals(strMockUserPublicID)) {
                                         boolContainsSelfID = true;
                                         break;
@@ -190,13 +197,21 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
                 @Override
                 public void onResponse(String response) {
                     ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-                        new Response.Listener<HashMap<String, ImageJson>>() {
+                        new Response.Listener<ArrayList<ImageJson>>() {
                             @Override
-                            public void onResponse(HashMap<String, ImageJson> response) {
+                            public void onResponse(ArrayList<ImageJson> response) {
                                 assertNotNull(response);
-                                assertTrue(response.containsKey(strImageID));
+                                Boolean boolContainsKey = false;
+                                String[] likes = null;
+                                for (int i = 0; i < response.size(); i++)
+                                    if (response.get(i).image_id.equals(strImageID)) {
+                                        boolContainsKey = true;
+                                        likes = response.get(i).likes;
+                                        break;
+                                    }
+                                assertTrue(boolContainsKey);
                                 Boolean boolContainsSelfID = false;
-                                for (String id : response.get(strImageID).likes)
+                                for (String id : likes)
                                     if (id.equals(strMockUserPublicID)) {
                                         boolContainsSelfID = true;
                                         break;

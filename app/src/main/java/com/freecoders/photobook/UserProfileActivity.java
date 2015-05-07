@@ -147,17 +147,14 @@ public class UserProfileActivity extends ActionBarActivity {
             }, null);
 
         ServerInterface.getImageDetailsRequestJson(this, null, userId,
-            new Response.Listener<HashMap<String, ImageJson>>() {
+            new Response.Listener<ArrayList<ImageJson>>() {
                 @Override
-                public void onResponse(HashMap<String, ImageJson> stringImageJsonHashMap) {
+                public void onResponse(ArrayList<ImageJson> response) {
                     imageList.clear();
-                    Iterator it = stringImageJsonHashMap.entrySet().iterator();
-                    Log.d(LOG_TAG, "Received " + stringImageJsonHashMap.size() + " items");
-                    while (it.hasNext()) {
-                        Map.Entry pair = (Map.Entry)it.next();
-                        ImageJson image = (ImageJson) pair.getValue();
+                    Log.d(LOG_TAG, "Received " + response.size() + " items");
+                    for (int i = 0; i < response.size(); i++) {
+                        ImageJson image = response.get(i);
                         imageList.add(image);
-                        it.remove();
                     }
                     galleryAdapter.notifyDataSetChanged();
                 }

@@ -330,11 +330,11 @@ public class ImageDetailsActivity extends Activity {
 
             ServerInterface.getImageDetailsRequestJson(Photobook.getImageDetailsActivity(),
                 mGalleryImage.getServerId(), null,
-                new Response.Listener<HashMap<String, ImageJson>>() {
+                new Response.Listener<ArrayList<ImageJson>>() {
                     @Override
-                    public void onResponse(HashMap<String, ImageJson> response) {
-                        if (response.containsKey(mGalleryImage.getServerId())) {
-                            ImageJson image = response.get(mGalleryImage.getServerId());
+                    public void onResponse(ArrayList<ImageJson> response) {
+                        if (response.get(0).image_id.equals(mGalleryImage.getServerId())) {
+                            ImageJson image = response.get(0);
                             if (image.likes != null) {
                                 for (String id : image.likes)
                                     if (id.equals(Photobook.getPreferences().intPublicID.
