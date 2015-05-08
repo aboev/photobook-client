@@ -1,29 +1,25 @@
 package com.freecoders.photobook;
 
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.freecoders.photobook.classes.CallbackInterface;
-import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.FeedEntryJson;
-import com.freecoders.photobook.network.FeedLoader;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.MemoryLruCache;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -111,6 +107,16 @@ public class FeedAdapter  extends ArrayAdapter<FeedEntryJson> {
         } else {
             holder.imgViewAvatar.setImageResource(R.drawable.avatar);
         }
+
+        final String strUserId = feedEntry.author.id;
+        holder.imgViewAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Photobook.getMainActivity(), UserProfileActivity.class);
+                intent.putExtra("userId", strUserId);
+                Photobook.getMainActivity().startActivity(intent);
+            }
+        });
 
         return rowView;
     }
