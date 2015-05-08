@@ -72,6 +72,7 @@ public class GalleryFragmentTab extends Fragment {
         reloadGallery(new CallbackInterface() {
             @Override
             public void onResponse(Object obj) {
+                Photobook.getImagesDataSource().dropPendingUploads();
                 syncGallery();
             }
         });
