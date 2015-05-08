@@ -325,4 +325,14 @@ public class ImagesDataSource {
         public String strTitleImageUrl;
     }
 
+    public ArrayList<ImageEntry> getPendingUploads() {
+        return getSharedImages(null, ImageEntry.INT_STATUS_SHARING);
+    }
+
+    public void dropPendingUploads() {
+        ArrayList<ImageEntry> images = getPendingUploads();
+        for (int i = 0; i < images.size(); i++)
+            deleteImageEntry(images.get(i));
+    }
+
 }
