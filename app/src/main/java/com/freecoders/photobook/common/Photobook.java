@@ -64,6 +64,8 @@ public class Photobook extends Application {
             mImageDiskLruCache = null;
             Log.d(LOG_TAG, "Failed to initialize disk cache");
         }
+
+        Photobook.getImagesDataSource().dropPendingUploads();
     }
 
     public static Boolean isFirstStart(){
