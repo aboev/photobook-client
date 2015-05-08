@@ -81,7 +81,7 @@
     <string name="bookmark_shares">My shares</string>
     <string name="text_followers"> followers</string>
     <string name="followers" translatable="false">Followers: </string>
-    <string name="aboutText" translatable="false">
+    <string name="aboutText">
         Photobook (c) 2015\n
         Alexey Boev\n
         Andrei Alikov\n

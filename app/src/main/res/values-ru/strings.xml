@@ -24,6 +24,14 @@
     <string name="bookmark_gallery">Галерея</string>
     <string name="bookmark_shares">Загруженные</string>
     <string name="text_followers"> подписч.</string>
+    <string name="aboutText">
+        Фотобук (c) 2015\n
+        Алексей Боев\n
+        Андрей Аликов\n
+        Максим Максимов\n
+        Some components are licensed under Apache 2.0\n
+        More details at www.github.com/aboev/photobook-client\n
+        Channel images from Pixabay www.pixabay.com</string>
     <string name="btn_comment">Коммент.</string>
     <string name="btn_download">Скачать</string>
     <string name="btn_share_text">Загрузить</string>
@@ -35,7 +43,7 @@
     <string name="dialog_uploading_avatar">Загрузка аватара</string>
     <string name="drawer_close">Спрятать</string>
     <string name="drawer_open">Профиль</string>
-    <string name="edit_loading">Загрузка новостей</string>
+    <string name="edit_loading">Загрузка ленты</string>
     <string name="edit_loading_gallery">Загрузка галлереи</string>
     <string name="edit_uploading_image">Загрузка изображения</string>
     <string name="eula_notice">Регистрация в сервисе подразумевает согласие с <a href="http://dev.snufan.com/eula.html">лицензионным соглашением</a></string>
