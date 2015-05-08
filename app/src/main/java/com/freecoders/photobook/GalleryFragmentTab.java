@@ -38,6 +38,7 @@ import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.ImageUtils;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,7 +73,6 @@ public class GalleryFragmentTab extends Fragment {
         reloadGallery(new CallbackInterface() {
             @Override
             public void onResponse(Object obj) {
-                Photobook.getImagesDataSource().dropPendingUploads();
                 syncGallery();
             }
         });
@@ -339,8 +339,10 @@ public class GalleryFragmentTab extends Fragment {
                             new HashMap<String, ImageJson>();
                     for (int i = 0; i < response.size(); i++)
                         if ((response.get(i).local_uri != null) &&
-                                !response.get(i).local_uri.isEmpty())
+                                !response.get(i).local_uri.isEmpty() &&
+                                response.get(i).status == ImageEntry.INT_SERVER_STATUS_SHARED) {
                             uriMap.put(response.get(i).local_uri.toLowerCase(), response.get(i));
+                        }
                     for (int i = 0; i < mImageList.size(); i++)
                         if (uriMap.containsKey(mImageList.get(i).
                                 getOrigUri().toLowerCase()) &&
@@ -348,7 +350,7 @@ public class GalleryFragmentTab extends Fragment {
                                         ImageEntry.INT_STATUS_DEFAULT) &&
                                 (uriMap.get(mImageList.get(i).
                                         getOrigUri().toLowerCase()).status ==
-                                        1)) {
+                                        ImageEntry.INT_SERVER_STATUS_SHARED)) {
                             ImageJson remoteImage = uriMap.get(mImageList.get(i).
                                     getOrigUri().toLowerCase());
                             mImageList.get(i).setStatus(ImageEntry.
