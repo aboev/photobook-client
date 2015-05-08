@@ -330,7 +330,7 @@ public class ImageUploader {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(LOG_TAG, "Error: " +
-                                new String(error.networkResponse.data));
+                                new String(error.getLocalizedMessage()));
                         handleFailure();
                     }
         }
