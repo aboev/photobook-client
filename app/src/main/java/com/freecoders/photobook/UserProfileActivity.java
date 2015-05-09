@@ -172,12 +172,14 @@ public class UserProfileActivity extends ActionBarActivity {
                     if (strRes.equals(Constants.RESPONSE_RESULT_OK)) {
                         FriendEntry friendEntry = Photobook.getFriendsDataSource().
                             getContactByUserId(userId);
-                        friendEntry.setStatus(followRequest ? FriendEntry.INT_STATUS_FRIEND :
-                            FriendEntry.INT_STATUS_DEFAULT);
-                        Photobook.getFriendsDataSource().updateFriend(friendEntry);
-                        Photobook.getFriendsFragmentTab().refreshContactList();
-                        isUserFollowed = followRequest;
-                        setFollowButtonText();
+                        if (friendEntry != null) {
+                            friendEntry.setStatus(followRequest ? FriendEntry.INT_STATUS_FRIEND :
+                                    FriendEntry.INT_STATUS_DEFAULT);
+                            Photobook.getFriendsDataSource().updateFriend(friendEntry);
+                            Photobook.getFriendsFragmentTab().refreshContactList();
+                            isUserFollowed = followRequest;
+                            setFollowButtonText();
+                        }
                     }
                 } catch (JSONException e) {
                     Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
@@ -200,6 +202,10 @@ public class UserProfileActivity extends ActionBarActivity {
     }
 
     private void setFollowButtonText() {
+        if (Photobook.getPreferences().intPublicID.toString().equals(userId))
+            followButton.setVisibility(View.GONE);
+        else
+            followButton.setVisibility(View.VISIBLE);
         followButton.setText(isUserFollowed ? R.string.btn_unfollow_text : R.string.btn_follow_text);
     }
 
