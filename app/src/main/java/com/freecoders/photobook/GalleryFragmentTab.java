@@ -355,6 +355,7 @@ public class GalleryFragmentTab extends Fragment {
                                     getOrigUri().toLowerCase());
                             mImageList.get(i).setStatus(ImageEntry.
                                     INT_STATUS_SHARED);
+                            mImageList.get(i).setRatio(remoteImage.ratio);
                             mImageList.get(i).setServerId(remoteImage.image_id);
                             mImageList.get(i).setTitle(remoteImage.title);
                             Photobook.getImagesDataSource().saveImage(mImageList.
