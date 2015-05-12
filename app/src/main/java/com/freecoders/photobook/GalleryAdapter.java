@@ -44,8 +44,8 @@ import static com.freecoders.photobook.utils.FileUtils.getRealPathFromURI;
 public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
     private static String LOG_TAG = "GalleryAdapter";    
 
-    private int imageWidth = ImageUtils.dpToPx(100);
-    private int maxImageHeight = ImageUtils.dpToPx(1000);
+    private int imageWidth = 100;
+    private int maxImageHeight = 1000;
     private MemoryLruCache cache;
 
     public GalleryAdapter(Context context, int resource, List<ImageEntry> objects) {
@@ -209,7 +209,7 @@ public class GalleryAdapter extends ArrayAdapter<ImageEntry> {
                 b = cache.getBitmap(mImgUri);
                 if (b == null) {
                     b = ImageUtils.decodeSampledBitmap(mImgUri,
-                            imageWidth, maxImageHeight);
+                            ImageUtils.dpToPx(imageWidth), ImageUtils.dpToPx(maxImageHeight));
                     if (b != null)
                         cache.putBitmap(mImgUri, b);
                 }
