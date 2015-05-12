@@ -82,6 +82,19 @@ public final class ImageUtils {
         return BitmapFactory.decodeFile(imgPath, options);
     }
 
+    public static Bitmap decodeSampledBitmap(String imgPath, Boolean boolRotate) {
+        int orientation = ImageUtils.getExifOrientation(imgPath);
+        Bitmap b = ImageUtils.decodeSampledBitmap(imgPath);
+        Bitmap bitmap = b;
+        if (((orientation == 90) || (orientation == 270)) && boolRotate) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(orientation);
+            bitmap = Bitmap.createBitmap(b, 0, 0,
+                    b.getWidth(), b.getHeight(), matrix, true);
+        }
+        return bitmap;
+    }
+
     public final static int dpToPx(int dp) {
         DisplayMetrics displayMetrics = Photobook.getMainActivity().
                 getResources().getDisplayMetrics();
