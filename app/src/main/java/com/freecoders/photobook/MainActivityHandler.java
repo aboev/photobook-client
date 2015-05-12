@@ -11,6 +11,7 @@ import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
+import com.freecoders.photobook.network.ImageDownloader;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
@@ -32,6 +33,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -415,6 +417,35 @@ public class MainActivityHandler {
                                     });
                         AlertDialog dialog = builder.create();
                         dialog.show();
+                    }
+                }, null);
+    }
+
+    public void syncAvatar(){
+        final File avatar = new File(Photobook.getMainActivity().getFilesDir(),
+                Constants.FILENAME_AVATAR);
+        if (!avatar.exists())
+            ServerInterface.getUserProfileRequest(activity,
+                new String[]{Photobook.getPreferences().intPublicID.toString()},
+                new Response.Listener<HashMap<String, UserProfile>>() {
+                    @Override
+                    public void onResponse(HashMap<String, UserProfile> stringUserProfileHashMap) {
+                        Gson gson = new Gson();
+                        Log.d(LOG_TAG, "Sync avatar response " +
+                                gson.toJson(stringUserProfileHashMap));
+                        UserProfile profile = stringUserProfileHashMap.get(
+                                Photobook.getPreferences().intPublicID.toString());
+                        if ((profile != null) && (profile.avatar != null) &&
+                                (URLUtil.isValidUrl(profile.avatar))) {
+                            new ImageDownloader(profile.avatar, avatar, false,
+                                new CallbackInterface() {
+                                    @Override
+                                    public void onResponse(Object obj) {
+                                        activity.mDrawerAvatarImage.
+                                                setImageURI(Uri.fromFile(avatar));
+                                    }
+                                }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        }
                     }
                 }, null);
     }
