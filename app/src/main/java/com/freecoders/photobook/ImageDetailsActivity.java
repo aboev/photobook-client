@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -316,7 +317,8 @@ public class ImageDetailsActivity extends Activity {
             if (mGalleryImage.getServerId() != null)
                 strImageID = mGalleryImage.getServerId();
 
-            Bitmap b = ImageUtils.decodeSampledBitmap(mGalleryImage.getOrigUri());
+            Bitmap b = ImageUtils.decodeSampledBitmap(mGalleryImage.getOrigUri(), true);
+
             mImageView.setImageBitmap(b);
 
             if (mGalleryImage.getTitle() != null)
