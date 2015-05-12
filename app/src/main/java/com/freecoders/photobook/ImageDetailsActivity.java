@@ -633,4 +633,15 @@ public class ImageDetailsActivity extends Activity {
             Photobook.getGalleryFragmentTab().refreshAdapter();
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        Bundle b = getIntent().getExtras();
+        if ((b != null) && (b.containsKey(Photobook.extraImageSource)))
+            populateView(true);
+        else
+            populateView(false);
+    }
 }
