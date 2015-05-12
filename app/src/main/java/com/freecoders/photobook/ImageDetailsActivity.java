@@ -2,19 +2,11 @@ package com.freecoders.photobook;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,41 +19,24 @@ import android.view.ViewTreeObserver;
 import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
+import com.freecoders.photobook.network.ImageDownloader;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.ImageUtils;
 import com.freecoders.photobook.utils.MemoryLruCache;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -392,7 +367,8 @@ public class ImageDetailsActivity extends Activity {
             public void onClick(View v) {
                 if ((Photobook.getImageDetails().image.url_original != null)
                         && (URLUtil.isValidUrl(Photobook.getImageDetails().image.url_original)))
-                    new DownloadImage().execute(Photobook.getImageDetails().image.url_original);
+                    new ImageDownloader(Photobook.getImageDetails().image.url_original, null,
+                            true, null).execute();
             }
         });
 
@@ -454,77 +430,6 @@ public class ImageDetailsActivity extends Activity {
     public void processDeleteComment(int index) {
         mCommentListAdapter.mCommentList.remove(index);
         mCommentListAdapter.notifyDataSetChanged();
-    }
-
-    class DownloadImage extends AsyncTask<String,Integer,Long> {
-        String strFilename = "";
-        ProgressDialog mProgressDialog = new ProgressDialog(Photobook.getImageDetailsActivity());
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog.setMessage(getResources().getString(R.string.dialog_downloading));
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setMax(100);
-            mProgressDialog.setCancelable(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.show();
-        }
-        @Override
-        protected Long doInBackground(String... aurl) {
-            int count;
-            try {
-                URL url = new URL((String) aurl[0]);
-                URLConnection conexion = url.openConnection();
-                conexion.connect();
-                String targetFileName =
-                        aurl[0].substring(aurl[0].lastIndexOf('/')+1, aurl[0].length() );
-                int lenghtOfFile = conexion.getContentLength();
-                String type = Environment.DIRECTORY_PICTURES;
-                File path = Environment.getExternalStoragePublicDirectory(type);
-                path.mkdirs();
-                File file = new File(path, Constants.APP_FOLDER +"/" + targetFileName);
-                if(!file.exists()) {
-                    file.getParentFile().mkdirs();
-                    file.createNewFile();
-                }
-                strFilename = file.toString();
-                InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(file);
-                byte data[] = new byte[1024];
-                long total = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-                    publishProgress ((int)(total*100/lenghtOfFile));
-                    output.write(data, 0, count);
-                }
-                output.flush();
-                output.close();
-                input.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                mProgressDialog.dismiss();
-            }
-            return null;
-        }
-        protected void onProgressUpdate(Integer... progress) {
-            mProgressDialog.setProgress(progress[0]);
-            if(mProgressDialog.getProgress()==mProgressDialog.getMax()){
-                mProgressDialog.dismiss();
-                Toast.makeText(Photobook.getImageDetailsActivity() ,
-                        getResources().getString(R.string.dialog_download_complete)
-                        , Toast.LENGTH_SHORT).show();
-
-                if (!strFilename.isEmpty())
-                    MediaScannerConnection.scanFile(Photobook.getImageDetailsActivity(),
-                        new String[]{strFilename}, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            public void onScanCompleted(String path, Uri uri) {
-                            }
-                        });
-            }
-        }
-        protected void onPostExecute(String result) {
-        }
     }
 
     public void getLikesListView(View view){
