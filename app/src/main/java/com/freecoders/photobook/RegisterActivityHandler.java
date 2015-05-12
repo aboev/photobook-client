@@ -19,6 +19,7 @@ import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.common.Preferences;
 import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
+import com.freecoders.photobook.network.ImageDownloader;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.StringRequest;
@@ -43,6 +44,7 @@ import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -230,6 +232,7 @@ public class RegisterActivityHandler {
                                 Photobook.getGalleryFragmentTab().syncGallery();
                             Photobook.getMainActivity().mHandler.registerPushID();
                             Photobook.getMainActivity().mHandler.showChannelsDialog();
+                            Photobook.getMainActivity().mHandler.syncAvatar();
                             activity.finish();
                         } else if (resJson.has(Constants.RESPONSE_CODE) &&
                                 resJson.getInt(Constants.RESPONSE_CODE) == 121) {
