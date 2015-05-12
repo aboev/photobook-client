@@ -5,6 +5,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.freecoders.photobook.R;
@@ -24,6 +25,8 @@ import java.net.URLConnection;
  * Created by Alex on 2015-05-12.
  */
 public class ImageDownloader extends AsyncTask<String,Integer,Long> {
+    private static String LOG_TAG = "ImageDownloader";
+
     private File destFile = null;
     private String strFilename = "";
     private String strURL = "";
@@ -33,6 +36,7 @@ public class ImageDownloader extends AsyncTask<String,Integer,Long> {
 
     public ImageDownloader(String strURL, File destFile, Boolean boolShowProgress,
                            CallbackInterface callback) {
+        Log.d(LOG_TAG, "Starting image download for " + strURL);
         this.boolShowProgress = boolShowProgress;
         this.strURL = strURL;
         this.callback = callback;
@@ -106,6 +110,7 @@ public class ImageDownloader extends AsyncTask<String,Integer,Long> {
 
     @Override
     protected void onPostExecute(Long l) {
+        Log.d(LOG_TAG, "Saved image to " + strFilename);
         if (callback != null) callback.onResponse(null);
         if (!strFilename.isEmpty())
             MediaScannerConnection.scanFile(Photobook.getImageDetailsActivity(),
