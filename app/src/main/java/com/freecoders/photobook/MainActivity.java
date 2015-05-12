@@ -246,4 +246,11 @@ public class MainActivity extends FragmentActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        mHandler.handleIntent(intent);
+    }
 }
