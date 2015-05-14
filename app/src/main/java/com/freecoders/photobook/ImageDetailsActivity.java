@@ -120,10 +120,8 @@ public class ImageDetailsActivity extends Activity {
         mCommentListAdapter = new CommentListAdapter(this,
                 R.layout.item_comment, new ArrayList<CommentEntryJson>(),
                 mAvatarLoader);
-        mCommentsList.setAdapter(mCommentListAdapter);
         mCommentsList.addHeaderView(view);
-
-
+        mCommentsList.setAdapter(mCommentListAdapter);
 
         mCommentsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
