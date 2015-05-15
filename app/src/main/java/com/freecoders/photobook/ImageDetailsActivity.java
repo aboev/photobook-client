@@ -31,6 +31,7 @@ import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
+import com.freecoders.photobook.gson.ServerResponse;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ImageDownloader;
 import com.freecoders.photobook.network.ServerInterface;
@@ -144,16 +145,19 @@ public class ImageDetailsActivity extends Activity {
 
                             dialog.dismiss();
                             if (item == 0)
-                                if (Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString()))
-                                    ServerInterface.deleteCommentRequest(Photobook.getImageDetailsActivity(),
-                                            String.valueOf(mCommentListAdapter.mCommentList.get(adapterItemPos).id),
-                                            Photobook.getPreferences().strUserID,
-                                            new Response.Listener<String>() {
-                                                @Override
-                                                public void onResponse(String response) {
-                                                    processDeleteComment(adapterItemPos);
-                                                }
-                                            }, null);
+                                if (Photobook.getPreferences().intPublicID.toString().equals(
+                                        mCommentListAdapter.mCommentList.get(adapterItemPos).
+                                        author_id.toString()))
+                                    ServerInterface.deleteCommentRequest(
+                                            Photobook.getImageDetailsActivity(),
+                                        String.valueOf(mCommentListAdapter.mCommentList.
+                                                get(adapterItemPos).id),
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                processDeleteComment(adapterItemPos);
+                                            }
+                                        }, null);
                         }
                     });
                 }
@@ -203,30 +207,24 @@ public class ImageDetailsActivity extends Activity {
 
         alert.setView(input);
         alert.setPositiveButton(R.string.alert_send_button,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String strComment = input.getText().toString();
-                        ServerInterface.postCommentRequest(
-                                Photobook.getImageDetailsActivity(),
-                                strImageID,
-                                Photobook.getPreferences().strUserID,
-                                strComment, replyToId,
-                                new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        ServerInterface.getComments(
-                                                Photobook.getImageDetailsActivity(),
-                                                strImageID,
-                                                mCommentListAdapter);
-                                    }
-                                }, null);
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String strComment = input.getText().toString();
+                    ServerInterface.postCommentRequest(Photobook.getImageDetailsActivity(),
+                            strImageID, strComment, replyToId,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    reloadCommentsList();
+                                }
+                            }, null);
+                }
+            });
         alert.setNegativeButton(R.string.alert_cancel_button,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            });
 
         alert.show();
     }
@@ -303,28 +301,28 @@ public class ImageDetailsActivity extends Activity {
 
             mButtonLikeTextView.setText(R.string.btn_like);
 
-            ServerInterface.getImageDetailsRequestJson(Photobook.getImageDetailsActivity(),
-                mGalleryImage.getServerId(), null,
-                new Response.Listener<ArrayList<ImageJson>>() {
-                    @Override
-                    public void onResponse(ArrayList<ImageJson> response) {
-                        if (response.get(0).image_id.equals(mGalleryImage.getServerId())) {
-                            ImageJson image = response.get(0);
-                            if (image.likes != null) {
-                                for (String id : image.likes)
-                                    if (id.equals(Photobook.getPreferences().intPublicID.
-                                            toString())) {
-                                        mButtonLikeTextView.setText(R.string.btn_unlike);
-                                        boolImageLiked = true;
-                                        break;
-                                    }
-                                mLikeCountTextView.setText(
-                                        String.valueOf(image.likes.length));
-                                likes = image.likes;
+            ServerInterface.getImageDetailsRequest(Photobook.getImageDetailsActivity(),
+                    mGalleryImage.getServerId(), null,
+                    new Response.Listener<ArrayList<ImageJson>>() {
+                        @Override
+                        public void onResponse(ArrayList<ImageJson> response) {
+                            if (response.get(0).image_id.equals(mGalleryImage.getServerId())) {
+                                ImageJson image = response.get(0);
+                                if (image.likes != null) {
+                                    for (String id : image.likes)
+                                        if (id.equals(Photobook.getPreferences().intPublicID.
+                                                toString())) {
+                                            mButtonLikeTextView.setText(R.string.btn_unlike);
+                                            boolImageLiked = true;
+                                            break;
+                                        }
+                                    mLikeCountTextView.setText(
+                                            String.valueOf(image.likes.length));
+                                    likes = image.likes;
+                                }
                             }
                         }
-                    }
-                }, null);
+                    }, null);
         }
 
         mButtonLike.setOnClickListener(new View.OnClickListener() {
@@ -333,7 +331,6 @@ public class ImageDetailsActivity extends Activity {
                 if (!boolImageLiked)
                     ServerInterface.likeRequest(Photobook.getImageDetailsActivity(),
                             strImageID,
-                            Photobook.getPreferences().strUserID,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -341,9 +338,7 @@ public class ImageDetailsActivity extends Activity {
                                 }
                             }, null);
                 else
-                    ServerInterface.unLikeRequest(Photobook.getImageDetailsActivity(),
-                            strImageID,
-                            Photobook.getPreferences().strUserID,
+                    ServerInterface.unLikeRequest(Photobook.getImageDetailsActivity(), strImageID,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -370,7 +365,7 @@ public class ImageDetailsActivity extends Activity {
             }
         });
 
-        ServerInterface.getComments(this, strImageID, mCommentListAdapter);
+        reloadCommentsList();
 
         if (Photobook.getPreferences().hsetUnreadImages.contains(strImageID)) {
             Photobook.getPreferences().hsetUnreadImages.remove(strImageID);
@@ -546,5 +541,17 @@ public class ImageDetailsActivity extends Activity {
             populateView(true);
         else
             populateView(false);
+    }
+
+    public void reloadCommentsList() {
+        ServerInterface.getCommentsRequest(Photobook.getMainActivity(), strImageID, false,
+                new Response.Listener<ServerResponse<ArrayList<CommentEntryJson>>>() {
+                    @Override
+                    public void onResponse(ServerResponse<ArrayList<CommentEntryJson>> response) {
+                        mCommentListAdapter.mCommentList.clear();
+                        mCommentListAdapter.mCommentList.addAll(response.data);
+                        mCommentListAdapter.notifyDataSetChanged();
+                    }
+                }, null);
     }
 }
