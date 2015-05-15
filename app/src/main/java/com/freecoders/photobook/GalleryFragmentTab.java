@@ -33,12 +33,13 @@ import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.db.ImagesDataSource;
+import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
+import com.freecoders.photobook.gson.ServerResponse;
 import com.freecoders.photobook.network.ImageUploader;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.ImageUtils;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -329,50 +330,62 @@ public class GalleryFragmentTab extends Fragment {
     };
 
     public void syncGallery(){
-        ServerInterface.getImageDetailsRequestJson(
-            Photobook.getMainActivity(),
-            null, null,
-            new Response.Listener<ArrayList<ImageJson>>() {
-                @Override
-                public void onResponse(ArrayList<ImageJson> response) {
-                    HashMap<String, ImageJson> uriMap =
-                            new HashMap<String, ImageJson>();
-                    for (int i = 0; i < response.size(); i++)
-                        if ((response.get(i).local_uri != null) &&
-                                !response.get(i).local_uri.isEmpty() &&
-                                response.get(i).status == ImageEntry.INT_SERVER_STATUS_SHARED) {
-                            uriMap.put(response.get(i).local_uri.toLowerCase(), response.get(i));
-                        }
-                    for (int i = 0; i < mImageList.size(); i++)
-                        if (uriMap.containsKey(mImageList.get(i).
-                                getOrigUri().toLowerCase()) &&
-                                (mImageList.get(i).getStatus() ==
-                                        ImageEntry.INT_STATUS_DEFAULT) &&
-                                (uriMap.get(mImageList.get(i).
-                                        getOrigUri().toLowerCase()).status ==
-                                        ImageEntry.INT_SERVER_STATUS_SHARED)) {
-                            ImageJson remoteImage = uriMap.get(mImageList.get(i).
-                                    getOrigUri().toLowerCase());
-                            mImageList.get(i).setStatus(ImageEntry.
-                                    INT_STATUS_SHARED);
-                            mImageList.get(i).setRatio(remoteImage.ratio);
-                            mImageList.get(i).setServerId(remoteImage.image_id);
-                            mImageList.get(i).setTitle(remoteImage.title);
-                            Photobook.getImagesDataSource().saveImage(mImageList.
-                                    get(i));
-                        }
-                    if (mAdapter != null) mAdapter.notifyDataSetChanged();
-                }
-            }, null);
+        ServerInterface.getImageDetailsRequest(
+                Photobook.getMainActivity(),
+                null, null,
+                new Response.Listener<ArrayList<ImageJson>>() {
+                    @Override
+                    public void onResponse(ArrayList<ImageJson> response) {
+                        HashMap<String, ImageJson> uriMap =
+                                new HashMap<String, ImageJson>();
+                        for (int i = 0; i < response.size(); i++)
+                            if ((response.get(i).local_uri != null) &&
+                                    !response.get(i).local_uri.isEmpty() &&
+                                    response.get(i).status == ImageEntry.INT_SERVER_STATUS_SHARED) {
+                                uriMap.put(response.get(i).local_uri.toLowerCase(), response.get(i));
+                            }
+                        for (int i = 0; i < mImageList.size(); i++)
+                            if (uriMap.containsKey(mImageList.get(i).
+                                    getOrigUri().toLowerCase()) &&
+                                    (mImageList.get(i).getStatus() ==
+                                            ImageEntry.INT_STATUS_DEFAULT) &&
+                                    (uriMap.get(mImageList.get(i).
+                                            getOrigUri().toLowerCase()).status ==
+                                            ImageEntry.INT_SERVER_STATUS_SHARED)) {
+                                ImageJson remoteImage = uriMap.get(mImageList.get(i).
+                                        getOrigUri().toLowerCase());
+                                mImageList.get(i).setStatus(ImageEntry.
+                                        INT_STATUS_SHARED);
+                                mImageList.get(i).setRatio(remoteImage.ratio);
+                                mImageList.get(i).setServerId(remoteImage.image_id);
+                                mImageList.get(i).setTitle(remoteImage.title);
+                                Photobook.getImagesDataSource().saveImage(mImageList.
+                                        get(i));
+                            }
+                        if (mAdapter != null) mAdapter.notifyDataSetChanged();
+                    }
+                }, null);
     }
 
     public void syncComments(){
-        ServerInterface.getComments(
-                null,
-                true,
-                new Response.Listener<String>() {
+        ServerInterface.getCommentsRequest(Photobook.getMainActivity(), null, true,
+                new Response.Listener<ServerResponse<ArrayList<CommentEntryJson>>>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(ServerResponse<ArrayList<CommentEntryJson>> response) {
+                        Photobook.getPreferences().strCommentsTimestamp = response.timestamp;
+                        for (int i = 0; i < response.data.size(); i++) {
+                            if (!Photobook.getPreferences().hsetUnreadImages.contains
+                                    (response.data.get(i).image_id))
+                                Photobook.getPreferences().hsetUnreadImages.add(response.data.get(i).
+                                        image_id);
+                            int intCommentCount = Photobook.getPreferences().unreadImagesMap.
+                                    containsKey(response.data.get(i).image_id) ?
+                                    Photobook.getPreferences().unreadImagesMap.get(response.data.get(i).
+                                            image_id) : 0;
+                            Photobook.getPreferences().unreadImagesMap.put(
+                                    response.data.get(i).image_id, intCommentCount + 1);
+                        }
+                        Photobook.getPreferences().savePreferences();
                         if (mAdapter != null) mAdapter.notifyDataSetChanged();
                     }
                 }, null);
