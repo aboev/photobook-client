@@ -1,7 +1,6 @@
 package com.freecoders.photobook.db;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
@@ -9,21 +8,14 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.freecoders.photobook.FriendsFragmentTab;
 import com.freecoders.photobook.classes.CallbackInterface;
-import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,8 +57,7 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
         }
 
         Log.d(LOG_TAG, "Sending post contacts request for " + new Gson().toJson(contactKeys));
-        ServerInterface.postContactsRequest(Photobook.getMainActivity(),
-            hContactKeys, Photobook.getPreferences().strUserID,
+        ServerInterface.postContactsRequest(Photobook.getMainActivity(), hContactKeys,
             new Response.Listener<Map<String, UserProfile>>() {
                 @Override
                 public void onResponse(Map<String, UserProfile> response) {
