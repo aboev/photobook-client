@@ -1,49 +1,35 @@
 package test;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.ActivityUnitTestCase;
-import android.test.InstrumentationTestCase;
-import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.freecoders.photobook.MainActivity;
-import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.CommentEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
+import com.freecoders.photobook.gson.ServerResponse;
 import com.freecoders.photobook.gson.UserProfile;
 import com.freecoders.photobook.network.ServerInterface;
-import com.freecoders.photobook.network.VolleySingleton;
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import static android.support.v4.app.ActivityCompat.startActivity;
 
 /**
  * Created by aleksey.boev on 2015-03-25.
  */
 public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainActivity> {
     private String strOriginalUserID = "";
-    private String strMockUserID = "";
+    private String strMockUserID = "a33c7ac8-a416-46ed-8255-73ca193f499c";
     private String strMockUserPublicID = "47";
     private String strMockUserProfile = "{\"avatar\":\"http://dev.snufan.com/" +
             "uploads/katiefritz.jpg\",\"email\":\"test@test.com\",\"id\":\"\"," +
@@ -123,24 +109,24 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
 
     public void testGetImageDetailsRequest() throws Exception {
         boolRequestFinished = false;
-        ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-            new Response.Listener<ArrayList<ImageJson>>() {
-                @Override
-                public void onResponse(ArrayList<ImageJson> response) {
-                    assertNotNull(response);
-                    assertNotSame(0, response.size());
-                    ImageJson image = response.get(0);
-                    assertNotNull(image.title);
-                    assertNotSame("", image.title);
-                    new DownloadImageTask().execute(image);
-                    setRequestFinishedFlag();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    fail("Network error " + error.getMessage());
-                }
-            });
+        ServerInterface.getImageDetailsRequest(getActivity(), null, null,
+                new Response.Listener<ArrayList<ImageJson>>() {
+                    @Override
+                    public void onResponse(ArrayList<ImageJson> response) {
+                        assertNotNull(response);
+                        assertNotSame(0, response.size());
+                        ImageJson image = response.get(0);
+                        assertNotNull(image.title);
+                        assertNotSame("", image.title);
+                        new DownloadImageTask().execute(image);
+                        setRequestFinishedFlag();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        fail("Network error " + error.getMessage());
+                    }
+                });
         Thread.sleep(intDefaultRequestTimeout);
         assertTrue(boolRequestFinished);
         assertTrue(boolImageDownloaded);
@@ -149,39 +135,39 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     public void testLikeRequest() throws Exception {
         boolRequestFinished = false;
 
-        ServerInterface.likeRequest(getActivity(), strImageID, strMockUserID,
+        ServerInterface.likeRequest(getActivity(), strImageID,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-                        new Response.Listener<ArrayList<ImageJson>>() {
-                            @Override
-                            public void onResponse(ArrayList<ImageJson> response) {
-                                assertNotNull(response);
-                                Boolean boolContainsKey = false;
-                                String[] likes = null;
-                                for (int i = 0; i < response.size(); i++)
-                                    if (response.get(i).image_id.equals(strImageID)) {
-                                        boolContainsKey = true;
-                                        likes = response.get(i).likes;
-                                        break;
-                                    }
-                                assertTrue(boolContainsKey);
-                                Boolean boolContainsSelfID = false;
-                                for (String id : likes)
-                                    if (id.equals(strMockUserPublicID)) {
-                                        boolContainsSelfID = true;
-                                        break;
-                                    }
-                                assertTrue(boolContainsSelfID);
-                                setRequestFinishedFlag();
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                fail("Network error " + error.getMessage());
-                            }
-                        });
+                    ServerInterface.getImageDetailsRequest(getActivity(), null, null,
+                            new Response.Listener<ArrayList<ImageJson>>() {
+                                @Override
+                                public void onResponse(ArrayList<ImageJson> response) {
+                                    assertNotNull(response);
+                                    Boolean boolContainsKey = false;
+                                    String[] likes = null;
+                                    for (int i = 0; i < response.size(); i++)
+                                        if (response.get(i).image_id.equals(strImageID)) {
+                                            boolContainsKey = true;
+                                            likes = response.get(i).likes;
+                                            break;
+                                        }
+                                    assertTrue(boolContainsKey);
+                                    Boolean boolContainsSelfID = false;
+                                    for (String id : likes)
+                                        if (id.equals(strMockUserPublicID)) {
+                                            boolContainsSelfID = true;
+                                            break;
+                                        }
+                                    assertTrue(boolContainsSelfID);
+                                    setRequestFinishedFlag();
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    fail("Network error " + error.getMessage());
+                                }
+                            });
                 }}, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -192,39 +178,39 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         assertTrue(boolRequestFinished);
         boolRequestFinished = false;
 
-        ServerInterface.unLikeRequest(getActivity(), strImageID, strMockUserID,
+        ServerInterface.unLikeRequest(getActivity(), strImageID,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    ServerInterface.getImageDetailsRequestJson(getActivity(), null, null,
-                        new Response.Listener<ArrayList<ImageJson>>() {
-                            @Override
-                            public void onResponse(ArrayList<ImageJson> response) {
-                                assertNotNull(response);
-                                Boolean boolContainsKey = false;
-                                String[] likes = null;
-                                for (int i = 0; i < response.size(); i++)
-                                    if (response.get(i).image_id.equals(strImageID)) {
-                                        boolContainsKey = true;
-                                        likes = response.get(i).likes;
-                                        break;
-                                    }
-                                assertTrue(boolContainsKey);
-                                Boolean boolContainsSelfID = false;
-                                for (String id : likes)
-                                    if (id.equals(strMockUserPublicID)) {
-                                        boolContainsSelfID = true;
-                                        break;
-                                    }
-                                assertFalse(boolContainsSelfID);
-                                setRequestFinishedFlag();
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                fail("Network error " + error.getMessage());
-                            }
-                        });
+                    ServerInterface.getImageDetailsRequest(getActivity(), null, null,
+                            new Response.Listener<ArrayList<ImageJson>>() {
+                                @Override
+                                public void onResponse(ArrayList<ImageJson> response) {
+                                    assertNotNull(response);
+                                    Boolean boolContainsKey = false;
+                                    String[] likes = null;
+                                    for (int i = 0; i < response.size(); i++)
+                                        if (response.get(i).image_id.equals(strImageID)) {
+                                            boolContainsKey = true;
+                                            likes = response.get(i).likes;
+                                            break;
+                                        }
+                                    assertTrue(boolContainsKey);
+                                    Boolean boolContainsSelfID = false;
+                                    for (String id : likes)
+                                        if (id.equals(strMockUserPublicID)) {
+                                            boolContainsSelfID = true;
+                                            break;
+                                        }
+                                    assertFalse(boolContainsSelfID);
+                                    setRequestFinishedFlag();
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    fail("Network error " + error.getMessage());
+                                }
+                            });
                 }}, null);
         Thread.sleep(intDefaultRequestTimeout);
         assertTrue(boolRequestFinished);
@@ -233,46 +219,48 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
     public void testCommentRequest() throws Exception {
         boolRequestFinished = false;
         // Post comment
-        ServerInterface.postCommentRequestJson(getActivity(), strImageID, strMockUserID,
-            strSampleComment, 0,
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    setCommentId(response);
-                    setRequestFinishedFlag();
-                }},
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    fail("Network error " + error.getMessage());
-                }
-            });
+        ServerInterface.postCommentRequest(getActivity(), strImageID,
+                strSampleComment, 0,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        setCommentId(response);
+                        setRequestFinishedFlag();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        fail("Network error " + error.getMessage());
+                    }
+                });
         Thread.sleep(intDefaultRequestTimeout);
         assertTrue(boolRequestFinished);
         boolRequestFinished = false;
 
         // Get comments - should return new comment
-        ServerInterface.getCommentsJson(strImageID, false,
-            new Response.Listener<ArrayList<CommentEntryJson>>() {
-                @Override
-                public void onResponse(ArrayList<CommentEntryJson> response) {
-                    CommentEntryJson comment = null;
-                    for (int i = 0; i < response.size(); i++)
-                        if (response.get(i).id == longCommentId) {
-                            comment = response.get(i);
-                            break;
-                        }
-                    assertNotNull(comment);
-                    compare(strSampleComment, comment.text);
-                    compare(strMockUserPublicID, comment.author_id );
-                    setRequestFinishedFlag();
-                }},
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    fail("Network error " + error.getMessage());
-                }
-            });
+        ServerInterface.getCommentsRequest(getActivity(), strImageID, false,
+                new Response.Listener<ServerResponse<ArrayList<CommentEntryJson>>>() {
+                    @Override
+                    public void onResponse(ServerResponse<ArrayList<CommentEntryJson>> response) {
+                        CommentEntryJson comment = null;
+                        for (int i = 0; i < response.data.size(); i++)
+                            if (response.data.get(i).id == longCommentId) {
+                                comment = response.data.get(i);
+                                break;
+                            }
+                        assertNotNull(comment);
+                        compare(strSampleComment, comment.text);
+                        compare(strMockUserPublicID, comment.author_id);
+                        setRequestFinishedFlag();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        fail("Network error " + error.getMessage());
+                    }
+                });
 
         Thread.sleep(intDefaultRequestTimeout);
         assertTrue(boolRequestFinished);
@@ -281,7 +269,6 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         // Delete comment
         ServerInterface.deleteCommentRequest (getActivity(),
             String.valueOf(longCommentId),
-            strMockUserID,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -300,25 +287,26 @@ public class ServerInterfaceTest  extends ActivityInstrumentationTestCase2<MainA
         boolRequestFinished = false;
 
         // Get comments should not return comment
-        ServerInterface.getCommentsJson(strImageID, false,
-            new Response.Listener<ArrayList<CommentEntryJson>>() {
-                @Override
-                public void onResponse(ArrayList<CommentEntryJson> response) {
-                    CommentEntryJson comment = null;
-                    for (int i = 0; i < response.size(); i++)
-                        if (response.get(i).id == longCommentId) {
-                            comment = response.get(i);
-                            break;
-                        }
-                    assertNull(comment);
-                    setRequestFinishedFlag();
-                }},
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    fail("Network error " + error.getMessage());
-                }
-            });
+        ServerInterface.getCommentsRequest(getActivity(), strImageID, false,
+                new Response.Listener<ServerResponse<ArrayList<CommentEntryJson>>>() {
+                    @Override
+                    public void onResponse(ServerResponse<ArrayList<CommentEntryJson>> response) {
+                        CommentEntryJson comment = null;
+                        for (int i = 0; i < response.data.size(); i++)
+                            if (response.data.get(i).id == longCommentId) {
+                                comment = response.data.get(i);
+                                break;
+                            }
+                        assertNull(comment);
+                        setRequestFinishedFlag();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        fail("Network error " + error.getMessage());
+                    }
+                });
         Thread.sleep(intDefaultRequestTimeout);
         assertTrue(boolRequestFinished);
     }

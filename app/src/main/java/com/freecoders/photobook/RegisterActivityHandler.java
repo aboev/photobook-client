@@ -1,8 +1,6 @@
 package com.freecoders.photobook;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -11,40 +9,24 @@ import org.json.JSONObject;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.Request.Method;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
-import com.freecoders.photobook.common.Preferences;
-import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.UserProfile;
-import com.freecoders.photobook.network.ImageDownloader;
 import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.StringRequest;
 import com.freecoders.photobook.network.VolleySingleton;
-import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -144,17 +126,16 @@ public class RegisterActivityHandler {
                         profile.setNullFields();
                         profile.avatar = strUrl;
                         ServerInterface.updateProfileRequest(activity, profile,
-                                strUserID,
-                                new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        File avatar = new File(Photobook.getMainActivity().
-                                                getFilesDir(), Constants.FILENAME_AVATAR);
-                                        if (avatar.exists())
-                                            Photobook.getMainActivity().mDrawerAvatarImage.
-                                                    setImageURI(Uri.fromFile(avatar));
-                                    }
-                                }, null);
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    File avatar = new File(Photobook.getMainActivity().
+                                            getFilesDir(), Constants.FILENAME_AVATAR);
+                                    if (avatar.exists())
+                                        Photobook.getMainActivity().mDrawerAvatarImage.
+                                                setImageURI(Uri.fromFile(avatar));
+                                }
+                            }, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());

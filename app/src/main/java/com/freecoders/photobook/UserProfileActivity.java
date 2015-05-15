@@ -127,14 +127,17 @@ public class UserProfileActivity extends ActionBarActivity {
                 && friendEntry.getStatus() == FriendEntry.INT_STATUS_FRIEND;
         setFollowButtonText();
 
-        serverInterface = new ServerInterface();
-        ProfileServerResponseHandler serverHandler = new ProfileServerResponseHandler();
-        serverInterface.setServerErrorHandler(serverHandler);
-        serverInterface.setServerResponseHandler(serverHandler);
-        serverInterface.sentFollowersRequest(userId);
+        serverInterface.getFollowersRequest(this, userId,
+            new Response.Listener<HashMap<String, UserProfile>>() {
+                @Override
+                public void onResponse(HashMap<String, UserProfile> users) {
+                    followersView.setText(String.valueOf(users.size()));
+                    followers = users;
+                }
+            }, null);
 
         fillUserProfileInfo(new UserProfile());
-        ServerInterface.getUserProfileRequest(null, new String[]{userId},
+        ServerInterface.getUserProfileRequest(this, new String[]{userId},
             new Response.Listener<HashMap<String, UserProfile>>() {
                 @Override
                 public void onResponse(HashMap<String, UserProfile> stringUserProfileHashMap) {
@@ -146,20 +149,20 @@ public class UserProfileActivity extends ActionBarActivity {
                 }
             }, null);
 
-        ServerInterface.getImageDetailsRequestJson(this, null, userId,
-            new Response.Listener<ArrayList<ImageJson>>() {
-                @Override
-                public void onResponse(ArrayList<ImageJson> response) {
-                    imageList.clear();
-                    Log.d(LOG_TAG, "Received " + response.size() + " items");
-                    for (int i = 0; i < response.size(); i++) {
-                        ImageJson image = response.get(i);
-                        imageList.add(image);
+        ServerInterface.getImageDetailsRequest(this, null, userId,
+                new Response.Listener<ArrayList<ImageJson>>() {
+                    @Override
+                    public void onResponse(ArrayList<ImageJson> response) {
+                        imageList.clear();
+                        Log.d(LOG_TAG, "Received " + response.size() + " items");
+                        for (int i = 0; i < response.size(); i++) {
+                            ImageJson image = response.get(i);
+                            imageList.add(image);
+                        }
+                        galleryAdapter.notifyDataSetChanged();
                     }
-                    galleryAdapter.notifyDataSetChanged();
-                }
-            }, null
-            );
+                }, null
+        );
     }
 
     private Response.Listener<String> createFollowChangeResponse(final boolean followRequest) {
@@ -292,26 +295,5 @@ public class UserProfileActivity extends ActionBarActivity {
                     }
                 }
             }, null);
-    }
-
-    private class ProfileServerResponseHandler extends DefaultServerResponseHandler
-            implements ServerErrorHandler {
-        @Override
-        public void onFollowersResponse(Map<String, UserProfile> users) {
-            followersView.setText(String.valueOf(users.size()));
-            followers = users;
-        }
-
-        @Override
-        public void onServerRequestError(String request, VolleyError error) {
-            String message = (error.networkResponse == null ? error.toString() :
-                    new String(error.networkResponse.data));
-            Log.d(LOG_TAG, "Error for request " + request + ": " + message);
-        }
-
-        @Override
-        public void onServerRequestError(String request, Exception ex) {
-            Log.d(LOG_TAG, "Error for request " + request + ": " + ex.getLocalizedMessage());
-        }
     }
 }
