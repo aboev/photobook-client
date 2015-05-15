@@ -95,54 +95,51 @@ public class MainActivityHandler {
         HashMap<String, String> params = new HashMap<String, String>();
         final String strUserID = Photobook.getPreferences().strUserID;
         params.put(Constants.HEADER_USERID, strUserID);
-        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL+"/image",
-                avatarImage, params,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(LOG_TAG, response.toString());
-                        try {
-                            JSONObject obj = new JSONObject( response);
-                            String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
-                                    getString(Constants.KEY_URL_SMALL);
-                            UserProfile profile = new UserProfile();
-                            profile.setNullFields();
-                            profile.avatar = strUrl;
-                            ServerInterface.updateProfileRequest(activity, profile,
-                                    strUserID,
-                                    new Response.Listener<String>() {
-
-                                        @Override
-                                        public void onResponse(String response) {
-                                            activity.mDrawerAvatarImage.setImageResource(0);
-                                            File avatar = new
-                                                    File(activity.getFilesDir(),
-                                                    Constants.FILENAME_AVATAR);
-                                            if (avatar.exists()) {
-                                                activity.mDrawerAvatarImage.setImageURI(
-                                                        Uri.fromFile(avatar));
-                                            }
-                                            progress.dismiss();
-                                        }
-                                    },
-                                    new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            progress.dismiss();
-                                        }});
-                        } catch (Exception e) {
-                            progress.dismiss();
-                            e.printStackTrace();
-                            Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
-                        }
+        MultiPartRequest avatarRequest = new MultiPartRequest(Constants.SERVER_URL + "/image",
+            avatarImage, params,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(LOG_TAG, response.toString());
+                    try {
+                        JSONObject obj = new JSONObject( response);
+                        String strUrl = obj.getJSONObject(Constants.RESPONSE_DATA).
+                                getString(Constants.KEY_URL_SMALL);
+                        UserProfile profile = new UserProfile();
+                        profile.setNullFields();
+                        profile.avatar = strUrl;
+                        ServerInterface.updateProfileRequest(activity, profile,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    activity.mDrawerAvatarImage.setImageResource(0);
+                                    File avatar = new
+                                            File(activity.getFilesDir(),
+                                            Constants.FILENAME_AVATAR);
+                                    if (avatar.exists()) {
+                                        activity.mDrawerAvatarImage.setImageURI(
+                                                Uri.fromFile(avatar));
+                                    }
+                                    progress.dismiss();
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    progress.dismiss();
+                                }});
+                    } catch (Exception e) {
+                        progress.dismiss();
+                        e.printStackTrace();
+                        Log.d(LOG_TAG, "Exception " + e.getLocalizedMessage());
                     }
-                }, new Response.ErrorListener() {
+                }
+            }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progress.dismiss();
-                Log.d(LOG_TAG, "Error: " + error.getMessage());
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            progress.dismiss();
+            Log.d(LOG_TAG, "Error: " + error.getMessage());
             }
         }
         );
@@ -223,7 +220,7 @@ public class MainActivityHandler {
     }
 
     public void registerPushID() {
-        new AsyncTask() {
+        AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
                 String strPushID = "";
@@ -247,7 +244,6 @@ public class MainActivityHandler {
                     profile.pushid = strPushID;
                     Log.d(LOG_TAG, "Sending pushId " + strPushID + " to server");
                     ServerInterface.updateProfileRequest(activity, profile,
-                            Photobook.getPreferences().strUserID,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -258,7 +254,8 @@ public class MainActivityHandler {
                             }, null);
                 }
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        };
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private boolean checkPlayServices() {
