@@ -15,6 +15,8 @@
     <string name="sms_hint" translatable="false">1234</string>
     <string name="sms_title" translatable="false">sms code</string>
     <string name="register">Sign up</string>
+    <string name="demo_account">Demo account</string>
+    <string name="demo_notice">Demo account is limited to browsing channel images. Other features are limited</string>
     <string name="about">About</string>
     <string name="eula_notice">By registering in service you agree to <a href="http://dev.snufan.com/eula.html">license agreement</a></string>
     <string name="privacy_policy_notice"><a href="http://dev.snufan.com/privacy_policy.html">Privacy policy</a></string>

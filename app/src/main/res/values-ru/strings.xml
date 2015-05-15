@@ -51,6 +51,8 @@
     <string name="notification_new_comment">Новый комментарий</string>
     <string name="phone_hint">+79060430169</string>
     <string name="register">Регистрация</string>
+    <string name="demo_account">Демо-аккаунт</string>
+    <string name="demo_notice">Демо-аккаунт поддерживает только просмотр каналов. Другие функции ограничены</string>
     <string name="word_by">от</string>
     <string name="btn_like">Лайк</string>
     <string name="btn_follow_text">Подписаться</string>
