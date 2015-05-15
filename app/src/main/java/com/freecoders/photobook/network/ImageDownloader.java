@@ -113,11 +113,15 @@ public class ImageDownloader extends AsyncTask<String,Integer,Long> {
         Log.d(LOG_TAG, "Saved image to " + strFilename);
         if (callback != null) callback.onResponse(null);
         if (!strFilename.isEmpty())
-            MediaScannerConnection.scanFile(Photobook.getImageDetailsActivity(),
-                    new String[]{strFilename}, null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        public void onScanCompleted(String path, Uri uri) {
-                        }
-                    });
+            try {
+                MediaScannerConnection.scanFile(Photobook.getImageDetailsActivity(),
+                        new String[]{strFilename}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                            }
+                        });
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Failed to call media scanner with: " + e.getLocalizedMessage());
+            }
     }
 }
