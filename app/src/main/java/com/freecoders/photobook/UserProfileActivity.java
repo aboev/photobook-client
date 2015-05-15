@@ -22,8 +22,6 @@ import com.freecoders.photobook.db.FriendEntry;
 import com.freecoders.photobook.gson.FeedEntryJson;
 import com.freecoders.photobook.gson.ImageJson;
 import com.freecoders.photobook.gson.UserProfile;
-import com.freecoders.photobook.network.DefaultServerResponseHandler;
-import com.freecoders.photobook.network.ServerErrorHandler;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.VolleySingleton;
 import com.freecoders.photobook.utils.DiskLruBitmapCache;
