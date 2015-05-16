@@ -68,5 +68,7 @@ public class Constants {
     public final static String FILENAME_AVATAR = "avatar.jpg";
     public final static String APP_FOLDER = "photobook";
     public final static String PUSH_SENDER_ID = "69387014044";
+
+    public final static String DEMO_ACCOUNT_ID = "";
 }
 
