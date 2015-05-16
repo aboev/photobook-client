@@ -25,6 +25,7 @@ If you wish to derive or contribute, feel free to do so, but in this case: deplo
 - [Android-crop](https://github.com/jdamcd/android-crop) from jdamcd
 - [libphonenumber](https://github.com/googlei18n/libphonenumber) from Google
 - Channel images from [pixabay](http://pixabay.com/)
+- Clipart from [iconfinder](https://www.iconfinder.com/)
 
 ### Screenshots
 ![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.png)
