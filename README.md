@@ -3,13 +3,23 @@
 
 Photobook is an image sharing social service. You can express your feelings, emotions and memories; draw inspiration from public photo channels - animals, nature, travel, technology and much more.
 
+[Client Repository](https://github.com/aboev/photobook-client)
+
+[Server Repository](https://github.com/aboev/photobook-server)
+
+
 ### Features
 - Share images
 - Like, comment
 - Friends sync
 - Follow public channels
 
-### Components
+### Developer's guide
+You can import this project in Android Studio and briefly debug using our development server.
+If you wish to derive or contribute, feel free to do so, but in this case: deploy server on your own machine and change project name to avoid confusion.
+
+### Attributes
+
 
 ### Screenshots
 ![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.png)
