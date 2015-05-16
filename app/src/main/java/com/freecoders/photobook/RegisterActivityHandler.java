@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
@@ -16,6 +17,7 @@ import com.freecoders.photobook.network.MultiPartRequest;
 import com.freecoders.photobook.network.ServerInterface;
 import com.freecoders.photobook.network.StringRequest;
 import com.freecoders.photobook.network.VolleySingleton;
+import com.freecoders.photobook.utils.FileUtils;
 import com.freecoders.photobook.utils.PhoneUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -24,6 +26,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -278,6 +282,32 @@ public class RegisterActivityHandler {
                 pDialog.dismiss();
             }
         });
+    }
+
+    public void startDemo() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        alert.setMessage(R.string.demo_notice);
+        alert.setPositiveButton(R.string.alert_ok_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Photobook.getPreferences().strUserID = Constants.DEMO_ACCOUNT_ID;
+                        if (Photobook.getFriendsFragmentTab() != null) {
+                            Photobook.getFriendsFragmentTab().bookmarkAdapter.
+                                    setSelectedPosition(Photobook.getFriendsFragmentTab().
+                                            BOOKMARK_ID_CHANNELS);
+                        Photobook.getFriendsFragmentTab().reloadChannelList(null);
+                        Photobook.getMainActivity().mHandler.syncAvatar();
+                            Photobook.getFriendsFragmentTab().reloadContactList(null);
+                        }
+                        activity.finish();
+                    }
+                });
+        alert.setNegativeButton(R.string.alert_cancel_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+        });
+        alert.show();
     }
 
     public Boolean validateInput () {

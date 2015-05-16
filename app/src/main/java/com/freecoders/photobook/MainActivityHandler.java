@@ -59,6 +59,7 @@ public class MainActivityHandler {
         Photobook.setMainActivity(activity);
         prefs = new Preferences(activity);
 		if (!prefs.loadPreferences()) {
+            Photobook.getPreferences().strUserID = "";
 			Intent intent = new Intent(activity, RegisterActivity.class);
 		    activity.startActivity(intent);
 		}

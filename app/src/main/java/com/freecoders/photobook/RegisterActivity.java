@@ -95,6 +95,10 @@ public class RegisterActivity extends ActionBarActivity {
 	public void doRegister(View view) {
 		handler.doRegister();
 	}
+
+    public void startDemo(View view) {
+        handler.startDemo();
+    }
 	
 	public void doAvatarPick(){
 		Intent intent = new Intent();
