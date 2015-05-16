@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.freecoders.photobook.R;
-import com.freecoders.photobook.gson.CommentEntryJson;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,7 +77,7 @@ public final class Preferences {
         intRegisterStatus = settings.getInt(KEY_REGISTER_STATUS, 0);
         intLastOpenedTab = settings.getInt(KEY_LAST_OPENED_TAB, 0);
         boolFirstStart = settings.getBoolean(KEY_FIRST_START, true);
-		return strUserID.length() != 0;
+		return ((strUserID.length() != 0) && (intRegisterStatus == Constants.STATUS_REGISTERED));
 	}
 	
 	public final void savePreferences(){
