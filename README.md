@@ -19,7 +19,11 @@ You can import this project in Android Studio and briefly debug using our develo
 If you wish to derive or contribute, feel free to do so, but in this case: deploy server on your own machine and change project name to avoid confusion.
 
 ### Attributes
-
+[AndroidStaggeredGrid](https://github.com/etsy/AndroidStaggeredGrid) from Etsy
+[CircleImageView](https://github.com/hdodenhof/CircleImageView/) from hdodenhof
+[DiskLruCache](https://github.com/JakeWharton/DiskLruCache) from Jake Wharton
+[Android-crop](https://github.com/jdamcd/android-crop) from jdamcd
+[libphonenumber](https://github.com/googlei18n/libphonenumber) from Google
 
 ### Screenshots
 ![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.png)
