@@ -91,6 +91,18 @@
 		     	android:padding="10dp"
 		     	android:onClick="doRegister" />
 		</LinearLayout>
+
+        <TextView
+            android:id="@+id/text_demo_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:autoLink="web"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="40dp"
+            android:text="@string/demo_account"
+            android:onClick="startDemo"/>
+
         <TextView
             android:id="@+id/text_eula"
             android:layout_width="wrap_content"
