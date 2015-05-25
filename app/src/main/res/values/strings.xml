@@ -48,6 +48,7 @@
     <string name="alert_ok_button" translatable="false">OK</string>
     <string name="alert_cancel_button">Cancel</string>
     <string name="alert_delete">Delete</string>
+    <string name="alert_reply">Reply</string>
     <string name="dialog_downloading">Downloading</string>
     <string name="dialog_download_complete">Image downloaded</string>
     <string name="dialog_creating_account">Creating account...</string>

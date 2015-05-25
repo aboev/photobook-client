@@ -5,6 +5,7 @@
     <string name="action_settings">Настройки</string>
     <string name="alert_cancel_button">Отмена</string>
     <string name="alert_delete">Удалить</string>
+    <string name="alert_reply">Ответить</string>
     <string name="alert_input_name">Укажите имя </string>
     <string name="alert_input_phone">Укажите номер телефона начиная с +</string>
     <string name="alert_message_comment">Что вы думаете?</string>
