@@ -129,16 +129,17 @@ public class ImageDetailsActivity extends Activity {
             public void onItemClick(AdapterView<?> arg0, View v,
                                            int index, long arg3) {
 
+                if (index == 0) return;
+                final int adapterItemPos = index - mCommentsList.getHeaderViewsCount();
 
-                final int adapterItemPos = index-1;
-
-                final CharSequence[] itemsOwner = {"Delete"};
-                final CharSequence[] itemsOther = {"Reply"};
+                final CharSequence[] itemsOwner = {getResources().getString(R.string.alert_delete)};
+                final CharSequence[] itemsOther = {getResources().getString(R.string.alert_reply)};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(ImageDetailsActivity.this);
                 //builder.setTitle("Make your selection");
 
-                if(Photobook.getPreferences().intPublicID.toString().equals(mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString())) {
+                if(Photobook.getPreferences().intPublicID.toString().equals(
+                        mCommentListAdapter.mCommentList.get(adapterItemPos).author_id.toString())) {
 
                     builder.setItems(itemsOwner, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int item) {
