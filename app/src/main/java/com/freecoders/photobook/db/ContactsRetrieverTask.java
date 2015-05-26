@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.gson.UserProfile;
@@ -35,7 +36,14 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
 
     @Override
     protected ArrayList<ContactEntry> doInBackground(String... params) {
-        return getContacts();
+
+        try{
+            return getContacts(); // activity could be null -> ContentResolver null , Cursor null etc.
+        }catch(Exception ex){
+            Log.d(LOG_TAG, "Error: " + ex.getMessage());
+        }  //try
+
+        return new ArrayList<ContactEntry>();
     }
 
     @Override
@@ -101,7 +109,9 @@ public class ContactsRetrieverTask extends AsyncTask<String, Void,
 
     public ArrayList<ContactEntry> getContacts() {
         ArrayList<ContactEntry> res = new ArrayList<ContactEntry>();
-        ContentResolver cr =  Photobook.getMainActivity().getContentResolver();
+
+        MainActivity mainActivity = Photobook.getMainActivity();
+        ContentResolver cr =  mainActivity.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cur.getCount() > 0) {
             while (cur.moveToNext()) {
