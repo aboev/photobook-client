@@ -24,7 +24,7 @@
     <HorizontalScrollView
         android:id="@+id/bookmarkScrollView"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="60dp"
         android:background="#ff4da7ff"
         android:scrollbars="none"
         android:fillViewport="true"
