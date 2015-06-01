@@ -112,4 +112,6 @@
         <item>@drawable/ic_tab_folders</item>
         <item>@drawable/ic_tab_shares</item>
     </string-array>
+    <string name="playMarketDetailsLink" translatable="false">market://details?id=</string>
+    <string name="playMarketDetailsLinkAlt" translatable="false">https://play.google.com/store/apps/details?id=</string>
 </resources>

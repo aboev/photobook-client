@@ -149,37 +149,60 @@ public class MainActivityHandler {
 
     public void checkLatestVersion () {
         ServerInterface.getServerInfoRequest(activity,
-            new Response.Listener<HashMap<String,String>>() {
-                @Override
-                public void onResponse(HashMap<String,String> response) {
-                    Gson gson = new Gson();
-                    String strServerInfo = gson.toJson(response);
-                    if (Photobook.getPreferences().strServerInfo.equals(strServerInfo)) return;
-                    PackageInfo pInfo = null;
-                    try {
-                        pInfo = activity.getPackageManager().getPackageInfo(
-                                activity.getPackageName(), 0);
-                    } catch (PackageManager.NameNotFoundException e) {
+                new Response.Listener<HashMap<String, String>>() {
+                    @Override
+                    public void onResponse(HashMap<String, String> response) {
+                        Gson gson = new Gson();
+                        String strServerInfo = gson.toJson(response);
+                        if (Photobook.getPreferences().strServerInfo.equals(strServerInfo)) return;
+                        PackageInfo pInfo = null;
+                        try {
+                            pInfo = activity.getPackageManager().getPackageInfo(
+                                    activity.getPackageName(), 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                        }
+                        if (response.containsKey(Constants.KEY_LATEST_APK_VER) &&
+                                response.containsKey(Constants.KEY_LATEST_APK_URL) &&
+                                response.containsKey(Constants.KEY_MIN_CLIENT_VERSION) &&
+                                pInfo != null) {
+                            int intLatestAPKVersion = Integer.
+                                    valueOf(response.get(Constants.KEY_LATEST_APK_VER));
+                            int intMinClientVersion = Integer.
+                                    valueOf(response.get(Constants.KEY_MIN_CLIENT_VERSION));
+                            if (intMinClientVersion > pInfo.versionCode)
+                                showUpdateDialog(true, response);
+                            else if (intLatestAPKVersion > pInfo.versionCode)
+                                showUpdateDialog(false, response);
+                        }
                     }
-                    if (response.containsKey(Constants.KEY_LATEST_APK_VER) &&
-                            response.containsKey(Constants.KEY_LATEST_APK_URL) &&
-                            response.containsKey(Constants.KEY_MIN_CLIENT_VERSION) &&
-                            pInfo != null) {
-                        int intLatestAPKVersion = Integer.
-                            valueOf(response.get(Constants.KEY_LATEST_APK_VER));
-                        int intMinClientVersion = Integer.
-                            valueOf(response.get(Constants.KEY_MIN_CLIENT_VERSION));
-                        if (intMinClientVersion > pInfo.versionCode)
-                            showUpdateDialog(true, response);
-                        else if (intLatestAPKVersion > pInfo.versionCode)
-                            showUpdateDialog(false, response);
-                    }
-                }
-            }, null);
+                }, null);
+    }
+
+    protected void OpenPlayMarketPage() {
+
+        if(activity != null) {
+
+            final String appPackageName = activity.getPackageName();
+
+            try {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.playMarketDetailsLink) + appPackageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.playMarketDetailsLinkAlt) + appPackageName)));
+            }  //try
+
+        }  //if
+
     }
 
     public void showUpdateDialog (Boolean boolMandatory, final HashMap<String, String> serverInfo) {
+
         final String strURL = serverInfo.get(Constants.KEY_LATEST_APK_URL);
+
+        if(strURL == null || strURL.isEmpty()){
+            OpenPlayMarketPage();
+            return;
+        }  //if
+
         final String strLocalFilename = serverInfo.get(Constants.KEY_LATEST_APK_VER) + ".apk";
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
         if (boolMandatory)
