@@ -19,6 +19,11 @@ Photobook is an image sharing social service. You can express your feelings, emo
 ### Developer's guide
 You can import this project in Android Studio and briefly debug using our development server.
 If you wish to derive or contribute, feel free to do so, but in this case: deploy server on your own machine and change project name to avoid confusion.
+#### Hosted server
+If you deploy your own photobook-server, then replace following line in common/Constants.java:
+```
+public final static String SERVER_URL = "http://<Your server IP>";
+```
 
 ### Attributes
 - [AndroidStaggeredGrid](https://github.com/etsy/AndroidStaggeredGrid) from Etsy
@@ -30,7 +35,7 @@ If you wish to derive or contribute, feel free to do so, but in this case: deplo
 - Clipart from [iconfinder](https://www.iconfinder.com/)
 
 ### Screenshots
-![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.png)
+![alt text](https://raw.githubusercontent.com/aboev/photobook-client/master/screenshot.jpg)
 
 ### License 
 
