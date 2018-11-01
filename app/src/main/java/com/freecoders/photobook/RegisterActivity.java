@@ -10,7 +10,7 @@ import com.soundcloud.android.crop.Crop;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -33,7 +33,7 @@ import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RegisterActivity extends ActionBarActivity {
+public class RegisterActivity extends AppCompatActivity {
     private static String LOG_TAG = "RegisterActivity";
 	
 	EditText nameEditText;
@@ -132,3 +132,4 @@ public class RegisterActivity extends ActionBarActivity {
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
 }
+

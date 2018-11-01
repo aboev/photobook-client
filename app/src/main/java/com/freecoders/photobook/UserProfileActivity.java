@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * @author Andrei Alikov andrei.alikov@gmail.com
  */
-public class UserProfileActivity extends ActionBarActivity {
+public class UserProfileActivity extends AppCompatActivity {
     private final static String LOG_TAG = "UserProfileActivity";
 
     private String userId;
@@ -295,3 +295,4 @@ public class UserProfileActivity extends ActionBarActivity {
             }, null);
     }
 }
+
