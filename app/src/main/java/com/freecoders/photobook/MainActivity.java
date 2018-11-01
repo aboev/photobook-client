@@ -1,38 +1,39 @@
 package com.freecoders.photobook;
 
 import android.app.*;
+import android.support.v7.app.AppCompatActivity;
 import android.view.*;
+
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.common.Constants;
 import com.freecoders.photobook.common.Photobook;
 import com.freecoders.photobook.utils.FileUtils;
+import com.freecoders.photobook.utils.Permission;
 import com.soundcloud.android.crop.Crop;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar.Tab;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.support.design.widget.TabLayout;
 
 import java.io.File;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
     private static String LOG_TAG = "MainActivity";
 
+    TabLayout tabLayout;
     ViewPager mViewPager;
 
     MainActivityHandler mHandler;
@@ -47,7 +48,7 @@ public class MainActivity extends FragmentActivity {
     TextView mDrawerContactKey;
     private TextView aboutTextView;
 
-    ActionBar.Tab friendsTab, galleryTab, feedTab;
+    android.support.design.widget.TabLayout.Tab friendsTab, galleryTab, feedTab;
 
     protected Dialog mSplashDialog;
     private int FRAGMENT_ID_CONTACTS = 0;
@@ -58,9 +59,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        getActionBar().hide();
 
         Photobook.setMainActivity(this);
 
@@ -75,111 +73,93 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(false);
-        
-        friendsTab = actionBar.newTab().setIcon(R.drawable.ic_action_friends_tab);
-        galleryTab = actionBar.newTab().setIcon(R.drawable.ic_action_gallery_tab);
-        feedTab = actionBar.newTab().setIcon(R.drawable.ic_action_feed_tab);
+        final MainActivity mainActivity = this;
+        Permission.requestPermissions(new CallbackInterface() {
+            @Override
+            public void onResponse(Object obj) {
+                tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+                friendsTab = tabLayout.newTab().setIcon(R.drawable.ic_action_friends_tab);
+                galleryTab = tabLayout.newTab().setIcon(R.drawable.ic_action_gallery_tab);
+                feedTab = tabLayout.newTab().setIcon(R.drawable.ic_action_feed_tab);
 
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-                if (mViewPager != null)
-				    mViewPager.setCurrentItem(tab.getPosition());
+                tabLayout.addTab(friendsTab);
+                tabLayout.addTab(galleryTab);
+                tabLayout.addTab(feedTab);
 
-			}
-
-			@Override
-			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			}
-
-			@Override
-			public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			}
-        };
-
-        friendsTab.setTabListener(tabListener);
-        galleryTab.setTabListener(tabListener);
-        feedTab.setTabListener(tabListener);
-        
-        actionBar.addTab(friendsTab);
-        actionBar.addTab(galleryTab);
-        actionBar.addTab(feedTab);
-
-        mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mPagerAdapter);
-
-        //mViewPager.setCurrentItem(Photobook.getPreferences().intLastOpenedTab);
-
-        mViewPager.setOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
+                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
-                    public void onPageSelected(int position) {
-                        getActionBar().setSelectedNavigationItem(position);
-                        Photobook.getPreferences().intLastOpenedTab = position;
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        if (mViewPager != null)
+                            mViewPager.setCurrentItem(tab.getPosition());
+
+                        Photobook.getPreferences().intLastOpenedTab = tab.getPosition();
                         Photobook.getPreferences().savePreferences();
                     }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {}
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {}
                 });
 
-        String[] mMenuItems = getResources().getStringArray(R.array.menu_items);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.menu_drawer);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        //mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+                mPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+                mViewPager = (ViewPager) findViewById(R.id.pager);
+                mViewPager.setAdapter(mPagerAdapter);
+                mViewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        mDrawerAvatarImage = (ImageView) findViewById(R.id.imgAvatarDrawer);
-        mDrawerUserName = (TextView) findViewById(R.id.textUserNameDrawer);
-        mDrawerContactKey = (TextView) findViewById(R.id.textContactKeyDrawer);
+                String[] mMenuItems = getResources().getStringArray(R.array.menu_items);
+                mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+                mDrawerList = (ListView) findViewById(R.id.menu_drawer);
+                mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        aboutTextView = (TextView) findViewById(R.id.aboutTextView);
-        aboutTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog aboutDialog = new AlertDialog.Builder(MainActivity.this).create();
-                aboutDialog.setTitle(R.string.about);
-                aboutDialog.setMessage(getString(R.string.aboutText));
-                aboutDialog.show();
+                mDrawerAvatarImage = (ImageView) findViewById(R.id.imgAvatarDrawer);
+                mDrawerUserName = (TextView) findViewById(R.id.textUserNameDrawer);
+                mDrawerContactKey = (TextView) findViewById(R.id.textContactKeyDrawer);
 
-                TextView messageText = (TextView)aboutDialog.findViewById(android.R.id.message);
-                messageText.setGravity(Gravity.CENTER);
+                aboutTextView = (TextView) findViewById(R.id.aboutTextView);
+                aboutTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog aboutDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        aboutDialog.setTitle(R.string.about);
+                        aboutDialog.setMessage(getString(R.string.aboutText));
+                        aboutDialog.show();
+
+                        TextView messageText = (TextView)aboutDialog.findViewById(android.R.id.message);
+                        messageText.setGravity(Gravity.CENTER);
+                    }
+                });
+                mDrawerList.setAdapter(new ArrayAdapter<String>(mainActivity,
+                        R.layout.item_drawer_list, mMenuItems));
+
+                mDrawerToggle = new ActionBarDrawerToggle(mainActivity, mDrawerLayout,
+                        R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+                    public void onDrawerClosed(View view) {
+                        super.onDrawerClosed(view);
+                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    }
+
+                    public void onDrawerOpened(View drawerView) {
+                        super.onDrawerOpened(drawerView);
+                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    }
+                };
+                mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+                mHandler = new MainActivityHandler();
+                mHandler.init(mainActivity);
+                mHandler.checkLatestVersion();
+                mHandler.handleIntent(getIntent());
+
+                if (mSplashDialog != null) {
+                    new SplashTimeoutTask().execute();
+                }
+
+                Log.d(LOG_TAG, "Loaded main activity");
             }
         });
-
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.item_drawer_list, mMenuItems));
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        mHandler = new MainActivityHandler();
-        mHandler.init(this);
-        mHandler.checkLatestVersion();
-        mHandler.handleIntent(getIntent());
-
-        getActionBar().show();
-
-        if (mSplashDialog != null) {
-            new SplashTimeoutTask().execute();
-        }
-
-        Log.d(LOG_TAG, "Loaded main activity");
     }
 
     public class SplashTimeoutTask extends AsyncTask<String, Void, Boolean> {
@@ -253,4 +233,12 @@ public class MainActivity extends FragmentActivity {
         super.onNewIntent(intent);
         mHandler.handleIntent(intent);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if ((Photobook.getPermissionHandlers().containsKey(requestCode)) &&
+                (Photobook.getPermissionHandlers().get(requestCode) != null))
+            Photobook.getPermissionHandlers().get(requestCode).onResponse(null);
+    }
 }
+
