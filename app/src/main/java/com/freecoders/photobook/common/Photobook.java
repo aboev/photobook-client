@@ -11,6 +11,7 @@ import com.freecoders.photobook.GalleryFragmentTab;
 import com.freecoders.photobook.ImageDetailsActivity;
 import com.freecoders.photobook.MainActivity;
 import com.freecoders.photobook.MainActivityPagerAdapter;
+import com.freecoders.photobook.classes.CallbackInterface;
 import com.freecoders.photobook.db.FriendsDataSource;
 import com.freecoders.photobook.db.ImageEntry;
 import com.freecoders.photobook.db.ImagesDataSource;
@@ -20,6 +21,7 @@ import com.freecoders.photobook.utils.MemoryLruCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Alex on 2014-11-30.
@@ -43,6 +45,9 @@ public class Photobook extends Application {
 
     public static String extraImageSource = "gallery_image";
     public static String extraImageID = "imageID";
+
+    public static HashMap<Integer, CallbackInterface> permissionHandlers =
+            new HashMap<Integer, CallbackInterface>();
 
     @Override
     public void onCreate() {
@@ -139,5 +144,8 @@ public class Photobook extends Application {
 
     public static ImageEntry getGalleryImageDetails()
     {return mGalleryImageDetails;}
+
+    public final static HashMap<Integer, CallbackInterface> getPermissionHandlers()
+    {return permissionHandlers;}
 
 }
